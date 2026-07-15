@@ -1,5 +1,227 @@
 @charset 'UTF-8';
 
-body {
-    background-color: whitesmoke;
+:root {
+
+    --cor-1: #0D0D0D;
+    --cor-2: #F2F2F2;
+    --cor-3: #BFBFBF;
+    --cor-detalhe: #8B5CF6;
+    --cor-hover: #9064f7;
+    --cor-sub-detalhe: #3B82F6;
+    --cor-nav: #0d0d0d50;
+
 }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--cor-1);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* Montando nossa nav bar!*/
+a {
+    text-decoration: none;
+    color: var(--cor-3);
+}
+
+a.ctf {
+    background-color: var(--cor-detalhe);
+    padding: 10px 15px;
+    border-radius: 5px;
+    color: var(--cor-2);
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+a.ctf:hover {
+    background-color: var(--cor-hover);
+    box-shadow: 1px 0px 5px var(--cor-hover);
+    color: var(--cor-2);
+}
+
+a.ctf.ativo {
+    color: var(--cor-2);
+    padding-bottom: 8px;
+}
+
+a.ativo {
+    color: var(--cor-detalhe); 
+    border-bottom: 2px solid var(--cor-detalhe); 
+    padding-bottom: 5px;
+}
+
+img#logo {
+    border-radius: 3px;
+}
+
+header {
+    position: sticky;
+    top: 0;
+}
+
+nav {
+    background-color: var(--cor-nav);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0 10px;
+    height: 70px;
+    border-bottom: 1px solid #bfbfbf41;
+}
+
+nav ul {
+    gap: 20px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--cor-1);
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    padding: 20px 0;
+    gap: 20px;
+    border-bottom: 1px solid #bfbfbf41;
+}
+
+nav li {
+    list-style-type: none;
+}
+
+nav a:hover {
+    color: var(--cor-hover);
+    transition: 0.3s;
+}
+
+img#logo-menu {
+    position: absolute; 
+    top: 12px; 
+    left: 40px; 
+    width: 26px; 
+    border-radius: 3px;
+}
+
+
+#btn-menu {
+    position: fixed; 
+    top: 23px;
+    right: 20px;
+    width: 30px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 1002;
+}
+
+#btn-menu .linha {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--cor-3);
+    transition: all 0.3s ease-in-out;
+}
+
+#btn-menu .linha:nth-child(1) { top: 0px; }
+#btn-menu .linha:nth-child(2) { top: 10px; }
+#btn-menu .linha:nth-child(3) { top: 20px; }
+
+#btn-menu.ativo-mobile .linha:nth-child(1) {
+    top: 10px;
+    transform: rotate(45deg);
+}
+
+#btn-menu.ativo-mobile .linha:nth-child(2) {
+    opacity: 0;
+}
+
+#btn-menu.ativo-mobile .linha:nth-child(3) {
+    top: 10px;
+    transform: rotate(-45deg);
+}
+
+
+#btn-menu.ativo-mobile .linha {
+    background-color: #fff;
+}
+
+nav ul.ativo-mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: var(--cor-1); 
+    position: fixed; 
+    top: 0;
+    right: 0; 
+    left: auto;
+    width: 75%; 
+    max-width: 350px;
+    height: 100vh;
+    padding: 80px 40px 40px 40px; 
+    box-shadow: -10px 0 20px rgba(0, 0, 0, 0.7); 
+    z-index: 1000; 
+}
+
+nav ul.ativo-mobile li a {
+    color: var(--cor-2); 
+    font-size: 1.1rem;
+    font-weight: normal;
+    text-decoration: none;
+    position: relative; 
+    display: inline-block;
+    transition: color 0.3s ease; 
+}
+nav ul.ativo-mobile li a.ativo {
+    color: var(--cor-detalhe); 
+    font-weight: bold;
+}
+
+nav ul.ativo-mobile li a.ativo::before {
+    content: '';
+    position: absolute;
+    left: -20px; 
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 80%;
+}
+
+nav ul.ativo-mobile li {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+nav ul.ativo-mobile li:last-child {
+    margin-top: auto; 
+    margin-bottom: 0;
+}
+
+nav ul.ativo-mobile li a.ctf {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 16px 0;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+}
+
+nav ul.ativo-mobile li a:hover {
+    color: var(--cor-hover); 
+
+}
+
+nav ul.ativo-mobile li a.ctf:hover {
+    color: var(--cor-2);
+}
+/* Fim da nav bar! */

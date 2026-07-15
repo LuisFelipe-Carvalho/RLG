@@ -1,0 +1,26 @@
+@charset 'UTF-8';
+
+@media (min-width: 768px) {
+    
+    #btn-menu {
+        display: none;
+    }
+
+    nav {
+        justify-content: space-around;
+    }
+
+    nav ul {
+        display: flex;
+        flex-direction: row;
+        position: static;
+        background-color: transparent;
+        width: auto;
+        padding: 0;
+        border: none;
+    }
+
+    img#logo-menu {
+        display: none;
+    }
+}
