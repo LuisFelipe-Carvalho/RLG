@@ -57,3 +57,33 @@ window.addEventListener("resize", () => {
         btnMenu.classList.remove("ativo-mobile");
     }
 });
+
+/* Mudando a imagem na parte do Como Funciona */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Mapeia os elementos do DOM
+    const itensPasso = document.querySelectorAll('.item-passo');
+    const imagemDinamica = document.getElementById('imagem-dinamica');
+
+    // 2. Percorre cada item da lista
+    itensPasso.forEach(item => {
+        
+        // 3. Ouve quando o mouse entra na área do item
+        item.addEventListener('mouseenter', () => {
+            
+            // Puxa o link da imagem correspondente
+            const novaImagem = item.getAttribute('data-imagem');
+            
+            if (novaImagem) {
+                // Diminui a opacidade para 0 (faz a imagem sumir)
+                imagemDinamica.style.opacity = 0;
+                
+                // Espera um instante, troca o arquivo e volta a opacidade para 1
+                setTimeout(() => {
+                    imagemDinamica.src = novaImagem;
+                    imagemDinamica.style.opacity = 1;
+                }, 200); // 200 milissegundos acompanha o tempo definido no CSS
+            }
+        });
+    });
+});

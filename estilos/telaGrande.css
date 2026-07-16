@@ -24,9 +24,45 @@
     img#logo-menu {
         display: none;
     }
-    /* home */
 
+    /* home */
     .container > div.conteudo-home {
         margin-left: 60px;
+    }
+
+    .grid {
+        grid-template-columns: 50px 1fr 50px;
+    }
+
+    /* Como Funicona */
+    .conteudo-como-funciona {
+        max-width: 1000px;
+    }
+    
+    .conteudo-como-funciona > p {
+        margin-bottom: 50px;
+    }
+
+    .layout-colunas {
+        display: flex; 
+        flex-direction: row-reverse; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 60px;
+    }
+
+    .imagem-box, .texto-box {
+        flex: 1; 
+    }
+
+    .imagem-box img {
+        width: 100%;
+        height: 550px; 
+        max-height: none;
+        display: block;
+        object-fit: cover; 
+        border-radius: 12px;
+
+        margin-bottom: 70px;
     }
 }
