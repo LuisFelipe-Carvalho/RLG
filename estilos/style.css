@@ -384,8 +384,9 @@ section#como-funciona {
 
 /* Serviços   */
 #servicos {
-    height: 90vh;
+    min-height: 90vh;
     width: 100vw;
+    padding-bottom: 40px;
 }
 
 .secao-grid-animado {

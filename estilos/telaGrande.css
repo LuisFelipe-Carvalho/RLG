@@ -100,7 +100,7 @@
 
     /* Serviços*/
     #servicos {
-        height: 78vh;
+        min-height: 78vh;
     }
 
     div.conteudo-servicos {
