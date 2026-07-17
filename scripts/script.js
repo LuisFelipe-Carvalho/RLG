@@ -3,20 +3,23 @@ const sections = document.querySelectorAll("section");
 const navLinks = document.querySelectorAll("nav ul li a");
 
 window.addEventListener("scroll", () => {
-    let current = ""; 
-    
+    let current = "";
+
+    // Linha de gatilho a 40% da altura da tela: a seção fica "ativa"
+    // quando entra na porção central do viewport, e não só ao topo.
+    const linhaGatilho = window.scrollY + window.innerHeight * 0.4;
+
     sections.forEach(section => {
         const sectionTop = section.offsetTop;
-        const sectionHeight = section.clientHeight;
-        
-        if (window.scrollY >= (sectionTop - 60)) {
+
+        if (linhaGatilho >= sectionTop) {
             current = section.getAttribute("id");
         }
     });
 
     navLinks.forEach(link => {
         link.classList.remove("ativo");
-        
+
         if (link.getAttribute("href") === `#${current}`) {
             link.classList.add("ativo");
         }

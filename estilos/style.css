@@ -18,9 +18,17 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     background-color: var(--cor-1);
     font-family: Arial, Helvetica, sans-serif;
+}
+
+section {
+    scroll-margin-top: 70px;
 }
 
 
@@ -80,17 +88,24 @@ nav {
 
 nav ul {
     gap: 20px;
-    display: none;
+    display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     background-color: var(--cor-1);
-    position: absolute;
-    top: 50px;
-    left: 0;
-    width: 100%;
-    padding: 20px 0;
-    gap: 20px;
-    border-bottom: 1px solid #bfbfbf41;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: auto;
+    width: 75%;
+    max-width: 350px;
+    height: 100vh;
+    padding: 80px 40px 40px 40px;
+    box-shadow: -10px 0 20px rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.35s ease, visibility 0.35s ease;
 }
 
 nav li {
@@ -156,56 +171,44 @@ img#logo-menu {
 }
 
 nav ul.ativo-mobile {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    background-color: var(--cor-1); 
-    position: fixed; 
-    top: 0;
-    right: 0; 
-    left: auto;
-    width: 75%; 
-    max-width: 350px;
-    height: 100vh;
-    padding: 80px 40px 40px 40px; 
-    box-shadow: -10px 0 20px rgba(0, 0, 0, 0.7); 
-    z-index: 1000; 
+    transform: translateX(0);
+    visibility: visible;
 }
 
-nav ul.ativo-mobile li a {
-    color: var(--cor-2); 
+nav ul li a {
+    color: var(--cor-2);
     font-size: 1.1rem;
     font-weight: normal;
-    position: relative; 
+    position: relative;
     display: inline-block;
-    transition: color 0.3s ease; 
+    transition: color 0.3s ease;
 }
-nav ul.ativo-mobile li a.ativo {
-    color: var(--cor-detalhe); 
+nav ul li a.ativo {
+    color: var(--cor-detalhe);
     font-weight: bold;
 }
 
-nav ul.ativo-mobile li a.ativo::before {
+nav ul li a.ativo::before {
     content: '';
     position: absolute;
-    left: -20px; 
+    left: -20px;
     top: 50%;
     transform: translateY(-50%);
     width: 3px;
     height: 80%;
 }
 
-nav ul.ativo-mobile li {
+nav ul li {
     width: 100%;
     margin-bottom: 25px;
 }
 
-nav ul.ativo-mobile li:last-child {
-    margin-top: auto; 
+nav ul li:last-child {
+    margin-top: auto;
     margin-bottom: 0;
 }
 
-nav ul.ativo-mobile li a.ctf {
+nav ul li a.ctf {
     display: block;
     width: 100%;
     text-align: center;
@@ -215,12 +218,12 @@ nav ul.ativo-mobile li a.ctf {
     font-size: 1.1rem;
 }
 
-nav ul.ativo-mobile li a:hover {
-    color: var(--cor-hover); 
+nav ul li a:hover {
+    color: var(--cor-hover);
 
 }
 
-nav ul.ativo-mobile li a.ctf:hover {
+nav ul li a.ctf:hover {
     color: var(--cor-2);
 }
 /* Fim da nav bar! */
