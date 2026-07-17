@@ -43,6 +43,19 @@ todosOsLinks.forEach(link => {
     });
 });
 
+/* Fecha o menu ao clicar fora dele */
+document.addEventListener("click", (evento) => {
+    const menuAberto = menuLinksMobile.classList.contains("ativo-mobile");
+
+    // Ignora cliques no proprio menu ou no botao (o botao ja tem seu toggle).
+    const clicouDentro = menuLinksMobile.contains(evento.target) || btnMenu.contains(evento.target);
+
+    if (menuAberto && !clicouDentro) {
+        menuLinksMobile.classList.remove("ativo-mobile");
+        btnMenu.classList.remove("ativo-mobile");
+    }
+});
+
 /* --- PREVENÇÃO DE BUG NO REDIMENSIONAMENTO DA TELA --- */
 window.addEventListener("resize", () => {
 
