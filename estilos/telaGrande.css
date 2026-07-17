@@ -132,6 +132,21 @@
         margin: 80px auto;
         padding: 50px;
     }
+
+    /* Footer */
+    .conteudo-footer {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 60px;
+    }
+
+    .coluna-marca {
+        flex: 1.5;
+    }
+
+    .coluna-footer {
+        flex: 1;
+    }
 }
 
 @media (min-width:1080px) {
