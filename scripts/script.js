@@ -57,12 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
     itensPasso.forEach(item => {
         
         item.addEventListener('mouseenter', () => {
-            
+
             const novaImagem = item.getAttribute('data-imagem');
-            
+
             if (novaImagem) {
                 imagemDinamica.style.opacity = 0;
-                
+
                 setTimeout(() => {
                     imagemDinamica.src = novaImagem;
                     imagemDinamica.style.opacity = 1;
@@ -70,4 +70,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+});
+
+/* Animação de revelar os cards ao scrollar (Explicação) */
+document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.card-explicacao');
+
+    const observador = new IntersectionObserver((entradas) => {
+        entradas.forEach(entrada => {
+            if (entrada.isIntersecting) {
+                entrada.target.classList.add('revelado');
+                observador.unobserve(entrada.target);
+            }
+        });
+    }, {
+        threshold: 0.2
+    });
+
+    cards.forEach(card => observador.observe(card));
 });
