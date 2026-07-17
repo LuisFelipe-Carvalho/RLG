@@ -57,21 +57,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const itensPasso = document.querySelectorAll('.item-passo');
     const imagemDinamica = document.getElementById('imagem-dinamica');
 
+    const trocarImagem = (item) => {
+        const novaImagem = item.getAttribute('data-imagem');
+
+        // Evita re-animar se a imagem clicada já é a que está sendo exibida.
+        if (!novaImagem || imagemDinamica.dataset.atual === novaImagem) {
+            return;
+        }
+
+        imagemDinamica.dataset.atual = novaImagem;
+        imagemDinamica.style.opacity = 0;
+
+        setTimeout(() => {
+            imagemDinamica.src = novaImagem;
+            imagemDinamica.style.opacity = 1;
+        }, 200);
+    };
+
     itensPasso.forEach(item => {
-        
-        item.addEventListener('mouseenter', () => {
-
-            const novaImagem = item.getAttribute('data-imagem');
-
-            if (novaImagem) {
-                imagemDinamica.style.opacity = 0;
-
-                setTimeout(() => {
-                    imagemDinamica.src = novaImagem;
-                    imagemDinamica.style.opacity = 1;
-                }, 200);
-            }
-        });
+        // mouseenter cobre o hover no desktop; click cobre o toque no celular.
+        item.addEventListener('mouseenter', () => trocarImagem(item));
+        item.addEventListener('click', () => trocarImagem(item));
     });
 });
 
