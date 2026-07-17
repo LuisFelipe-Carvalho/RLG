@@ -63,6 +63,7 @@ img#logo {
 header {
     position: sticky;
     top: 0;
+    z-index: 999;
 }
 
 nav {
@@ -234,7 +235,7 @@ section#home {
     background-position: center;
     background-repeat: no-repeat;
 
-    height: 80vh;
+    height: 87vh;
 }
 
 .grid {
@@ -376,7 +377,7 @@ section#como-funciona {
 
 /* Serviços   */
 #servicos {
-    height: 50vh;
+    height: 90vh;
     width: 100vw;
 }
 
@@ -394,7 +395,6 @@ section#como-funciona {
     min-height: 500px;
 }
 
-/* 5. A Animação (Keyframes) */
 @keyframes moverDiagonal {
     0% {
         background-position: 0px 0px;
@@ -403,3 +403,66 @@ section#como-funciona {
         background-position: 40px 40px;
     }
 }
+
+div.container-3 {
+    grid-column: 2 / 3;
+}
+
+div.conteudo-servicos {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    margin-top: 10px;
+}
+
+.cabecalho-seco {
+    background-color: rgba(0, 0, 0, 0.4); 
+    backdrop-filter: blur(6px); 
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--cor-3);
+    
+    padding: 10px 40px;
+    border-radius: 16px;
+ 
+    max-width: 800px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+div.conteudo-servicos > .cabecalho-seco > h2{
+    color: var(--cor-2);
+    font-weight: bolder;
+    font-size: xx-large;
+    text-align: center;
+
+    margin-bottom: 5px;
+}
+
+div.mini-box {
+    color: var(--cor-2);
+    background-color: rgba(26, 11, 46, 0.85); 
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(138, 75, 255, 0.15);
+    border-radius: 5px;
+
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+div.mini-box > span {
+    margin-bottom: 20px;
+}
+
+div.mini-box > h3 {
+    color: #F1F5F9;
+    margin-bottom: 7px;
+}
+
+div.mini-box > p {
+    color: #CBD5E1;
+    line-height: 1.5;
+}
+/* Fim do Serviços */
+
