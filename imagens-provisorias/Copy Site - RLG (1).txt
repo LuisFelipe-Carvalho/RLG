@@ -1,0 +1,61 @@
+Copy Site - RLG
+
+---Hero---
+
+Headline: Você cuida do paciente. A RLG cuida da clínica.
+Subheadline: A RLG responde, agenda e confirma consultas no WhatsApp em
+segundos — mesmo quando sua recepção está ocupada ou fora do expediente. Nós instalamos um agente de IA que responde na hora, qualifica o paciente, agenda na sua agenda, confirma, lembra, acompanha o pós-atendimento e pede a avaliação no Google. Tudo registrado, tudo medido. Você só cuida de quem senta na cadeira.
+CTA primário: Quero parar de perder pacientes
+
+---Nossos Serviços---
+
+Card 1 — Atendimento 24/7
+Agente de IA no WhatsApp e no Instagram respondendo horários, endereço, convênios e valores a qualquer hora. Coleta nome, telefone e motivo do contato, e passa para a equipe quando o caso pede gente de verdade.
+
+Card 2 — Agenda cheia, sem no-show
+Agendamento com confirmação automática na hora: data, endereço e orientações. Lembretes 24h e 2h antes, com opção de confirmar ou remarcar em um toque. Cadeira parada custa caro.
+
+Card 3 — Pré-consulta e pós-atendimento
+Anamnese digital, termo de consentimento e LGPD assinados antes do paciente chegar. Kit de orientações por procedimento. Follow-up em 6h, 24h e 72h — se algo sair do esperado, sua equipe é avisada na hora.
+
+Card 4 — Leads, números e reputação
+Cada contato vira registro com origem, motivo e status. Dashboard com taxa de comparecimento, conversão, ticket médio, CAC e ROI. E pedido automático de avaliação no Google após o atendimento.
+
+
+---Como funciona nossa empresa---
+
+A gente não entrega um sistema e some. Instalamos o agente dentro do WhatsApp e do Instagram que sua clínica já usa, conectamos na sua agenda e acompanhamos os números todo mês. Sem trocar de software, sem treinar equipe em plataforma nova.
+
+Item 1 — Responde e agenda
+Atende no WhatsApp e no Instagram, qualifica o paciente e marca direto na agenda da clínica.
+
+Item 2 — Confirma e lembra
+Confirmação imediata, lembrete 24h e 2h antes. Menos falta, menos horário vago.
+
+Item 3 — Organiza sozinho
+Todo lead cai automaticamente na planilha ou no CRM, com origem, motivo e status.
+
+Item 4 — Mostra o resultado
+Dashboard com leads, comparecimento, conversão, CAC e ROI. Decisão com número, não com achismo.
+
+---Explicação---
+
+Título: Da primeira conversa à clínica rodando no automático.
+Automação boa não é a mais complexa — é a que encaixa na rotina que sua clínica já tem. Por isso todo projeto começa entendendo o seu fluxo antes de escrever uma linha de código.
+
+01 — Diagnóstico da operação
+Mapeamos como sua clínica atende hoje: onde chega o paciente, quem responde, quanto tempo demora e onde ele desiste. Sai daqui um desenho claro dos gargalos e do que dá para automatizar já na primeira semana.
+
+02 — Construção do agente
+Treinamos o agente com as informações reais da sua clínica: horários, convênios, procedimentos, valores e tom de voz. Ele fala como a sua recepção fala — só que não dorme, não fica ocupado e não esquece de responder.
+
+03 — Integração e ativação
+Conectamos o agente ao WhatsApp, ao Instagram, à sua agenda e à sua base de leads. Testamos com casos reais antes de ligar. Sua equipe recebe o que precisa saber em uma reunião curta e o resto acontece sozinho.
+
+04 — Ajuste contínuo pelos dados
+Todo mês olhamos os números: taxa de confirmação, comparecimento, fechamento, CAC e ROI. Onde o funil vaza, a gente ajusta. A operação fica mais eficiente a cada ciclo, não estagnada.
+
+---Agendamento---
+
+Mande seus dados que a gente entra em contato com você.
+Você mostra como sua clínica atende hoje. A gente mostra o que dá para automatizar, quanto tempo leva e quanto custa. Se não fizer sentido para o seu caso, a gente fala na hora — não vendemos automação para clínica que ainda não precisa dela.
