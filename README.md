@@ -1,6 +1,6 @@
-# Agência RLG — site institucional
+# Agência RLG
 
-Site institucional responsivo com formulário de contato integrado a um back-end
+Site responsivo com formulário de contato integrado a um back-end
 **serverless** na AWS. Os contatos enviados pelo site são armazenados em banco de dados
 e a equipe recebe um aviso por e-mail a cada novo lead.
 
@@ -11,7 +11,7 @@ e a equipe recebe um aviso por e-mail a cada novo lead.
 ## Sobre
 
 Site da Agência RLG, em produção. Além da camada visual, o projeto inclui um back-end
-para captação de leads que não depende de nenhum servidor mantido ligado — tudo é
+para captação de leads que não depende de nenhum servidor mantido ligado, tudo é
 executado sob demanda.
 
 ---
