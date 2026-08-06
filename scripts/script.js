@@ -144,9 +144,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (resposta.ok) {
                     alert('Recebemos seus dados! Em breve entramos em contato.');
                     formulario.reset();
-                } else {
-                    alert('Erro ao enviar. Tente novamente.');
+                    return;
                 }
+
+                // A Lambda devolve o motivo da recusa em {"error": "..."}.
+                // Sem isso o visitante não sabe qual campo corrigir.
+                return resposta.json()
+                    .then(corpo => {
+                        alert(corpo.error || 'Erro ao enviar. Tente novamente.');
+                    })
+                    .catch(() => {
+                        alert('Erro ao enviar. Tente novamente.');
+                    });
             })
             .catch(erro => {
                 console.error('Erro:', erro);
