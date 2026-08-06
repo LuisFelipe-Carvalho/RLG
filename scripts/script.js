@@ -111,3 +111,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cards.forEach(card => observador.observe(card));
 });
+
+/* Envio do formulário de contato para a AWS (API Gateway -> Lambda -> DynamoDB) */
+document.addEventListener('DOMContentLoaded', () => {
+    // Invoke URL do API Gateway (rota /enviar).
+    const urlDaAPI = 'https://khwjhz2sid.execute-api.us-east-2.amazonaws.com/enviar';
+
+    const formulario = document.getElementById('formulario-call');
+
+    formulario.addEventListener('submit', (evento) => {
+        // Impede a página de recarregar ao enviar.
+        evento.preventDefault();
+
+        const botao = formulario.querySelector('button[type="submit"]');
+        const textoOriginal = botao.innerText;
+        botao.innerText = 'Enviando...';
+        botao.disabled = true;
+
+        const dados = {
+            nome: document.getElementById('nome').value,
+            email: document.getElementById('email').value,
+            telefone: document.getElementById('telefone').value,
+            motivo: document.getElementById('motivo').value
+        };
+
+        fetch(urlDaAPI, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+        })
+            .then(resposta => {
+                if (resposta.ok) {
+                    alert('Recebemos seus dados! Em breve entramos em contato.');
+                    formulario.reset();
+                } else {
+                    alert('Erro ao enviar. Tente novamente.');
+                }
+            })
+            .catch(erro => {
+                console.error('Erro:', erro);
+                alert('Falha na conexão com o servidor.');
+            })
+            .finally(() => {
+                botao.innerText = textoOriginal;
+                botao.disabled = false;
+            });
+    });
+});
