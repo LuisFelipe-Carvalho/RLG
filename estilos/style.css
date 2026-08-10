@@ -341,7 +341,6 @@ section#como-funciona {
     padding: 15px;
     gap: 15px;
 
-    cursor: pointer; 
     border-radius: 8px;
     width: 100%; 
     border: 1px solid transparent;
@@ -380,8 +379,6 @@ section#como-funciona {
     
     object-fit: cover;
     display: block;
-
-    transition: opacity 0.2s;
 }
 /* Fim do Como Funciona */
 
