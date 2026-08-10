@@ -237,7 +237,7 @@ section#home {
   background-image: 
         linear-gradient(to bottom, transparent 60%, var(--cor-1) 100%), 
         linear-gradient(to right, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 100%), 
-        url('../imagens-provisorias/pexels-cedric-fauntleroy-4269276.jpg');
+        url('../imagens/home.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
