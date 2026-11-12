@@ -16,6 +16,8 @@
     --cor-borda: rgba(242, 242, 242, 0.08);
     --cor-detalhe-suave: color-mix(in srgb, var(--cor-detalhe) 28%, var(--cor-superficie));
     --sombra-card: 0 18px 40px rgba(0, 0, 0, 0.45);
+    --cor-grade: color-mix(in srgb, var(--cor-detalhe) 55%, transparent);
+    --cor-brilho: color-mix(in srgb, var(--cor-detalhe) 22%, transparent);
 
     --fonte-titulo: 'Sora', Arial, Helvetica, sans-serif;
     --fonte-texto: 'Inter', Arial, Helvetica, sans-serif;
@@ -347,97 +349,12 @@ section#como-funciona {
 }
 /* Fim do Como Funciona */
 
-/* Serviços   */
-#servicos {
-    min-height: 90vh;
-    width: 100vw;
-    padding-bottom: 40px;
-}
+/* Serviços: os estilos ficam em estilos/servicos.css */
 
-.secao-grid-animado {
-    background-color: rgb(61, 61, 61); 
-    
-    background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.7) 2px, transparent 2px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.7) 2px, transparent 2px);
-        
-    background-size: 40px 40px; 
-    
-    animation: moverDiagonal 3s linear infinite;
-
-    min-height: 500px;
-}
-
-@keyframes moverDiagonal {
-    0% {
-        background-position: 0px 0px;
-    }
-    100% {
-        background-position: 40px 40px;
-    }
-}
-
+/* Container compartilhado (Explicação e Call) */
 div.container-3 {
     grid-column: 2 / 3;
 }
-
-div.conteudo-servicos {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    margin-top: 10px;
-}
-
-.cabecalho-seco {
-    background-color: rgba(0, 0, 0, 0.4); 
-    backdrop-filter: blur(6px); 
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    color: var(--cor-3);
-    
-    padding: 15px 45px;
-    border-radius: 16px;
- 
-    max-width: 800px;
-    margin-bottom: 40px;
-    text-align: center;
-}
-
-div.conteudo-servicos > .cabecalho-seco > h2{
-    color: var(--cor-2);
-    font-weight: bolder;
-    font-size: xx-large;
-    text-align: center;
-
-    margin-bottom: 5px;
-}
-
-div.mini-box {
-    color: var(--cor-2);
-    background-color: rgba(26, 11, 46, 0.85); 
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(138, 75, 255, 0.15);
-    border-radius: 5px;
-
-    padding: 10px;
-    margin-bottom: 20px;
-}
-
-div.mini-box > span {
-    margin-bottom: 20px;
-}
-
-div.mini-box > h3 {
-    color: #F1F5F9;
-    margin-bottom: 7px;
-}
-
-div.mini-box > p {
-    color: #CBD5E1;
-    line-height: 1.5;
-}
-/* Fim do Serviços */
 
 /* Explicação */
 section.explicacao {
