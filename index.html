@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="estilos/telaGrande.css" media="screen">
     <link rel="stylesheet" href="estilos/home.css">
     <link rel="stylesheet" href="estilos/servicos.css">
+    <link rel="stylesheet" href="estilos/como-funciona.css">
     <link rel="shortcut icon" href="imagens-provisorias/favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -166,56 +167,81 @@
             </div>
         </section>
 
-        <section id="como-funciona" class="grid">
-            <div class="container-2">
-                <div class="conteudo-como-funciona">
-                    <h2 class="titulo">Como funciona nossa empresa</h2>
-                    <p>
-                        A gente não entrega um sistema e some. Instalamos o agente dentro do WhatsApp e do Instagram que sua clínica já usa, conectamos na sua agenda e acompanhamos os números todo mês. Sem trocar de software, sem treinar equipe em plataforma nova.
-                    </p>
+        <section id="como-funciona" class="como">
+            <div class="como-inner">
+                <div class="como-cabecalho">
+                    <h2 class="como-titulo">Como funciona nossa empresa</h2>
+                    <p>A gente não entrega um sistema e some. Instalamos o agente dentro do WhatsApp e do Instagram que sua clínica já usa, conectamos na sua agenda e acompanhamos os números todo mês. Sem trocar de software, sem treinar equipe em plataforma nova.</p>
+                </div>
 
-                    <div class="layout-colunas">
-                        <div class="imagem-box">
-                            <img src="imagens/como_funciona.png" alt="Conversa no WhatsApp agendando uma consulta, ao lado do lembrete de confirmação, do registro do lead e do gráfico de agendamentos">
+                <div class="como-corpo">
+                    <!-- Sem JS: todos os passos abertos, linhas completas e a imagem inteira.
+                         Com JS (data-js na seção): um passo por vez; o clique desenha a linha
+                         até o próximo e a imagem aproxima a parte daquele passo. -->
+                    <div class="como-visual" data-foco="0">
+                        <img src="imagens/como_funciona.png" alt="Conversa no WhatsApp agendando uma consulta, ligada por linhas ao lembrete de confirmação, ao registro do lead e ao gráfico de agendamentos" width="1672" height="941" loading="lazy" decoding="async">
+                    </div>
+
+                    <div class="como-passos">
+                        <ol class="passos">
+                            <li class="passo">
+                                <h3>
+                                    <button type="button" class="passo-gatilho" aria-controls="passo-1-texto">
+                                        <span class="passo-marcador" aria-hidden="true">1</span>
+                                        <span class="passo-titulo">Responde e agenda</span>
+                                    </button>
+                                </h3>
+                                <div class="passo-texto" id="passo-1-texto">
+                                    <div><p>Atende no WhatsApp e no Instagram, qualifica o paciente e marca direto na agenda da clínica.</p></div>
+                                </div>
+                                <span class="passo-linha" aria-hidden="true"></span>
+                            </li>
+
+                            <li class="passo">
+                                <h3>
+                                    <button type="button" class="passo-gatilho" aria-controls="passo-2-texto">
+                                        <span class="passo-marcador" aria-hidden="true">2</span>
+                                        <span class="passo-titulo">Confirma e lembra</span>
+                                    </button>
+                                </h3>
+                                <div class="passo-texto" id="passo-2-texto">
+                                    <div><p>Confirmação imediata, lembrete 24h e 2h antes. Menos falta, menos horário vago.</p></div>
+                                </div>
+                                <span class="passo-linha" aria-hidden="true"></span>
+                            </li>
+
+                            <li class="passo">
+                                <h3>
+                                    <button type="button" class="passo-gatilho" aria-controls="passo-3-texto">
+                                        <span class="passo-marcador" aria-hidden="true">3</span>
+                                        <span class="passo-titulo">Organiza sozinho</span>
+                                    </button>
+                                </h3>
+                                <div class="passo-texto" id="passo-3-texto">
+                                    <div><p>Todo lead cai automaticamente na planilha ou no CRM, com origem, motivo e status.</p></div>
+                                </div>
+                                <span class="passo-linha" aria-hidden="true"></span>
+                            </li>
+
+                            <li class="passo">
+                                <h3>
+                                    <button type="button" class="passo-gatilho" aria-controls="passo-4-texto">
+                                        <span class="passo-marcador" aria-hidden="true">4</span>
+                                        <span class="passo-titulo">Mostra o resultado</span>
+                                    </button>
+                                </h3>
+                                <div class="passo-texto" id="passo-4-texto">
+                                    <div><p>Dashboard com leads, comparecimento, conversão, CAC e ROI. Decisão com número, não com achismo.</p></div>
+                                </div>
+                            </li>
+                        </ol>
+
+                        <div class="passos-acoes">
+                            <button type="button" class="passos-proximo">Próximo passo</button>
+                            <a href="#call" class="ctf passos-cta">Quero isso na minha clínica</a>
                         </div>
-                        <div class="texto-box">
-                            <div class="item-passo">
-                                <span class="material-symbols-outlined">
-                                    check_box
-                                </span>
-                                <div class="micro-texto">
-                                    <h3>Responde e agenda</h3>
-                                    <p>Atende no WhatsApp e no Instagram, qualifica o paciente e marca direto na agenda da clínica.</p>
-                                </div>
-                            </div>
-                            <div class="item-passo">
-                                <span class="material-symbols-outlined">
-                                    attach_money
-                                </span>
-                                <div class="micro-texto">
-                                    <h3>Confirma e lembra</h3>
-                                    <p>Confirmação imediata, lembrete 24h e 2h antes. Menos falta, menos horário vago.</p>
-                                </div>
-                            </div>
-                            <div class="item-passo">
-                                <span class="material-symbols-outlined">
-                                    computer
-                                </span>
-                                <div class="micro-texto">
-                                    <h3>Organiza sozinho</h3>
-                                    <p>Todo lead cai automaticamente na planilha ou no CRM, com origem, motivo e status.</p>
-                                </div>
-                            </div>
-                            <div class="item-passo">
-                                <span class="material-symbols-outlined">
-                                    dangerous
-                                </span>
-                                <div class="micro-texto">
-                                    <h3>Mostra o resultado</h3>
-                                    <p>Dashboard com leads, comparecimento, conversão, CAC e ROI. Decisão com número, não com achismo.</p>
-                                </div>
-                            </div>
-                        </div>
+
+                        <p class="como-aviso" aria-live="polite"></p>
                     </div>
                 </div>
             </div>
@@ -371,5 +397,6 @@
 
     <script src="scripts/script.js"></script>
     <script src="scripts/home-anima.js"></script>
+    <script src="scripts/como-funciona.js"></script>
 </body>
 </html>

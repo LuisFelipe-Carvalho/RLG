@@ -18,6 +18,7 @@
     --sombra-card: 0 18px 40px rgba(0, 0, 0, 0.45);
     --cor-grade: color-mix(in srgb, var(--cor-detalhe) 55%, transparent);
     --cor-brilho: color-mix(in srgb, var(--cor-detalhe) 22%, transparent);
+    --cor-trilha: rgba(242, 242, 242, 0.14);
 
     --fonte-titulo: 'Sora', Arial, Helvetica, sans-serif;
     --fonte-texto: 'Inter', Arial, Helvetica, sans-serif;
@@ -248,7 +249,7 @@ nav ul li a.ctf:hover {
 
 /* Home: os estilos da home ficam em estilos/home.css */
 
-/* Base compartilhada pelas seções (Serviços, Como funciona, Call) */
+/* Base compartilhada pelas seções (Home e Call) */
 .grid {
     display: grid;
     grid-template-columns: 30px 1fr 30px;
@@ -261,93 +262,7 @@ nav ul li a.ctf:hover {
     margin-bottom: 20px;
 }
 
-/* Como Funciona */
-section#como-funciona {
-    background-color: var(--cor-1);
-    min-height: 80vh;
-}
-
-.container-2 {
-    grid-column: 2 / 3;
-    justify-items: center;
-}
-
-.conteudo-como-funciona {
-    max-width: 600px;
-    text-align: center;
-    margin-top: 70px;
-}
-
-.conteudo-como-funciona > p {
-    color: var(--cor-3);
-    max-width: 500px;
-    margin: auto;
-    line-height: 1.5;
-}
-
-.conteudo-como-funciona > .layout-colunas > .texto-box {
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 5px;
-    background-color: #1A1A1A;
-    color: var(--cor-2);
-    margin-top: 30px;
-    margin-bottom: 70px;
-    padding: 10px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    justify-content: center;
-}
-
-.conteudo-como-funciona > .layout-colunas > .texto-box > div.item-passo {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    text-align: justify;
-    padding: 15px;
-    gap: 15px;
-
-    border-radius: 8px;
-    width: 100%; 
-    border: 1px solid transparent;
-    transition: all 0.3s ease;
-}
-
-.conteudo-como-funciona > .layout-colunas > .texto-box > div.item-passo:hover {
-    background-color: rgba(255, 255, 255, 0.05); 
-    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.4); 
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.conteudo-como-funciona >  .layout-colunas > .texto-box > div > span {
-    margin-right: 10px;
-    color: var(--cor-detalhe);
-}
-
-.micro-texto > h3 {
-    margin-bottom: 5px;
-}
-
-.micro-texto > p {
-    color: var(--cor-3);
-}
-
-.imagem-box {
-    max-width: 600px;
-    margin-top: 30px;
-}
-
-.imagem-box img {
-    width: 100%;
-    height: 300px;
-    
-    border-radius: 12px; 
-    
-    object-fit: cover;
-    display: block;
-}
-/* Fim do Como Funciona */
+/* Como funciona: os estilos ficam em estilos/como-funciona.css */
 
 /* Serviços: os estilos ficam em estilos/servicos.css */
 

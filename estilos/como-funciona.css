@@ -1,0 +1,362 @@
+/* Hallmark · redesign: full (escopo: só a seção #como-funciona) · theme: brand · os 4 passos numerados e ligados por uma linha; cada clique desenha a linha até o próximo passo e a imagem aproxima a parte que ele mostra (celular, lembrete, CRM, gráfico) · interação por clique e não por scroll: funciona igual no celular, sem JS e com menos movimento (scroll-choreography desliga abaixo de 40rem e com reduced-motion) */
+/* Hallmark · pre-emit critique: o movimento só acontece quando a pessoa pede (clique), segue as linhas que a própria imagem já desenha e termina na chamada para a call · sem JS: passos abertos, linhas completas, imagem inteira */
+
+/* =========================================================
+   COMO FUNCIONA - mobile first
+   Base: celular (imagem em cima, passos embaixo).
+   Duas colunas a partir de 960px.
+   ========================================================= */
+
+section.como {
+    padding: 64px 20px 80px;
+    background-color: var(--cor-1);
+    color: var(--cor-2);
+}
+
+.como-inner {
+    max-width: 1200px;
+    margin-inline: auto;
+}
+
+/* ---------- Cabeçalho ---------- */
+
+.como-cabecalho {
+    margin-bottom: 40px;
+}
+
+.como-titulo {
+    font-family: var(--fonte-titulo);
+    color: var(--cor-2);
+    font-size: clamp(2rem, 1.5rem + 2.5vw, 3rem);
+    line-height: 1.1;
+    margin-bottom: 16px;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    min-width: 0;
+}
+
+.como-cabecalho p {
+    font-family: var(--fonte-texto);
+    color: var(--cor-3);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 60ch;
+    text-wrap: pretty;
+}
+
+/* ---------- Corpo: imagem + passos ---------- */
+
+.como-corpo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+}
+
+/* ---------- Imagem que aproxima cada passo ---------- */
+
+.como-visual {
+    aspect-ratio: 1672 / 941;
+    overflow: clip;
+    border: 1px solid var(--cor-borda);
+    border-radius: 14px;
+    background-color: var(--cor-1);
+}
+
+/* --s: zoom · --x/--y: quanto a imagem anda para centralizar o foco
+   (em % do próprio tamanho; limitado para não mostrar as bordas) */
+.como-visual img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(var(--s, 1)) translate(var(--x, 0%), var(--y, 0%));
+    transition: transform 600ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+section.como[data-js] .como-visual[data-foco="1"] { --s: 1.2; --x: 4%; --y: 0%; }     /* celular: a conversa */
+section.como[data-js] .como-visual[data-foco="2"] { --s: 1.8; --x: 22%; --y: 2%; }    /* lembrete de consulta */
+section.como[data-js] .como-visual[data-foco="3"] { --s: 1.8; --x: -22%; --y: 22%; }  /* registro do lead */
+section.como[data-js] .como-visual[data-foco="4"] { --s: 1.8; --x: -22%; --y: -13%; } /* gráfico de agendamentos */
+
+/* ---------- Passos ---------- */
+
+.passos {
+    list-style: none;
+}
+
+.passo {
+    position: relative;
+    padding-left: 56px;
+    padding-bottom: 32px;
+}
+
+.passo:last-child {
+    padding-bottom: 0;
+}
+
+.passo h3 {
+    margin-left: -56px;
+    font-size: 1.125rem;
+    line-height: 1.3;
+}
+
+.passo-gatilho {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 40px;
+    padding: 0 0 0 56px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.passo-gatilho:focus-visible {
+    outline: 2px solid var(--cor-2);
+    outline-offset: 4px;
+}
+
+.passo-titulo {
+    font-family: var(--fonte-titulo);
+    color: var(--cor-2);
+    text-wrap: balance;
+    min-width: 0;
+    transition: color 220ms ease-out;
+}
+
+.passo-marcador {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--cor-detalhe);
+    border-radius: 50%;
+    background-color: var(--cor-detalhe-suave);
+    color: var(--cor-2);
+    font-family: var(--fonte-texto);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    transition-property: background-color, border-color, color, box-shadow;
+    transition-duration: 300ms;
+    transition-timing-function: ease-out;
+}
+
+.passo-texto {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition:
+        grid-template-rows 420ms ease-in-out,
+        opacity 300ms ease-out;
+}
+
+.passo-texto > div {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.passo-texto p {
+    padding-top: 8px;
+    max-width: 46ch;
+    font-family: var(--fonte-texto);
+    color: var(--cor-3);
+    font-size: 1rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+}
+
+/* A linha entre um marcador e o próximo: trilha apagada + preenchimento roxo */
+.passo-linha {
+    position: absolute;
+    top: 44px;
+    bottom: 4px;
+    left: 19px;
+    width: 2px;
+    overflow: hidden;
+    border-radius: 1px;
+    background-color: var(--cor-trilha);
+}
+
+.passo-linha::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--cor-detalhe);
+    transform-origin: top;
+    transform: scaleY(1);
+    transition: transform 380ms ease-in-out;
+}
+
+/* ---------- Estados (só com JS: data-js na seção, data-estado no passo) ---------- */
+
+/* A linha se desenha quando o passo está avançando (data-avancando)
+   e fica desenhada depois que ele vira "feito" */
+section.como[data-js] .passo:not([data-estado="feito"]):not([data-avancando]) .passo-linha::after {
+    transform: scaleY(0);
+}
+
+section.como[data-js] .passo[data-estado="atual"] .passo-marcador {
+    background-color: var(--cor-detalhe);
+    border-color: var(--cor-detalhe);
+    box-shadow: 0 0 0 6px var(--cor-brilho);
+}
+
+section.como[data-js] .passo[data-estado="futuro"] .passo-marcador {
+    background-color: transparent;
+    border-color: var(--cor-trilha);
+    color: var(--cor-3);
+}
+
+section.como[data-js] .passo[data-estado="futuro"] .passo-titulo {
+    color: var(--cor-3);
+}
+
+section.como[data-js] .passo:not([data-estado="atual"]) .passo-texto {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        grid-template-rows 420ms ease-in-out,
+        opacity 200ms ease-in,
+        visibility 0s linear 420ms;
+}
+
+section.como[data-js] .passo:not([data-estado="atual"]) .passo-gatilho:hover .passo-titulo {
+    color: var(--cor-2);
+}
+
+section.como[data-js] .passo[data-estado="futuro"] .passo-gatilho:hover .passo-marcador {
+    border-color: var(--cor-detalhe);
+}
+
+/* Sem JS os passos já estão todos abertos: o botão não faz nada */
+section.como:not([data-js]) .passo-gatilho {
+    cursor: default;
+}
+
+/* ---------- Ações: próximo passo e, no fim, a chamada ---------- */
+
+.passos-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+    padding-left: 56px;
+}
+
+.passos-proximo,
+section.como a.passos-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-family: var(--fonte-texto);
+    text-align: center;
+    text-wrap: balance;
+    transition-property: background-color, box-shadow, transform;
+    transition-duration: 220ms;
+    transition-timing-function: ease-out;
+}
+
+.passos-proximo {
+    display: none;
+    border: 0;
+    background-color: var(--cor-vidro);
+    color: var(--cor-2);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.passos-proximo:hover {
+    background-color: var(--cor-vidro-hover);
+}
+
+/* Texto grande (19px, negrito) para o branco sobre o roxo passar no contraste */
+section.como a.passos-cta {
+    font-size: 1.1875rem;
+    font-weight: 700;
+}
+
+.passos-proximo:focus-visible,
+section.como a.passos-cta:focus-visible {
+    outline: 2px solid var(--cor-2);
+    outline-offset: 3px;
+    transition: none;
+}
+
+.passos-proximo:active,
+section.como a.passos-cta:active {
+    transform: translateY(1px);
+}
+
+/* Com JS: "Próximo passo" até o último; no último, a chamada */
+section.como[data-js] .passos-proximo {
+    display: inline-flex;
+}
+
+section.como[data-js][data-fim] .passos-proximo,
+section.como[data-js]:not([data-fim]) .passos-cta {
+    display: none;
+}
+
+/* Anúncio para leitor de tela ("Passo 2 de 4: Confirma e lembra") */
+.como-aviso {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* ---------- Menos movimento: tudo muda na hora ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .como-visual img,
+    .passo-linha::after,
+    .passo-texto,
+    section.como[data-js] .passo:not([data-estado="atual"]) .passo-texto {
+        transition: none;
+    }
+}
+
+/* ---------- Tablet e maiores ---------- */
+
+@media (min-width: 768px) {
+    section.como {
+        padding: 96px 48px;
+    }
+
+    .como-cabecalho {
+        margin-bottom: 56px;
+    }
+}
+
+/* ---------- Tela grande: passos à esquerda, imagem à direita ---------- */
+
+@media (min-width: 960px) {
+    .como-corpo {
+        grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+        align-items: center;
+        gap: 64px;
+    }
+
+    .como-passos {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .como-visual {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
