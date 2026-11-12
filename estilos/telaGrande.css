@@ -67,19 +67,6 @@
 
     /* Call (Agendar): ajustes de tela grande ficam em estilos/agendar.css */
 
-    /* Footer */
-    .conteudo-footer {
-        flex-direction: row;
-        justify-content: space-between;
-        gap: 60px;
-    }
-
-    .coluna-marca {
-        flex: 1.5;
-    }
-
-    .coluna-footer {
-        flex: 1;
-    }
+    /* Rodapé: ajustes de tela grande ficam em estilos/rodape.css */
 }
 

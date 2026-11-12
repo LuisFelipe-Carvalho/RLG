@@ -1,0 +1,172 @@
+/* Hallmark · redesign: full (escopo: o rodapé, igual no index.html, privacidade.html e termos.html) · theme: brand · footer: três colunas (marca, navegação, contato) sobre uma faixa de base com o CNPJ e os links legais da LGPD · os rótulos saíram das maiúsculas espaçadas (Floor 9) para a fonte do texto, um passo menor · a navegação repete a ordem do menu e ganhou a Explicação que faltava */
+/* Hallmark · pre-emit critique: a frase da marca deixou o "tecnologia de ponta" genérico e diz o que a RLG faz (a mesma promessa do topo da página) · o CNPJ desceu para a faixa legal, ao lado da política de privacidade e dos termos · cores só por token, foco visível em todos os links, ícones aria-hidden */
+
+/* =========================================================
+   RODAPÉ - mobile first
+   Base: celular (uma coluna). Três colunas a partir de 768px.
+   ========================================================= */
+
+.rodape {
+    padding: 64px 20px 0;
+    border-top: 1px solid var(--cor-borda);
+    background-color: var(--cor-1);
+    color: var(--cor-3);
+    font-family: var(--fonte-texto);
+}
+
+.rodape-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+    max-width: 1200px;
+    margin-inline: auto;
+}
+
+/* ---------- Marca ---------- */
+
+.rodape-logo {
+    display: inline-block;
+    margin-bottom: 12px;
+    font-family: var(--fonte-titulo);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cor-2);
+}
+
+.rodape-logo span {
+    color: var(--cor-detalhe);
+}
+
+.rodape-marca p {
+    max-width: 36ch;
+    color: var(--cor-3);
+    font-size: 1rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+}
+
+/* ---------- Colunas ---------- */
+
+.rodape-rotulo {
+    margin-bottom: 16px;
+    font-family: var(--fonte-texto);
+    color: var(--cor-2);
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.rodape-coluna ul,
+.rodape-legal {
+    list-style: none;
+}
+
+.rodape-coluna ul {
+    display: grid;
+    gap: 4px;
+}
+
+.rodape-coluna li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 36px;
+    color: var(--cor-3);
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+}
+
+.rodape-contato .material-symbols-outlined,
+.rodape-icone-svg {
+    flex-shrink: 0;
+    color: var(--cor-detalhe);
+    font-size: 1.25rem;
+}
+
+/* ---------- Links ---------- */
+
+.rodape a {
+    color: var(--cor-3);
+    text-decoration: none;
+    transition: color 220ms ease-out;
+}
+
+.rodape .rodape-logo {
+    color: var(--cor-2);
+}
+
+.rodape a:hover {
+    color: var(--cor-2);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.rodape .rodape-logo:hover {
+    text-decoration: none;
+}
+
+.rodape a:active {
+    color: var(--cor-detalhe);
+}
+
+.rodape a:focus-visible {
+    outline: 2px solid var(--cor-detalhe);
+    outline-offset: 4px;
+    border-radius: 4px;
+    transition: none;
+}
+
+/* ---------- Faixa de base: CNPJ e links legais ---------- */
+
+.rodape-base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px 24px;
+    max-width: 1200px;
+    margin: 48px auto 0;
+    padding-block: 24px;
+    border-top: 1px solid var(--cor-borda);
+    font-size: 0.875rem;
+}
+
+.rodape-base p {
+    color: var(--cor-3);
+}
+
+.rodape-legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+}
+
+.rodape-legal a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+}
+
+/* ---------- Tablet e maiores ---------- */
+
+@media (min-width: 768px) {
+    .rodape {
+        padding: 96px 48px 0;
+    }
+
+    .rodape-inner {
+        grid-template-columns: minmax(0, 5fr) minmax(0, 3fr) minmax(0, 4fr);
+        gap: 64px;
+    }
+
+    .rodape-base {
+        margin-top: 64px;
+    }
+}
+
+/* ---------- Menos movimento ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .rodape a {
+        transition: none;
+    }
+}
