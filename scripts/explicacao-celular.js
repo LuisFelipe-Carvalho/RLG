@@ -3,9 +3,11 @@
 
    Abaixo de 960px os passos ficam lado a lado e a pessoa
    arrasta para o lado (scroll-snap, só CSS). Este script:
-   - cria os pontinhos embaixo (tocar leva ao passo);
-   - toca a cena de cada passo na primeira vez que ele
-     aparece; voltando a um passo já visto, ele está pronto.
+   - cria os pontinhos embaixo (tocar leva ao passo), em
+     qualquer navegador, com ou sem movimento;
+   - toca a cena de cada passo uma vez, quando a tela do
+     produto dele está de fato à vista; voltando a um passo
+     já visto, ele está pronto.
 
    01 mapa      a Ana pergunta às 22:47, a noite passa, ela
                 marca em outra clínica: o gargalo
@@ -15,7 +17,8 @@
 
    Com "reduzir movimento" o carrossel continua, mas tudo
    aparece pronto. Sem JS, arrasta e mostra tudo pronto.
-   A demo do computador fica em scripts/explicacao-anima.js.
+   Ajudantes e estados das telas: scripts/explicacao-cenas.js
+   Demo do computador: scripts/explicacao-anima.js
    ========================================================= */
 (() => {
     const secao = document.querySelector('#explicacao');
@@ -23,54 +26,86 @@
 
     const trilho = secao.querySelector('.exp-passos');
     const passos = [...secao.querySelectorAll('.exp-passo')];
-    if (!trilho || !passos.length || !('IntersectionObserver' in window)) return;
+    if (!trilho || !passos.length) return;
 
-    const celular = window.matchMedia('(max-width: 959px)');
     const comMovimento = window.matchMedia('(prefers-reduced-motion: no-preference)');
 
-    const PARADA = Symbol('parada');
+    /* ---------- Pontinhos (não dependem de nada além do scroll) ---------- */
 
-    const pausa = (exec, ms) => new Promise((ok, falha) => {
-        setTimeout(() => (exec.ativa ? ok() : falha(PARADA)), ms);
+    const pontos = document.createElement('div');
+    pontos.className = 'exp-pontos';
+    pontos.setAttribute('role', 'group');
+    pontos.setAttribute('aria-label', 'Passos da explicação');
+    const botoes = passos.map((passo, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'exp-ponto';
+        b.setAttribute('aria-label', `Passo ${i + 1}: ${passo.querySelector('h3').textContent}`);
+        b.append(document.createElement('span'));
+        b.addEventListener('click', () => irPara(i));
+        pontos.append(b);
+        return b;
+    });
+    trilho.after(pontos);
+
+    // Medidas do trilho: só mudam com a tela, então ficam guardadas
+    let largPasso = 1;
+    let scrollMax = 0;
+
+    function medir() {
+        largPasso = passos.length > 1 ? (passos[1].offsetLeft - passos[0].offsetLeft) || 1 : 1;
+        scrollMax = trilho.scrollWidth - trilho.clientWidth;
+    }
+
+    function marcarPonto() {
+        // Sem carrossel (tela grande) não há o que rolar: fica no primeiro
+        const fim = scrollMax > 2 && trilho.scrollLeft >= scrollMax - 2;
+        const i = fim ? passos.length - 1 : Math.round(trilho.scrollLeft / largPasso);
+        botoes.forEach((b, j) => {
+            if (j === i) b.setAttribute('aria-current', 'step');
+            else b.removeAttribute('aria-current');
+        });
+    }
+
+    function irPara(i) {
+        trilho.scrollTo({
+            left: passos[i].offsetLeft - passos[0].offsetLeft,
+            behavior: comMovimento.matches ? 'smooth' : 'auto'
+        });
+    }
+
+    let quadro = 0;
+    trilho.addEventListener('scroll', () => {
+        if (quadro) return;
+        quadro = requestAnimationFrame(() => {
+            quadro = 0;
+            marcarPonto();
+        });
+    }, { passive: true });
+
+    // Girar o aparelho ou mudar de tamanho muda as medidas e o passo à vista
+    let quadroResize = 0;
+    window.addEventListener('resize', () => {
+        if (quadroResize) return;
+        quadroResize = requestAnimationFrame(() => {
+            quadroResize = 0;
+            medir();
+            marcarPonto();
+        });
     });
 
-    const mostrar = el => el && el.classList.add('visivel');
-    const esconder = el => el && el.classList.remove('visivel');
-    const surgem = tela => [...tela.querySelectorAll('[data-surge]')];
+    medir();
+    marcarPonto();
 
-    function tudoVisivel(tela) {
-        surgem(tela).forEach(el => el.classList.toggle('visivel', !el.classList.contains('digitando')));
-    }
+    /* ---------- Cenas: só com IntersectionObserver e o arquivo comum ---------- */
 
-    async function digitaEMostra(exec, vez, ms) {
-        const bolinhas = vez.querySelector('.digitando');
-        const balao = vez.querySelector('.balao');
-        mostrar(bolinhas);
-        await pausa(exec, ms);
-        esconder(bolinhas);
-        mostrar(balao);
-    }
+    const C = window.RLGExplicacao;
+    if (!C || !('IntersectionObserver' in window)) return;
+    const { PARADA, pausa, mostrar, esconder, digitaEMostra, relogioTexto } = C;
 
-    const relogioTexto = minutos => {
-        const h = Math.floor(minutos / 60) % 24;
-        const m = minutos % 60;
-        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-    };
-
-    /* ---------- As cenas, cada uma dentro do seu cartão ---------- */
-
-    const mapa = {
-        preparar(tela) {
-            surgem(tela).forEach(esconder);
-            tela.querySelector('.mapa-perdido').classList.remove('riscado');
-            tela.querySelector('.tela-relogio').textContent = '22:47';
-        },
-        final(tela) {
-            tudoVisivel(tela);
-            tela.querySelector('.mapa-perdido').classList.add('riscado');
-            tela.querySelector('.tela-relogio').textContent = '09:16';
-        },
-        async tocar(tela, exec) {
+    const CENAS = C.cenas({
+        // 01 · a noite em que ninguém respondeu
+        async mapa(tela, exec) {
             const [pergunta, noite, resposta, perdido] = tela.querySelectorAll('.mapa li');
             const relogio = tela.querySelector('.tela-relogio');
 
@@ -96,34 +131,13 @@
             perdido.classList.add('riscado');
             await pausa(exec, 700);
             mostrar(tela.querySelector('.tela-achado'));
-        }
-    };
+        },
 
-    const base = {
-        preparar(tela) {
-            surgem(tela).forEach(esconder);
-            tela.querySelectorAll('[data-digita]').forEach(dd => {
-                if (dd.dataset.texto === undefined) dd.dataset.texto = dd.textContent;
-                dd.textContent = '';
-                dd.classList.remove('cursor');
-            });
-            tela.querySelector('[data-campo="horarios"]').classList.remove('em-uso');
-            tela.querySelector('.tela-pilula').textContent = 'Treinando';
-        },
-        final(tela) {
-            tudoVisivel(tela);
-            tela.querySelectorAll('[data-digita]').forEach(dd => {
-                if (dd.dataset.texto !== undefined) dd.textContent = dd.dataset.texto;
-                dd.classList.remove('cursor');
-            });
-            tela.querySelector('[data-campo="horarios"]').classList.add('em-uso');
-            tela.querySelector('.tela-pilula').textContent = 'Pronto';
-        },
-        async tocar(tela, exec) {
+        // 02 · a ficha é preenchida e o agente responde a Ana
+        async base(tela, exec) {
             mostrar(tela.querySelector('.balao-paciente'));
             await pausa(exec, 600);
 
-            // A ficha da clínica é preenchida, campo a campo
             for (const dd of tela.querySelectorAll('[data-digita]')) {
                 dd.classList.add('cursor');
                 const texto = dd.dataset.texto;
@@ -135,29 +149,15 @@
                 dd.classList.remove('cursor');
             }
 
-            // O agente usa a ficha para responder a Ana
             await pausa(exec, 300);
             await digitaEMostra(exec, tela.querySelector('.vez'), 1100);
             tela.querySelector('[data-campo="horarios"]').classList.add('em-uso');
             await pausa(exec, 500);
             tela.querySelector('.tela-pilula').textContent = 'Pronto';
-        }
-    };
+        },
 
-    const conexoes = {
-        preparar(tela) {
-            surgem(tela).forEach(esconder);
-            tela.dataset.chave = 'desligada';
-            tela.querySelector('.chave-rotulo').textContent = 'Desligado';
-            tela.querySelectorAll('.canais li').forEach(li => { li.dataset.estado = 'espera'; });
-        },
-        final(tela) {
-            tudoVisivel(tela);
-            tela.dataset.chave = 'ligada';
-            tela.querySelector('.chave-rotulo').textContent = 'Ligado';
-            tela.querySelectorAll('.canais li').forEach(li => { li.dataset.estado = 'ok'; });
-        },
-        async tocar(tela, exec) {
+        // 03 · o agente é ligado e a consulta é marcada
+        async conexoes(tela, exec) {
             await pausa(exec, 300);
             tela.dataset.chave = 'ligada';
             tela.querySelector('.chave-rotulo').textContent = 'Ligado';
@@ -175,7 +175,6 @@
             mostrar(tela.querySelector('.balao-agente .tela-tag'));
             await pausa(exec, 600);
 
-            // A Ana escolhe e o agente marca
             const [vezAna, vezAgente] = tela.querySelectorAll('.vez');
             await digitaEMostra(exec, vezAna, 900);
             await pausa(exec, 400);
@@ -186,24 +185,10 @@
             mostrar(consulta);
             await pausa(exec, 450);
             mostrar(consulta.querySelector('.tela-tag'));
-        }
-    };
+        },
 
-    const revisao = {
-        preparar(tela) {
-            surgem(tela).forEach(esconder);
-            tela.dataset.fase = 'zero';
-            const troca = tela.querySelector('.troca');
-            if (troca.dataset.depois === undefined) troca.dataset.depois = troca.textContent;
-            troca.textContent = troca.dataset.antes;
-        },
-        final(tela) {
-            tudoVisivel(tela);
-            tela.dataset.fase = 'ajustado';
-            const troca = tela.querySelector('.troca');
-            if (troca.dataset.depois !== undefined) troca.textContent = troca.dataset.depois;
-        },
-        async tocar(tela, exec) {
+        // 04 · a consulta é confirmada e o sábado sobe
+        async revisao(tela, exec) {
             const troca = tela.querySelector('.troca');
             const [vazava, ajuste, proxima] = tela.querySelectorAll('.campos > div');
 
@@ -227,123 +212,97 @@
             await pausa(exec, 900);
             mostrar(proxima);
         }
-    };
-
-    const CENAS = { mapa, base, conexoes, revisao };
+    });
 
     const itens = passos.map(passo => {
         const tela = passo.querySelector('.tela');
         return { passo, tela, cena: tela && CENAS[tela.dataset.cena] };
     });
 
-    /* ---------- Pontinhos ---------- */
-
-    const pontos = document.createElement('div');
-    pontos.className = 'exp-pontos';
-    pontos.setAttribute('aria-label', 'Passos da explicação');
-    const botoes = itens.map((item, i) => {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'exp-ponto';
-        b.setAttribute('aria-label', `Passo ${i + 1}: ${item.passo.querySelector('h3').textContent}`);
-        b.append(document.createElement('span'));
-        b.addEventListener('click', () => irPara(i));
-        pontos.append(b);
-        return b;
-    });
-    trilho.after(pontos);
-
-    function irPara(i) {
-        const esquerda = itens[i].passo.offsetLeft - itens[0].passo.offsetLeft;
-        trilho.scrollTo({ left: esquerda, behavior: comMovimento.matches ? 'smooth' : 'auto' });
-    }
-
     /* ---------- Motor ----------
-       Cada cartão toca a sua cena uma vez, quando fica pelo menos metade
-       visível na tela (no tablet aparecem dois ao mesmo tempo, e os dois
-       tocam). Os pontinhos seguem a posição do scroll. */
+       Cada cartão toca a sua cena uma vez, quando a TELA do produto dele está
+       à vista: metade da largura dela no trilho e, na altura, metade dela ou
+       metade da janela (o que for menor; com o celular deitado a tela não cabe
+       inteira). No tablet aparecem dois cartões ao mesmo tempo, e os dois tocam. */
 
     let montado = false;
     const vistos = new Set();
     const execs = new Map();
 
+    function aVista(entrada) {
+        if (!entrada.isIntersecting) return false;
+        const caixa = entrada.boundingClientRect;
+        const visivel = entrada.intersectionRect;
+        const alturaJanela = entrada.rootBounds ? entrada.rootBounds.height : window.innerHeight;
+        const larguraOk = visivel.width >= caixa.width * 0.5;
+        const alturaOk = visivel.height >= Math.min(caixa.height, alturaJanela) * 0.5;
+        return larguraOk && alturaOk;
+    }
+
     async function tocar(i) {
         const item = itens[i];
         if (!montado || !item.cena || vistos.has(i)) return;
         vistos.add(i);
+        observador.unobserve(item.tela);
         const meu = { ativa: true };
         execs.set(i, meu);
         try {
             await pausa(meu, 250);
             await item.cena.tocar(item.tela, meu);
         } catch (erro) {
-            if (erro !== PARADA) throw erro;
+            if (erro !== PARADA) {
+                // Uma cena quebrada nunca deixa o cartão pela metade
+                console.error('Explicação: a cena do passo', i + 1, 'falhou.', erro);
+                item.cena.final(item.tela);
+            }
+        } finally {
+            execs.delete(i);
         }
-        execs.delete(i);
     }
 
-    function pararTudo() {
-        execs.forEach(exec => { exec.ativa = false; });
-        execs.clear();
-    }
-
-    // A raiz é a janela: o recorte do carrossel conta, então "visível" é visível de verdade
-    const observaPassos = new IntersectionObserver(entradas => {
+    // A raiz é a janela: o recorte do carrossel conta, então "à vista" é à vista de verdade
+    const LIMIARES = Array.from({ length: 11 }, (_, k) => k / 10);
+    const observador = new IntersectionObserver(entradas => {
         entradas.forEach(entrada => {
-            if (entrada.isIntersecting) tocar(itens.findIndex(it => it.passo === entrada.target));
+            if (!aVista(entrada)) return;
+            const i = itens.findIndex(it => it.tela === entrada.target);
+            if (i >= 0) tocar(i);
         });
-    }, { threshold: 0.5 });
-
-    function marcarPonto() {
-        const passo = itens.length > 1 ? itens[1].passo.offsetLeft - itens[0].passo.offsetLeft : 1;
-        const fim = trilho.scrollLeft >= trilho.scrollWidth - trilho.clientWidth - 2;
-        const i = fim ? itens.length - 1 : Math.round(trilho.scrollLeft / passo);
-        botoes.forEach((b, j) => {
-            if (j === i) b.setAttribute('aria-current', 'step');
-            else b.removeAttribute('aria-current');
-        });
-    }
-
-    let quadro = 0;
-    trilho.addEventListener('scroll', () => {
-        if (quadro) return;
-        quadro = requestAnimationFrame(() => {
-            quadro = 0;
-            marcarPonto();
-        });
-    }, { passive: true });
+    }, { threshold: LIMIARES });
 
     function montar() {
         montado = true;
         secao.dataset.js = 'carrossel';
         itens.forEach((item, i) => {
             if (!item.cena) return;
-            if (vistos.has(i)) item.cena.final(item.tela);
-            else item.cena.preparar(item.tela);
+            if (vistos.has(i)) {
+                item.cena.final(item.tela);
+            } else {
+                item.cena.preparar(item.tela);
+                observador.observe(item.tela);
+            }
         });
-        itens.forEach(item => observaPassos.observe(item.passo));
+        medir();
+        marcarPonto();
     }
 
     function desmontar() {
         montado = false;
-        pararTudo();
-        observaPassos.disconnect();
+        execs.forEach(exec => { exec.ativa = false; });
+        execs.clear();
+        observador.disconnect();
+        // Saindo do carrossel, tudo fica pronto (e não toca de novo se voltar)
         itens.forEach((item, i) => {
             if (!item.cena) return;
             item.cena.final(item.tela);
             vistos.add(i);
         });
-        if (secao.dataset.js === 'carrossel') delete secao.dataset.js;
+        delete secao.dataset.js;
     }
 
-    const decidir = () => {
-        const deveMontar = celular.matches && comMovimento.matches;
-        if (deveMontar && !montado) montar();
-        else if (!deveMontar && montado) desmontar();
-    };
-
-    marcarPonto();
-    celular.addEventListener('change', decidir);
-    comMovimento.addEventListener('change', decidir);
-    decidir();
+    C.modos.registrar('carrossel', {
+        midia: '(max-width: 959px) and (prefers-reduced-motion: no-preference)',
+        montar,
+        desmontar
+    });
 })();

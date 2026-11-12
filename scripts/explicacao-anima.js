@@ -23,8 +23,11 @@
 
    Indo para a frente, a cena toca. Voltando, a janela
    aparece já pronta. "Repetir" toca a cena do passo de novo.
-   No celular, sem JS ou com "reduzir movimento", nada disso
-   roda: cada passo mostra a sua tela no estado final.
+   Ajudantes, estados das telas e o controle de modo (só um
+   modo montado por vez): scripts/explicacao-cenas.js
+   No celular: o carrossel de scripts/explicacao-celular.js.
+   Sem JS, com "reduzir movimento" ou entre 960 e 1120px:
+   cada passo mostra a sua tela no estado final.
    ========================================================= */
 (() => {
     const secao = document.querySelector('#explicacao');
@@ -39,38 +42,10 @@
     const repetir = secao.querySelector('.exp-repetir');
     if (!passos.length || !fixo || !palcoFixo || !painel || !fio || !relogioApp) return;
 
-    const PARADA = Symbol('parada');
-
-    // Espera ms; se a cena foi parada nesse meio-tempo, interrompe
-    const pausa = (exec, ms) => new Promise((ok, falha) => {
-        setTimeout(() => (exec.ativa ? ok() : falha(PARADA)), ms);
-    });
-
-    const mostrar = el => el && el.classList.add('visivel');
-    const esconder = el => el && el.classList.remove('visivel');
-    const surgem = tela => [...tela.querySelectorAll('[data-surge]')];
-
-    // Estado final: tudo à mostra, menos as bolinhas de "digitando"
-    function tudoVisivel(tela) {
-        surgem(tela).forEach(el => el.classList.toggle('visivel', !el.classList.contains('digitando')));
-    }
-
-    // "Digitando..." e depois a mensagem, no mesmo lugar
-    async function digitaEMostra(exec, vez, ms) {
-        const bolinhas = vez.querySelector('.digitando');
-        const balao = vez.querySelector('.balao');
-        mostrar(bolinhas);
-        await pausa(exec, ms);
-        esconder(bolinhas);
-        if (vez.closest('.app-fio')) balao.classList.add('chega');
-        mostrar(balao);
-    }
-
-    const relogioTexto = minutos => {
-        const h = Math.floor(minutos / 60) % 24;
-        const m = minutos % 60;
-        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-    };
+    // Ajudantes e estados das telas: scripts/explicacao-cenas.js
+    const C = window.RLGExplicacao;
+    if (!C) return;
+    const { PARADA, pausa, mostrar, esconder, digitaEMostra, relogioTexto } = C;
 
     /* ---------- A conversa da Ana (coluna da esquerda da janela) ----------
        O que está na conversa ao fim de cada passo. Cada cena começa do
@@ -130,16 +105,6 @@
     /* ---------- 01 · Atendimento hoje: o gargalo ---------- */
 
     const mapa = {
-        preparar(tela) {
-            surgem(tela).forEach(esconder);
-            tela.querySelector('.mapa-perdido').classList.remove('riscado');
-            tela.querySelector('.tela-relogio').textContent = '22:47';
-        },
-        final(tela) {
-            tudoVisivel(tela);
-            tela.querySelector('.mapa-perdido').classList.add('riscado');
-            tela.querySelector('.tela-relogio').textContent = '09:16';
-        },
         async tocar(tela, exec) {
             entra('pergunta');
             await pausa(exec, 300);
@@ -170,25 +135,6 @@
     /* ---------- 02 · Base da clínica: o agente aprende e responde a Ana ---------- */
 
     const base = {
-        preparar(tela) {
-            surgem(tela).forEach(esconder);
-            tela.querySelectorAll('[data-digita]').forEach(dd => {
-                if (dd.dataset.texto === undefined) dd.dataset.texto = dd.textContent;
-                dd.textContent = '';
-                dd.classList.remove('cursor');
-            });
-            tela.querySelector('[data-campo="horarios"]').classList.remove('em-uso');
-            tela.querySelector('.tela-pilula').textContent = 'Treinando';
-        },
-        final(tela) {
-            tudoVisivel(tela);
-            tela.querySelectorAll('[data-digita]').forEach(dd => {
-                if (dd.dataset.texto !== undefined) dd.textContent = dd.dataset.texto;
-                dd.classList.remove('cursor');
-            });
-            tela.querySelector('[data-campo="horarios"]').classList.add('em-uso');
-            tela.querySelector('.tela-pilula').textContent = 'Pronto';
-        },
         async tocar(tela, exec) {
             // A manhã perdida recolhe: fica só a pergunta das 22:47
             await saem(exec, ['noite', 'tarde', 'perdida']);
@@ -220,18 +166,6 @@
     /* ---------- 03 · Agente ligado: a resposta vai e a consulta é marcada ---------- */
 
     const conexoes = {
-        preparar(tela) {
-            surgem(tela).forEach(esconder);
-            tela.dataset.chave = 'desligada';
-            tela.querySelector('.chave-rotulo').textContent = 'Desligado';
-            tela.querySelectorAll('.canais li').forEach(li => { li.dataset.estado = 'espera'; });
-        },
-        final(tela) {
-            tudoVisivel(tela);
-            tela.dataset.chave = 'ligada';
-            tela.querySelector('.chave-rotulo').textContent = 'Ligado';
-            tela.querySelectorAll('.canais li').forEach(li => { li.dataset.estado = 'ok'; });
-        },
         async tocar(tela, exec) {
             await pausa(exec, 200);
 
@@ -268,19 +202,6 @@
     /* ---------- 04 · Revisão do mês: da consulta da Ana ao mês inteiro ---------- */
 
     const revisao = {
-        preparar(tela) {
-            surgem(tela).forEach(esconder);
-            tela.dataset.fase = 'zero';
-            const troca = tela.querySelector('.troca');
-            if (troca.dataset.depois === undefined) troca.dataset.depois = troca.textContent;
-            troca.textContent = troca.dataset.antes;
-        },
-        final(tela) {
-            tudoVisivel(tela);
-            tela.dataset.fase = 'ajustado';
-            const troca = tela.querySelector('.troca');
-            if (troca.dataset.depois !== undefined) troca.textContent = troca.dataset.depois;
-        },
         async tocar(tela, exec) {
             const troca = tela.querySelector('.troca');
             const [vazava, ajuste, proxima] = tela.querySelectorAll('.campos > div');
@@ -323,7 +244,12 @@
 
     /* ---------- Motor da demo ---------- */
 
-    const CENAS = { mapa, base, conexoes, revisao };
+    const CENAS = C.cenas({
+        mapa: mapa.tocar,
+        base: base.tocar,
+        conexoes: conexoes.tocar,
+        revisao: revisao.tocar
+    });
 
     const itens = passos.map(passo => {
         const tela = passo.querySelector('.tela');
@@ -491,7 +417,7 @@
             item.cena.final(item.tela);
         });
         fixo.hidden = true;
-        if (secao.dataset.js === 'demo') delete secao.dataset.js;
+        delete secao.dataset.js;
         atual = 0;
     }
 
@@ -501,13 +427,10 @@
 
     if (!('IntersectionObserver' in window)) return;
 
-    // A janela em duas colunas precisa de largura: abaixo disso, cada passo com a sua tela
-    const telaGrande = window.matchMedia('(min-width: 1120px) and (prefers-reduced-motion: no-preference)');
-    const decidir = () => {
-        const ligada = secao.dataset.js === 'demo';
-        if (telaGrande.matches && !ligada) montar();
-        else if (!telaGrande.matches && ligada) desmontar();
-    };
-    telaGrande.addEventListener('change', decidir);
-    decidir();
+    // A janela em duas colunas precisa de largura: abaixo disso, outro modo (ou nenhum)
+    C.modos.registrar('demo', {
+        midia: '(min-width: 1120px) and (prefers-reduced-motion: no-preference)',
+        montar,
+        desmontar
+    });
 })();
