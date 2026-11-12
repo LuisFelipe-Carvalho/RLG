@@ -491,7 +491,7 @@
             item.cena.final(item.tela);
         });
         fixo.hidden = true;
-        delete secao.dataset.js;
+        if (secao.dataset.js === 'demo') delete secao.dataset.js;
         atual = 0;
     }
 
@@ -504,7 +504,7 @@
     // A janela em duas colunas precisa de largura: abaixo disso, cada passo com a sua tela
     const telaGrande = window.matchMedia('(min-width: 1120px) and (prefers-reduced-motion: no-preference)');
     const decidir = () => {
-        const ligada = secao.dataset.js !== undefined;
+        const ligada = secao.dataset.js === 'demo';
         if (telaGrande.matches && !ligada) montar();
         else if (!telaGrande.matches && ligada) desmontar();
     };

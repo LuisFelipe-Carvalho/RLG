@@ -1,5 +1,5 @@
 /* Hallmark · redesign: full (escopo: só a seção #explicacao) · theme: brand · composição: Pinned (layout.md 13) com o padrão Sticky diptych (scroll-choreography.md 4), o único padrão de scroll da página · os passos à esquerda e um palco fixo à direita com UMA janela do produto que se transforma: a conversa da Ana fica viva à esquerda e vai se somando, o painel do passo à direita muda (diagnóstico, base, canais, revisão) · signature: o céu atrás da janela vai da noite (a pergunta das 22:47 sem resposta) ao dia (a revisão do mês) · imagery: product built, data-kind product, sem fotos · posture: committed, o céu é a superfície declarada do palco; o roxo da marca volta a ser só sinal (agente, chave ligada, consulta) */
-/* Hallmark · pre-emit critique: saiu o palco roxo sólido e o fundo roxo da seção (o roxo como superfície apagava o roxo como sinal) · uma ideia só: o produto contínuo sobre o céu, sem pacotes viajando (só o cartão da consulta passa da conversa para a revisão) · o céu troca por opacidade, camadas empilhadas (sem queda no meio), sem brilho nem gradiente roxo-azul · a cena toca no limiar do passo, por tempo, nunca presa ao scroll · celular, reduced-motion e sem JS: cada passo com a sua tela embaixo, no estado final, sobre o céu daquele passo · texto da janela sempre sobre a superfície escura dela, nunca sobre o céu */
+/* Hallmark · pre-emit critique: saiu o palco roxo sólido e o fundo roxo da seção (o roxo como superfície apagava o roxo como sinal) · uma ideia só: o produto contínuo sobre o céu, sem pacotes viajando (só o cartão da consulta passa da conversa para a revisão) · o céu troca por opacidade, camadas empilhadas (sem queda no meio), sem brilho nem gradiente roxo-azul · a cena toca no limiar do passo, por tempo, nunca presa ao scroll · celular (< 960px): os passos num carrossel de arrastar para o lado (scroll-snap, só CSS), com pontinhos e a cena de cada cartão tocando uma vez quando ele aparece (scripts/explicacao-celular.js); o passo 3 não repete a pergunta da Ana · reduced-motion e sem JS: o mesmo carrossel, tudo pronto, sobre o céu de cada passo · texto da janela sempre sobre a superfície escura dela, nunca sobre o céu */
 
 /* =========================================================
    EXPLICAÇÃO - mobile first
@@ -10,7 +10,8 @@
    ========================================================= */
 
 section.explicacao {
-    padding: 64px 20px 80px;
+    --exp-margem: 20px; /* a margem lateral; o carrossel do celular sangra até a borda */
+    padding: 64px var(--exp-margem) 80px;
     background-color: var(--cor-1);
     color: var(--cor-2);
 }
@@ -693,11 +694,115 @@ section.explicacao {
     transform: scaleY(var(--h-antes));
 }
 
+/* ---------- Celular e tablet pequeno: os passos num carrossel ----------
+   Arrasta para o lado, um passo por vez, com a ponta do próximo aparecendo.
+   Funciona só com CSS (scroll-snap); o script põe os pontinhos e toca a cena
+   de cada passo quando ele entra (scripts/explicacao-celular.js). */
+
+@media (max-width: 959px) {
+    .exp-cabecalho {
+        margin-bottom: 32px;
+    }
+
+    .exp-passos {
+        grid-auto-flow: column;
+        grid-auto-columns: 88%; /* fixo: com minmax o grid dividiria a largura entre os 4 */
+        gap: 12px;
+        margin-inline: calc(var(--exp-margem) * -1);
+        padding-inline: var(--exp-margem);
+        scroll-padding-inline: var(--exp-margem);
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+    }
+
+    .exp-passos::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* todos os cartões com a mesma altura: o céu preenche, a tela fica embaixo */
+    .exp-passo {
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 16px;
+        scroll-snap-align: start;
+    }
+
+    .exp-palco {
+        padding: 20px 12px 0;
+    }
+
+    .tela {
+        padding: 16px 16px 20px;
+    }
+
+    /* o passo 3 não repete a pergunta da Ana: o cartão anterior acabou de mostrar */
+    .tela-conexoes .conversa > .balao-paciente:first-child {
+        display: none;
+    }
+}
+
+/* tablet pequeno: cabe um cartão e meio */
+@media (min-width: 768px) and (max-width: 959px) {
+    .exp-passos {
+        grid-auto-columns: 64%;
+        gap: 16px;
+    }
+}
+
+/* os pontinhos do carrossel (criados pelo script) */
+.exp-pontos {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 16px;
+}
+
+.exp-ponto {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.exp-ponto span {
+    width: 24px;
+    height: 8px;
+    border-radius: 999px;
+    background-color: var(--cor-trilha);
+    transform: scaleX(0.34);
+    transition:
+        transform 250ms ease-out,
+        background-color 250ms ease-out;
+}
+
+.exp-ponto[aria-current="step"] span {
+    background-color: var(--cor-detalhe);
+    transform: none;
+}
+
+.exp-ponto:focus-visible {
+    outline: 2px solid var(--cor-detalhe);
+    outline-offset: -4px;
+}
+
+@media (min-width: 960px) {
+    .exp-pontos {
+        display: none;
+    }
+}
+
 /* ---------- Tablet e maiores: passo com a tela ao lado (sem palco fixo) ---------- */
 
 @media (min-width: 768px) {
     section.explicacao {
-        padding: 96px 48px 120px;
+        --exp-margem: 48px;
+        padding: 96px var(--exp-margem) 120px;
     }
 
     .exp-cabecalho {
@@ -731,13 +836,13 @@ section.explicacao {
    com movimento): passos à esquerda, palco fixo à direita
    ========================================================= */
 
-section.explicacao[data-js] .exp-demo {
+section.explicacao[data-js="demo"] .exp-demo {
     display: grid;
     grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
     gap: 64px;
 }
 
-section.explicacao[data-js] .exp-passos {
+section.explicacao[data-js="demo"] .exp-passos {
     gap: 0;
     padding-bottom: 20vh;
 }
@@ -745,42 +850,42 @@ section.explicacao[data-js] .exp-passos {
 /* cada passo é uma pista longa: o texto trava no lugar enquanto a cena toca,
    e só sai quando a pista acaba. A pista acompanha a duração da cena
    (01 ~4s, 02 ~5s, 03 ~6s, 04 ~8s), para o scroll não atropelar a demo */
-section.explicacao[data-js] .exp-passo {
+section.explicacao[data-js="demo"] .exp-passo {
     display: block;
     min-height: var(--pista);
     padding-top: 120px; /* respiro entre o texto que sai e o que entra */
 }
 
-section.explicacao[data-js] .exp-passo[data-passo="1"] { --pista: 160vh; }
-section.explicacao[data-js] .exp-passo[data-passo="2"] { --pista: 175vh; }
-section.explicacao[data-js] .exp-passo[data-passo="3"] { --pista: 195vh; }
-section.explicacao[data-js] .exp-passo[data-passo="4"] { --pista: 215vh; }
+section.explicacao[data-js="demo"] .exp-passo[data-passo="1"] { --pista: 160vh; }
+section.explicacao[data-js="demo"] .exp-passo[data-passo="2"] { --pista: 175vh; }
+section.explicacao[data-js="demo"] .exp-passo[data-passo="3"] { --pista: 195vh; }
+section.explicacao[data-js="demo"] .exp-passo[data-passo="4"] { --pista: 215vh; }
 
-section.explicacao[data-js] .exp-passo:first-child {
+section.explicacao[data-js="demo"] .exp-passo:first-child {
     padding-top: 0;
 }
 
-section.explicacao[data-js] .exp-passo-texto {
+section.explicacao[data-js="demo"] .exp-passo-texto {
     position: sticky;
     top: 174px; /* alinhado com o topo da janela no palco fixo (102px + 72px) */
 }
 
 /* a tela foi para o palco fixo: o palco do passo some */
-section.explicacao[data-js] .exp-passo .exp-palco {
+section.explicacao[data-js="demo"] .exp-passo .exp-palco {
     display: none;
 }
 
 /* passo fora de foco: título apagado (cor, nunca opacidade) */
-section.explicacao[data-js] .exp-passo:not(.ativo) h3 {
+section.explicacao[data-js="demo"] .exp-passo:not(.ativo) h3 {
     color: var(--cor-3);
 }
 
-section.explicacao[data-js] .exp-passo.ativo .exp-passo-texto::before {
+section.explicacao[data-js="demo"] .exp-passo.ativo .exp-passo-texto::before {
     border-color: var(--cor-detalhe);
     background-color: var(--cor-detalhe);
 }
 
-section.explicacao[data-js] .exp-passo.feito .exp-passo-texto::before {
+section.explicacao[data-js="demo"] .exp-passo.feito .exp-passo-texto::before {
     border-color: var(--cor-detalhe);
 }
 
@@ -1021,7 +1126,7 @@ section.explicacao[data-js] .exp-passo.feito .exp-passo-texto::before {
     overflow: hidden;
 }
 
-section.explicacao[data-js] .app-painel > .tela {
+section.explicacao[data-js="demo"] .app-painel > .tela {
     grid-area: 1 / 1;
     max-width: none;
     min-height: 0;
@@ -1039,7 +1144,7 @@ section.explicacao[data-js] .app-painel > .tela {
         visibility 0s 250ms;
 }
 
-section.explicacao[data-js] .app-painel > .tela.ativa {
+section.explicacao[data-js="demo"] .app-painel > .tela.ativa {
     opacity: 1;
     visibility: visible;
     transform: none;
@@ -1191,6 +1296,10 @@ section.explicacao[data-js] .mapa-perdido:not(.riscado) .risco {
 /* ---------- Menos movimento: o script nem monta a demo ---------- */
 
 @media (prefers-reduced-motion: reduce) {
+    .exp-ponto span {
+        transition: none;
+    }
+
     .spinner,
     .digitando i,
     .chega,
