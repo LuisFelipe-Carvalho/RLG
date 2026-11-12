@@ -1,0 +1,519 @@
+/* Hallmark · shape: kept · genre: atmospheric · theme: brand · redesign: full (escopo: só o hero #home) · hero: Stage, texto à esquerda e animação à direita, empilhado no mobile · nav: kept · footer: kept · signature: a frase encenada; uma conversa no WhatsApp às 22:47 em que o agente responde, marca o horário na agenda e confirma, e cada verbo da frase acende no seu passo
+ * axes: preto/Sora/roxo · posture: stage · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H5 E4 S4 R5 V3 · weakest: V, o layout texto+animação segue a referência pedida pelo usuário; a animação encena a própria frase do hero (responde, agenda, confirma), o que só a RLG pode mostrar */
+/* Hallmark · dismissed 58 · o h1 "Você cuida do paciente. A RLG cuida da clínica." é a frase da marca RLG e foi mantido a pedido do dono */
+/* Hallmark · reworded o parágrafo do hero (70 palavras) para "Agente de IA que responde, agenda e confirma consultas no WhatsApp." · 58 pede uma frase no hero; o texto longo já está em Serviços */
+/* Hallmark · waive 49b · a.ctf "Quero parar de perder pacientes!" quebra em 2 linhas só abaixo de ~400px · o rótulo é a chamada da RLG e o texto em 19px negrito é o que garante o contraste no roxo da marca */
+
+/* =========================================================
+   HOME (hero) - mobile first
+   Base: celular. Ajustes de tela maior no @media no fim.
+   ========================================================= */
+
+section#home {
+    padding: 48px 20px 64px;
+}
+
+#home .home-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+    max-width: 1200px;
+    margin-inline: auto;
+}
+
+/* ---------- Texto ---------- */
+
+#home .conteudo-home {
+    min-width: 0;
+}
+
+#home .titulo {
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2rem, 1.25rem + 3.5vw, 3.5rem);
+    line-height: 1.1;
+    margin-bottom: 16px;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    min-width: 0;
+}
+
+#home .conteudo-home > p {
+    font-family: var(--fonte-texto);
+    color: var(--cor-3);
+    font-size: 1.125rem;
+    line-height: 1.5;
+    max-width: 34ch;
+    margin-bottom: 32px;
+}
+
+/* ---------- Botões ---------- */
+
+#home .butao {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#home .butao a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 12px 16px;
+    border-radius: 5px;
+    font-family: var(--fonte-texto);
+    text-align: center;
+    text-wrap: balance;
+    transition-property: background-color, box-shadow, transform;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+}
+
+/* Texto grande (19px, negrito) para o branco sobre o roxo da marca
+   passar no contraste de texto grande (3:1) */
+#home a.ctf {
+    font-size: 1.1875rem;
+    font-weight: 700;
+}
+
+#home a.btn-sec {
+    font-size: 1.1875rem;
+    background-color: var(--cor-vidro);
+    color: var(--cor-2);
+}
+
+#home a.btn-sec:hover {
+    background-color: var(--cor-vidro-hover);
+}
+
+#home .butao a:focus-visible {
+    outline: 2px solid var(--cor-2);
+    outline-offset: 3px;
+    transition: none;
+}
+
+#home .butao a:active {
+    transform: translateY(1px);
+}
+
+/* ---------- Animação: o agente responde, agenda e confirma ----------
+   Sem JS ou com menos movimento, tudo aparece no estado final (estático).
+   O script adiciona data-js e vai marcando cada passo com .visivel. */
+
+#home .home-visual {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: 440px;
+    margin-inline: auto;
+    padding: 24px 0;
+    font-family: var(--fonte-texto);
+    background: radial-gradient(ellipse at 55% 45%,
+        color-mix(in srgb, var(--cor-detalhe) 28%, transparent) 0%,
+        color-mix(in srgb, var(--cor-detalhe) 8%, transparent) 45%,
+        transparent 72%);
+}
+
+#home .home-visual p {
+    margin: 0;
+}
+
+#home .chat,
+#home .agenda,
+#home .aviso {
+    background-color: var(--cor-superficie);
+    border: 1px solid var(--cor-borda);
+    border-radius: 14px;
+    box-shadow: var(--sombra-card);
+}
+
+/* --- Conversa --- */
+
+#home .chat {
+    grid-column: 1 / 13;
+    grid-row: 1;
+    overflow: clip;
+}
+
+#home .chat-topo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+#home .chat-avatar {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--cor-detalhe-suave);
+    color: var(--cor-2);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+#home .chat-nome,
+#home .agenda-titulo,
+#home .aviso-titulo {
+    color: var(--cor-2);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+#home .chat-status,
+#home .agenda-sub,
+#home .aviso-sub {
+    color: var(--cor-3);
+    font-size: 0.75rem;
+}
+
+#home .chat-corpo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+}
+
+#home .balao {
+    max-width: 82%;
+    padding: 8px 12px 4px;
+    border-radius: 12px;
+    color: var(--cor-2);
+    font-size: 0.8125rem;
+    line-height: 1.35;
+}
+
+#home .balao.paciente {
+    align-self: flex-start;
+    background-color: var(--cor-superficie-2);
+    border-bottom-left-radius: 4px;
+}
+
+#home .balao.agente {
+    background-color: var(--cor-detalhe-suave);
+    border-bottom-right-radius: 4px;
+}
+
+#home .hora {
+    display: block;
+    margin-top: 2px;
+    color: var(--cor-3);
+    font-size: 0.6875rem;
+    text-align: right;
+}
+
+#home .hora .lido {
+    font-size: 0.875rem;
+    color: var(--cor-sub-detalhe);
+    vertical-align: -3px;
+}
+
+/* Bolha do agente e "digitando" ocupam o mesmo lugar: nada pula na tela */
+#home .slot-mensagem {
+    display: grid;
+    justify-items: end;
+}
+
+#home .slot-mensagem > * {
+    grid-area: 1 / 1;
+}
+
+#home .digitando {
+    align-self: start;
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border-bottom-right-radius: 4px;
+    background-color: var(--cor-detalhe-suave);
+    visibility: hidden;
+}
+
+#home .digitando i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--cor-3);
+    animation: digitando 1s ease-in-out infinite;
+}
+
+#home .digitando i:nth-child(2) { animation-delay: 0.15s; }
+#home .digitando i:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes digitando {
+    0%, 60%, 100% { opacity: 0.35; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* Aviso "Consulta agendada" dentro da conversa: só no celular,
+   no lugar dos cartões de agenda e lembrete */
+#home .chat-agendado {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    align-self: center;
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--cor-detalhe);
+    background-color: var(--cor-detalhe-suave);
+    color: var(--cor-2);
+    font-size: 0.75rem;
+}
+
+#home .chat-agendado .material-symbols-outlined {
+    font-size: 1rem;
+    color: var(--cor-2);
+}
+
+/* --- Agenda --- */
+
+#home .agenda {
+    grid-column: 2 / 13;
+    grid-row: 2;
+    padding: 16px;
+}
+
+#home .agenda-topo,
+#home .aviso {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#home .agenda-topo {
+    margin-bottom: 12px;
+}
+
+#home .agenda-marcado .material-symbols-outlined {
+    font-size: 1rem;
+}
+
+#home .agenda-topo .material-symbols-outlined,
+#home .aviso .material-symbols-outlined {
+    color: var(--cor-detalhe);
+}
+
+#home .agenda-horarios {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    list-style: none;
+}
+
+#home .agenda-horarios li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 8px 0;
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    color: var(--cor-2);
+    font-size: 0.75rem;
+}
+
+#home .agenda-horarios li.ocupado {
+    color: var(--cor-3);
+    opacity: 0.45;
+    text-decoration: line-through;
+}
+
+/* Horário marcado: fundo roxo escuro e borda roxa, para o texto claro passar no contraste */
+#home .agenda-horarios .horario-alvo {
+    background-color: var(--cor-detalhe-suave);
+    border-color: var(--cor-detalhe);
+    box-shadow: 0 0 16px color-mix(in srgb, var(--cor-detalhe) 45%, transparent);
+    font-weight: 600;
+    transition-property: background-color, border-color, box-shadow;
+    transition-duration: 0.4s;
+}
+
+#home .agenda-marcado {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 12px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background-color: var(--cor-detalhe-suave);
+    color: var(--cor-2);
+    font-size: 0.75rem;
+}
+
+/* --- Aviso de lembrete --- */
+
+#home .aviso {
+    grid-column: 1 / 11;
+    grid-row: 3;
+    padding: 12px 16px;
+}
+
+/* --- Frase: cada verbo acende no passo correspondente --- */
+
+#home .verbo {
+    position: relative;
+    transition: color 0.4s ease;
+}
+
+#home .verbo::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 2px;
+    background-color: var(--cor-detalhe);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+}
+
+#home .verbo.ativo {
+    color: var(--cor-2);
+}
+
+#home .verbo.ativo::after {
+    transform: scaleX(1);
+}
+
+/* --- Estados da animação (só com [data-js], adicionado pelo script) --- */
+
+#home .home-visual[data-js] .surge {
+    transition-property: opacity, transform;
+    transition-duration: 0.45s;
+    transition-timing-function: ease;
+}
+
+#home .home-visual[data-js] .surge:not(.visivel) {
+    opacity: 0;
+    transform: translateY(8px);
+}
+
+#home .home-visual[data-js] .digitando.visivel {
+    visibility: visible;
+}
+
+#home .home-visual[data-js] .horario-alvo:not(.visivel) {
+    background-color: transparent;
+    border-color: var(--cor-borda);
+    box-shadow: none;
+    font-weight: 400;
+}
+
+#home .home-visual[data-js] .horario-alvo.visivel {
+    animation: marcar 0.5s ease;
+}
+
+@keyframes marcar {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #home .butao a,
+    #home .verbo,
+    #home .verbo::after {
+        transition: none;
+    }
+
+    #home .digitando i {
+        animation: none;
+    }
+}
+
+/* Celular: só a conversa. Agenda e lembrete aparecem a partir do tablet */
+#home .agenda,
+#home .aviso {
+    display: none;
+}
+
+/* ---------- Celular maior: botões lado a lado ---------- */
+
+@media (min-width: 480px) {
+    #home .butao {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    #home .butao a {
+        padding-inline: 32px;
+    }
+}
+
+/* ---------- Tablet: ainda empilhado, com mais respiro ---------- */
+
+@media (min-width: 768px) {
+    section#home {
+        padding: 64px 48px 80px;
+    }
+
+    /* Tablet e maiores: a agenda e o lembrete ganham cartões próprios */
+    #home .agenda {
+        display: block;
+    }
+
+    #home .aviso {
+        display: flex;
+    }
+
+    #home .chat-agendado {
+        display: none;
+    }
+
+    #home .home-visual {
+        max-width: 480px;
+    }
+
+    #home .agenda {
+        grid-column: 3 / 13;
+    }
+
+    #home .aviso {
+        grid-column: 1 / 9;
+    }
+}
+
+/* ---------- Desktop: texto à esquerda, animação à direita ---------- */
+
+@media (min-width: 960px) {
+    section#home {
+        display: grid;
+        align-items: center;
+        min-height: calc(100svh - 70px);
+        padding: 48px;
+    }
+
+    #home .home-inner {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: center;
+        gap: 48px;
+        width: 100%;
+    }
+
+    #home .home-visual {
+        max-width: 560px;
+        align-items: start;
+    }
+
+    /* Conversa à esquerda; agenda e lembrete empilhados à direita */
+    #home .chat {
+        grid-column: 1 / 8;
+        grid-row: 1 / 3;
+    }
+
+    #home .agenda {
+        grid-column: 8 / 13;
+        grid-row: 1;
+        margin-top: 40px;
+    }
+
+    #home .aviso {
+        grid-column: 8 / 13;
+        grid-row: 2;
+    }
+}

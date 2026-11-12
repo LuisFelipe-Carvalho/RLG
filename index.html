@@ -6,6 +6,7 @@
     <title>Agência RLG</title>
     <link rel="stylesheet" href="estilos/style.css">
     <link rel="stylesheet" href="estilos/telaGrande.css" media="screen">
+    <link rel="stylesheet" href="estilos/home.css">
     <link rel="shortcut icon" href="imagens-provisorias/favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,16 +37,89 @@
     </header>
 
     <main>
-        <section id="home" class="grid">
-            <div class="container">
+        <section id="home">
+            <div class="home-inner">
                 <div class="conteudo-home">
                     <h1 class="titulo">Você cuida do paciente.<br> A RLG cuida da clínica.</h1>
-                    <p>
-                        A RLG responde, agenda e confirma consultas no WhatsApp em segundos, mesmo quando sua recepção está ocupada ou fora do expediente. Nós instalamos um agente de IA que responde na hora, qualifica o paciente, agenda na sua agenda, confirma, lembra, acompanha o pós-atendimento e pede a avaliação no Google. Tudo registrado, tudo medido. Você só cuida de quem senta na cadeira.
-                    </p>
+                    <p>Agente de IA que <span class="verbo" data-verbo="responde">responde</span>, <span class="verbo" data-verbo="agenda">agenda</span> e <span class="verbo" data-verbo="confirma">confirma</span> consultas no WhatsApp.</p>
                     <div class="butao">
-                        <a href="" class="ctf">Quero parar de perder pacientes!</a>
-                        <a href="" class="btn-sec">Serviços</a>
+                        <a href="#call" class="ctf">Quero parar de perder pacientes!</a>
+                        <a href="#servicos" class="btn-sec">Serviços</a>
+                    </div>
+                </div>
+
+                <!-- Animação: o agente responde no WhatsApp, agenda o horário e confirma.
+                     Sem JS (ou com menos movimento) aparece o estado final, estático. -->
+                <div class="home-visual" aria-hidden="true">
+                    <div class="chat">
+                        <div class="chat-topo">
+                            <span class="chat-avatar">SC</span>
+                            <div>
+                                <p class="chat-nome">Sua clínica</p>
+                                <p class="chat-status">online</p>
+                            </div>
+                        </div>
+
+                        <div class="chat-corpo">
+                            <div class="balao paciente surge" data-passo="1">
+                                Oi! Tem horário pra limpeza essa semana?
+                                <span class="hora">22:47</span>
+                            </div>
+
+                            <div class="slot-mensagem">
+                                <div class="digitando surge" data-passo="2" data-ate="3"><i></i><i></i><i></i></div>
+                                <div class="balao agente surge" data-passo="3" data-verbo-passo="responde">
+                                    Oi, Ana! Tenho quinta às 10:30 ou 14:30. Qual fica melhor?
+                                    <span class="hora">22:47</span>
+                                </div>
+                            </div>
+
+                            <div class="balao paciente surge" data-passo="4">
+                                10:30, por favor
+                                <span class="hora">22:48</span>
+                            </div>
+
+                            <!-- Só no celular: o passo "agenda" aparece dentro da conversa -->
+                            <p class="chat-agendado surge" data-passo="5">
+                                <span class="material-symbols-outlined">event_available</span>
+                                Consulta agendada: quinta, 10:30
+                            </p>
+
+                            <div class="slot-mensagem">
+                                <div class="digitando surge" data-passo="6" data-ate="7"><i></i><i></i><i></i></div>
+                                <div class="balao agente surge" data-passo="7" data-verbo-passo="confirma">
+                                    Pronto, consulta confirmada! Quinta, 10:30. Te lembro na véspera.
+                                    <span class="hora">22:48 <span class="material-symbols-outlined lido">done_all</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="agenda">
+                        <div class="agenda-topo">
+                            <span class="material-symbols-outlined">calendar_month</span>
+                            <div>
+                                <p class="agenda-titulo">Quinta-feira</p>
+                                <p class="agenda-sub">Agenda da clínica</p>
+                            </div>
+                        </div>
+                        <ul class="agenda-horarios">
+                            <li class="ocupado">08:00</li>
+                            <li class="ocupado">09:30</li>
+                            <li class="horario-alvo marca" data-passo="5" data-verbo-passo="agenda">10:30</li>
+                            <li>13:00</li>
+                            <li>14:30</li>
+                            <li class="ocupado">16:00</li>
+                        </ul>
+                        <p class="agenda-marcado surge" data-passo="5"><span class="material-symbols-outlined">event_available</span> Ana, limpeza às 10:30</p>
+                    </div>
+
+                    <div class="aviso surge" data-passo="8">
+                        <span class="material-symbols-outlined">notifications_active</span>
+                        <div>
+                            <p class="aviso-titulo">Lembrete programado</p>
+                            <p class="aviso-sub">Quarta, 10:30, para a Ana</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -299,5 +373,6 @@
     </footer>
 
     <script src="scripts/script.js"></script>
+    <script src="scripts/home-anima.js"></script>
 </body>
 </html>
