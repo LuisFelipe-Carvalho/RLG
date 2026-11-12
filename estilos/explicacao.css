@@ -1,18 +1,18 @@
-/* Hallmark · redesign: full (escopo: só a seção #explicacao) · theme: brand · zigue-zague pedido pelo dono (texto de um lado, peça do outro, invertendo a cada passo); layout.md desaconselha zigzag, mantido por pedido explícito e compensado com quatro peças de formas diferentes (linha do tempo, ficha, lista de conexões, revisão), nunca a mesma composição repetida · fotos trocadas por peças do produto feitas em HTML/CSS, na linguagem do hero, sem números inventados */
-/* Hallmark · pre-emit critique: cada peça mostra o que o passo entrega (o gargalo achado, a base que treina o agente, as conexões ligadas, o ajuste do mês) · uma revelação só na página, visível sem JS e parada com reduced-motion · zigue-zague (layout.md, variety) mantido por pedido explícito do dono, com a referência weppy */
+/* Hallmark · redesign: full (escopo: só a seção #explicacao) · theme: brand · composição: Pinned (layout.md 13) com o padrão Sticky diptych (scroll-choreography.md 4), o único padrão de scroll da página · os passos à esquerda e um palco fixo à direita com UMA janela do produto que se transforma: a conversa da Ana fica viva à esquerda e vai se somando, o painel do passo à direita muda (diagnóstico, base, canais, revisão) · signature: o céu atrás da janela vai da noite (a pergunta das 22:47 sem resposta) ao dia (a revisão do mês) · imagery: product built, data-kind product, sem fotos · posture: committed, o céu é a superfície declarada do palco; o roxo da marca volta a ser só sinal (agente, chave ligada, consulta) */
+/* Hallmark · pre-emit critique: saiu o palco roxo sólido e o fundo roxo da seção (o roxo como superfície apagava o roxo como sinal) · uma ideia só: o produto contínuo sobre o céu, sem pacotes viajando (só o cartão da consulta passa da conversa para a revisão) · o céu troca por opacidade, camadas empilhadas (sem queda no meio), sem brilho nem gradiente roxo-azul · a cena toca no limiar do passo, por tempo, nunca presa ao scroll · celular, reduced-motion e sem JS: cada passo com a sua tela embaixo, no estado final, sobre o céu daquele passo · texto da janela sempre sobre a superfície escura dela, nunca sobre o céu */
 
 /* =========================================================
    EXPLICAÇÃO - mobile first
-   Base: celular (texto em cima, peça embaixo).
-   Zigue-zague em duas colunas a partir de 960px.
+   Base (celular, sem JS, reduzir movimento): cada passo com
+   a sua tela embaixo, no estado final.
+   Demo (computador + JS + movimento, data-js="demo" na seção):
+   passos à esquerda, palco fixo à direita.
    ========================================================= */
 
 section.explicacao {
     padding: 64px 20px 80px;
-    background-color: var(--cor-fundo-roxo);
-    background-image: linear-gradient(to bottom, var(--cor-1) 0%, var(--cor-fundo-roxo) 200px);
+    background-color: var(--cor-1);
     color: var(--cor-2);
-    overflow-x: clip; /* a peça entra de lado: nada de rolagem horizontal durante a entrada */
 }
 
 .exp-inner {
@@ -42,28 +42,56 @@ section.explicacao {
     max-width: 60ch;
     font-family: var(--fonte-texto);
     color: var(--cor-3);
-    font-size: 1rem;
+    font-size: 1.125rem;
     line-height: 1.6;
     text-wrap: pretty;
 }
 
-/* ---------- Linhas do zigue-zague ---------- */
+/* ---------- Passos ---------- */
 
-.exp-lista {
+.exp-passos {
     display: grid;
-    gap: 72px;
+    gap: 64px;
     list-style: none;
+    counter-reset: passo;
 }
 
-.exp-linha {
+.exp-passo {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 32px;
-    align-items: center;
+    gap: 24px;
 }
 
-.exp-texto h3 {
-    margin-bottom: 12px;
+.exp-passo-texto {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    column-gap: 16px;
+    align-content: start;
+}
+
+/* o número vem da própria lista */
+.exp-passo-texto::before {
+    counter-increment: passo;
+    content: counter(passo);
+    grid-row: 1 / span 2;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--cor-trilha);
+    border-radius: 50%;
+    font-family: var(--fonte-titulo);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--cor-2);
+    transition:
+        background-color 300ms ease-out,
+        border-color 300ms ease-out;
+}
+
+.exp-passo-texto h3 {
+    margin-bottom: 8px;
+    padding-top: 4px;
     font-family: var(--fonte-titulo);
     color: var(--cor-2);
     font-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
@@ -71,48 +99,70 @@ section.explicacao {
     text-wrap: balance;
     overflow-wrap: break-word;
     min-width: 0;
+    transition: color 300ms ease-out;
 }
 
-.exp-texto p {
-    max-width: 52ch;
+.exp-passo-texto p {
+    max-width: 45ch;
     font-family: var(--fonte-texto);
     color: var(--cor-3);
-    font-size: 1rem;
+    font-size: 1.0625rem;
     line-height: 1.6;
     text-wrap: pretty;
 }
 
-/* ---------- Palco da peça: só um brilho, sem moldura (nada de card dentro de card) ---------- */
+/* ---------- Palco: o céu daquele passo, a tela sai pela borda de baixo ---------- */
 
-.exp-visual {
-    display: grid;
-    place-items: center;
-    padding: 24px 0;
-    background: radial-gradient(ellipse 60% 55% at 50% 50%, var(--cor-brilho), transparent 75%);
+.exp-palco {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 28px 16px 0;
+    border-radius: 20px;
+    background-color: var(--ceu-noite-2);
+    background-image: linear-gradient(to bottom, var(--ceu-noite-1), var(--ceu-noite-2));
+    overflow: hidden;
 }
 
-/* ---------- A peça (o pedaço do produto) ---------- */
+.exp-passo[data-passo="2"] .exp-palco {
+    background-color: var(--ceu-madrugada-2);
+    background-image: linear-gradient(to bottom, var(--ceu-madrugada-1), var(--ceu-madrugada-2));
+}
 
-.peca {
+.exp-passo[data-passo="3"] .exp-palco {
+    background-color: var(--ceu-amanhecer-2);
+    background-image: linear-gradient(to bottom, var(--ceu-amanhecer-1), var(--ceu-amanhecer-2));
+}
+
+.exp-passo[data-passo="4"] .exp-palco {
+    background-color: var(--ceu-dia-2);
+    background-image: linear-gradient(to bottom, var(--ceu-dia-1), var(--ceu-dia-2));
+}
+
+/* ---------- A tela (o pedaço do produto) ---------- */
+
+.tela {
     width: 100%;
-    max-width: 400px;
-    padding: 20px;
+    max-width: 460px;
+    padding: 20px 20px 24px;
     border: 1px solid var(--cor-borda);
-    border-radius: 14px;
+    border-bottom: 0;
+    border-radius: 14px 14px 0 0;
     background-color: var(--cor-superficie);
     font-family: var(--fonte-texto);
     color: var(--cor-2);
 }
 
-.peca .material-symbols-outlined {
+.tela .material-symbols-outlined {
     font-size: 1.125rem;
     line-height: 1;
 }
 
-.peca-titulo {
+.tela-topo {
     display: flex;
     align-items: center;
     gap: 8px;
+    min-height: 32px;
     padding-bottom: 12px;
     margin-bottom: 16px;
     border-bottom: 1px solid var(--cor-borda);
@@ -120,36 +170,122 @@ section.explicacao {
     font-weight: 600;
 }
 
-.peca-titulo .material-symbols-outlined {
+.tela-topo > .material-symbols-outlined {
     color: var(--cor-detalhe);
 }
 
-.peca-rodape {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 16px;
+.tela-relogio,
+.tela-pilula {
+    margin-left: auto;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background-color: var(--cor-superficie-2);
     color: var(--cor-3);
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
 }
 
-.peca-rodape .material-symbols-outlined {
-    color: var(--cor-detalhe);
-}
-
-.peca-tag {
+.tela-tag {
     display: inline-block;
     margin-left: 4px;
     padding: 2px 8px;
     border-radius: 999px;
-    background-color: color-mix(in srgb, var(--cor-perigo) 16%, transparent);
-    color: var(--cor-perigo);
-    font-size: 0.75rem;
+    background-color: var(--cor-superficie-2);
+    color: var(--cor-3);
+    font-size: 0.6875rem;
     font-weight: 600;
     vertical-align: 1px;
+    white-space: nowrap;
 }
 
-/* 01 · Linha do tempo do atendimento de hoje */
+.tela-tag-ok {
+    background-color: var(--cor-detalhe-suave);
+    color: var(--cor-2);
+}
+
+/* 01 · Atendimento hoje: a régua do dia, com o horário da recepção e a pergunta da Ana */
+.regua {
+    margin-bottom: 20px;
+}
+
+.regua-faixa {
+    position: relative;
+    height: 16px;
+    margin-top: 16px;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--cor-perigo) 16%, var(--cor-superficie-2));
+}
+
+.regua-aberto {
+    position: absolute;
+    inset-block: 0;
+    left: calc(var(--de) / 24 * 100%);
+    width: calc((var(--ate) - var(--de)) / 24 * 100%);
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--cor-3) 55%, var(--cor-superficie-2));
+}
+
+/* a pergunta da Ana: um traço que passa da faixa, fora do horário */
+.regua-ana {
+    position: absolute;
+    top: -8px;
+    bottom: -8px;
+    left: calc(var(--em) / 24 * 100%);
+    width: 2px;
+    margin-left: -1px;
+    border-radius: 2px;
+    background-color: var(--cor-perigo);
+}
+
+.regua-ana::before {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: -3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--cor-perigo);
+}
+
+.regua-horas {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    color: var(--cor-3);
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.regua-legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-top: 12px;
+    color: var(--cor-3);
+    font-size: 0.75rem;
+}
+
+.regua-legenda > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.regua-chave {
+    width: 12px;
+    height: 8px;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--cor-3) 55%, var(--cor-superficie-2));
+}
+
+.regua-chave-ana {
+    width: 2px;
+    height: 12px;
+    background-color: var(--cor-perigo);
+}
+
 .mapa {
     display: grid;
     gap: 16px;
@@ -184,13 +320,19 @@ section.explicacao {
 .mapa-texto {
     font-size: 0.875rem;
     line-height: 1.4;
+    text-wrap: pretty;
 }
 
+.mapa-espera .mapa-texto,
 .mapa-perdido .mapa-texto {
     color: var(--cor-3);
 }
 
-/* risco por cima do texto (desenhado da esquerda para a direita na cena) */
+.mapa-espera .mapa-hora .material-symbols-outlined {
+    color: var(--cor-3);
+    font-size: 1rem;
+}
+
 .risco {
     background-image: linear-gradient(var(--cor-perigo), var(--cor-perigo));
     background-repeat: no-repeat;
@@ -200,131 +342,115 @@ section.explicacao {
     box-decoration-break: clone;
 }
 
-.mapa-espera .mapa-hora .material-symbols-outlined {
-    color: var(--cor-3);
-    font-size: 1rem;
-}
-
-.mapa-espera .mapa-texto {
-    color: var(--cor-3);
-    font-style: normal;
-}
-
-/* relógio no canto da peça */
-.mapa-relogio {
-    margin-left: auto;
-    padding: 2px 8px;
-    border-radius: 6px;
-    background-color: var(--cor-superficie-2);
-    color: var(--cor-3);
-    font-size: 0.75rem;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-}
-
-/* 02 e 04 · Campos de uma ficha */
-.peca-campos {
-    display: grid;
-    gap: 12px;
-}
-
-.peca-campos > div {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-    gap: 12px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--cor-borda);
-}
-
-.peca-campos > div:last-child {
-    padding-bottom: 0;
-    border-bottom: 0;
-}
-
-.peca-campos dt {
-    color: var(--cor-3);
+.tela-achado {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 10px;
+    background-color: color-mix(in srgb, var(--cor-perigo) 14%, var(--cor-superficie));
+    color: var(--cor-2);
     font-size: 0.8125rem;
+    font-weight: 600;
 }
 
-.peca-campos dd {
-    font-size: 0.875rem;
-    line-height: 1.4;
-}
-
-.peca-campos .campo-alerta dd {
+.tela-achado .material-symbols-outlined {
     color: var(--cor-perigo);
 }
 
-.peca-legenda {
-    margin-top: 20px;
-    margin-bottom: 8px;
-    color: var(--cor-3);
-    font-size: 0.75rem;
+/* 02 e 04 · Campos de uma ficha */
+.campos {
+    display: grid;
+    gap: 2px;
+    margin-block: 12px;
 }
 
-.peca-balao {
-    max-width: 88%;
-    margin-left: auto;
-    padding: 12px;
-    border-radius: 12px;
-    border-bottom-right-radius: 4px;
-    background-color: var(--cor-detalhe-suave);
+.campos > div {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 300ms ease-out;
+}
+
+.campos dt {
+    color: var(--cor-3);
+    font-size: 0.8125rem;
+    transition: color 300ms ease-out;
+}
+
+.campos dd {
+    min-height: 1.4em;
     font-size: 0.875rem;
     line-height: 1.4;
+    text-wrap: pretty;
 }
 
-/* 03 · Conexões ligadas */
-.conexoes {
+.campos > div.em-uso {
+    background-color: var(--cor-detalhe-suave);
+}
+
+.campos > div.em-uso dt {
+    color: var(--cor-2);
+}
+
+.campos .campo-alerta dd {
+    color: var(--cor-perigo);
+}
+
+/* conversas: balões, e o "digitando" que divide o lugar com o balão seguinte */
+.conversa {
     display: grid;
     gap: 8px;
-    list-style: none;
 }
 
-.conexoes li {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border-radius: 10px;
-    background-color: var(--cor-superficie-2);
-    font-size: 0.875rem;
-}
-
-.conexoes .conexao-icone {
-    color: var(--cor-3);
-}
-
-/* 02 · Agente digitando e cursor da digitação */
-.peca-campos dd {
-    min-height: 1.4em;
-}
-
-.cursor::after {
-    content: "";
-    display: inline-block;
-    width: 1px;
-    height: 1em;
-    margin-left: 1px;
-    background-color: var(--cor-detalhe);
-    vertical-align: -2px;
-    animation: exp-cursor 0.8s steps(1) infinite;
-}
-
-@keyframes exp-cursor {
-    50% { opacity: 0; }
-}
-
-/* digitando e balão ocupam o mesmo lugar: nada pula na tela */
-.base-resposta {
+.vez {
     display: grid;
-    justify-items: end;
 }
 
-.base-resposta > * {
+.vez > * {
     grid-area: 1 / 1;
 }
 
-.peca-digitando {
+.balao {
+    max-width: 85%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    text-wrap: pretty;
+}
+
+.balao time {
+    margin-left: 4px;
+    color: var(--cor-3);
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.balao-paciente {
+    justify-self: start;
+    border-bottom-left-radius: 4px;
+    background-color: var(--cor-superficie-2);
+}
+
+.balao-agente {
+    justify-self: end;
+    border-bottom-right-radius: 4px;
+    background-color: var(--cor-detalhe-suave);
+}
+
+/* a recepção, de manhã: do lado da clínica, mas sem o roxo do agente */
+.balao-recepcao {
+    justify-self: end;
+    border-bottom-right-radius: 4px;
+    background-color: var(--cor-superficie-2);
+}
+
+.digitando {
+    justify-self: end;
     align-self: start;
     display: flex;
     gap: 4px;
@@ -335,7 +461,14 @@ section.explicacao {
     visibility: hidden;
 }
 
-.peca-digitando i {
+.digitando-paciente {
+    justify-self: start;
+    border-radius: 12px;
+    border-bottom-left-radius: 4px;
+    background-color: var(--cor-superficie-2);
+}
+
+.digitando i {
     width: 6px;
     height: 6px;
     border-radius: 50%;
@@ -343,15 +476,15 @@ section.explicacao {
     animation: exp-digitando 1s ease-in-out infinite;
 }
 
-.peca-digitando i:nth-child(2) { animation-delay: 0.15s; }
-.peca-digitando i:nth-child(3) { animation-delay: 0.3s; }
+.digitando i:nth-child(2) { animation-delay: 0.15s; }
+.digitando i:nth-child(3) { animation-delay: 0.3s; }
 
 @keyframes exp-digitando {
     0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
     30% { transform: translateY(-3px); opacity: 1; }
 }
 
-/* 03 · Chave do agente e status de cada canal */
+/* 03 · Chave do agente e canais */
 .chave-grupo {
     display: inline-flex;
     align-items: center;
@@ -362,7 +495,7 @@ section.explicacao {
 .chave-rotulo {
     color: var(--cor-3);
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .chave {
@@ -386,92 +519,117 @@ section.explicacao {
     transition: transform 250ms ease-in-out;
 }
 
-.peca-conexoes[data-chave="desligada"] .chave {
-    background-color: var(--cor-superficie-2);
+.tela-conexoes[data-chave="desligada"] .chave {
+    background-color: var(--cor-trilha);
 }
 
-.peca-conexoes[data-chave="desligada"] .chave-bolinha {
+.tela-conexoes[data-chave="desligada"] .chave-bolinha {
     transform: translateX(0);
 }
 
-.conexoes li {
-    transition: opacity 300ms ease-out;
+.canais {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+    list-style: none;
 }
 
-.conexoes li[data-estado="espera"] {
-    opacity: 0.45;
-}
-
-.conexao-status {
-    display: inline-flex;
+.canais li {
+    display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background-color: var(--cor-superficie-2);
+    font-size: 0.8125rem;
+    transition: color 250ms ease-out;
+}
+
+.canais li > .material-symbols-outlined {
+    color: var(--cor-3);
+}
+
+.canal-status {
+    display: inline-flex;
     margin-left: auto;
     color: var(--cor-detalhe);
-    font-size: 0.75rem;
-    font-weight: 600;
-    transition: opacity 200ms ease-out;
 }
 
-.conexoes li[data-estado="espera"] .conexao-status {
-    opacity: 0;
-}
-
-.conexoes li[data-estado="conectando"] .conexao-status {
+.canais li[data-estado="espera"] {
     color: var(--cor-3);
+}
+
+.canais li[data-estado="espera"] .icone-ok,
+.canais li[data-estado="conectando"] .icone-ok {
+    display: none;
 }
 
 .spinner {
     display: none;
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border: 2px solid var(--cor-trilha);
     border-top-color: var(--cor-detalhe);
     border-radius: 50%;
     animation: exp-gira 0.7s linear infinite;
 }
 
-.conexoes li[data-estado="conectando"] .spinner {
+.canais li[data-estado="conectando"] .spinner {
     display: inline-block;
-}
-
-.conexoes li[data-estado="conectando"] .icone-ok {
-    display: none;
 }
 
 @keyframes exp-gira {
     to { transform: rotate(360deg); }
 }
 
+/* 03 e 04 · A consulta da Ana */
+.consulta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 12px;
+    border: 1px solid var(--cor-detalhe);
+    border-radius: 10px;
+    background-color: var(--cor-superficie-2);
+    font-size: 0.8125rem;
+}
+
+.consulta > .material-symbols-outlined {
+    color: var(--cor-detalhe);
+}
+
+.consulta-texto {
+    color: var(--cor-3);
+}
+
+.consulta-texto strong {
+    display: block;
+    color: var(--cor-2);
+    font-weight: 600;
+}
+
+.consulta .tela-tag {
+    margin-left: auto;
+}
+
+.tela-revisao .consulta {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
 /* 04 · Gráfico da revisão */
 .grafico-legenda {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
     margin-bottom: 12px;
     color: var(--cor-3);
     font-size: 0.75rem;
-}
-
-.grafico-tag {
-    margin-left: 0;
-    background-color: var(--cor-detalhe-suave);
-    color: var(--cor-2);
-}
-
-.peca-revisao[data-fase="zero"] .grafico-tag,
-.peca-revisao[data-fase="vaza"] .grafico-tag {
-    background-color: color-mix(in srgb, var(--cor-perigo) 16%, transparent);
-    color: var(--cor-perigo);
 }
 
 .barras {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 8px;
-    margin-bottom: 20px;
 }
 
 .barra {
@@ -483,18 +641,18 @@ section.explicacao {
 .barra-area {
     position: relative;
     width: 100%;
-    height: 96px;
+    height: 88px;
 }
 
 .barra-fill,
 .barra-antes {
     position: absolute;
     inset: 0;
-    border-radius: 4px 4px 2px 2px;
     transform-origin: bottom;
 }
 
 .barra-fill {
+    border-radius: 4px 4px 2px 2px;
     background-color: var(--cor-detalhe);
     transform: scaleY(var(--h));
     transition:
@@ -502,10 +660,11 @@ section.explicacao {
         background-color 400ms ease-out;
 }
 
-/* onde o sábado estava antes do ajuste (contorno tracejado) */
+/* onde o sábado estava antes do ajuste (linha tracejada na altura antiga) */
 .barra-antes {
-    border: 1px dashed var(--cor-perigo);
-    transform: scaleY(var(--h-antes));
+    z-index: 1;
+    top: calc((1 - var(--h-antes)) * 100%);
+    border-top: 2px dashed var(--cor-2);
     transition: opacity 300ms ease-out;
 }
 
@@ -514,100 +673,27 @@ section.explicacao {
     font-size: 0.6875rem;
 }
 
-.barra:nth-child(2) .barra-fill { transition-delay: 60ms; }
-.barra:nth-child(3) .barra-fill { transition-delay: 120ms; }
-.barra:nth-child(4) .barra-fill { transition-delay: 180ms; }
-.barra:nth-child(5) .barra-fill { transition-delay: 240ms; }
-.barra:nth-child(6) .barra-fill { transition-delay: 300ms; }
+.barra:nth-child(2) .barra-fill { transition-delay: 50ms; }
+.barra:nth-child(3) .barra-fill { transition-delay: 100ms; }
+.barra:nth-child(4) .barra-fill { transition-delay: 150ms; }
+.barra:nth-child(5) .barra-fill { transition-delay: 200ms; }
+.barra:nth-child(6) .barra-fill { transition-delay: 250ms; }
 
-.peca-revisao[data-fase="zero"] .barra-fill {
+.tela-revisao[data-fase="zero"] .barra-fill {
     transform: scaleY(0);
 }
 
-.peca-revisao[data-fase="zero"] .barra-antes,
-.peca-revisao[data-fase="vaza"] .barra-antes {
+.tela-revisao[data-fase="zero"] .barra-antes,
+.tela-revisao[data-fase="vaza"] .barra-antes {
     opacity: 0;
 }
 
-.peca-revisao[data-fase="vaza"] .barra-sab .barra-fill {
+.tela-revisao[data-fase="vaza"] .barra-sab .barra-fill {
     background-color: var(--cor-perigo);
     transform: scaleY(var(--h-antes));
 }
 
-/* ---------- Entrada da linha e cenas (só com JS: data-js na seção) ----------
-   A linha entra quando aparece (texto sobe, peça vem do seu lado) e a peça
-   toca a sua cena (scripts/explicacao-anima.js). Os elementos com
-   data-passo aparecem quando a cena marca .visivel. */
-
-section.explicacao[data-js] :is(.exp-texto, .exp-visual) {
-    transition:
-        opacity 500ms ease-out,
-        transform 500ms ease-out;
-}
-
-.exp-texto { --de: translateY(16px); }
-.exp-visual { --de: translateY(24px); }
-
-section.explicacao[data-js] .exp-visual {
-    transition-delay: 100ms;
-}
-
-section.explicacao[data-js] .exp-linha:not(.revelado) :is(.exp-texto, .exp-visual) {
-    opacity: 0;
-    transform: var(--de);
-}
-
-section.explicacao[data-js] [data-passo] {
-    transition:
-        opacity 400ms ease-out,
-        transform 400ms ease-out;
-}
-
-section.explicacao[data-js] [data-passo]:not(.visivel) {
-    opacity: 0;
-    transform: translateY(8px);
-}
-
-/* o "Gargalo" salta e o balão estoura */
-section.explicacao[data-js] .peca-tag[data-passo]:not(.visivel) {
-    transform: scale(0.5);
-}
-
-section.explicacao[data-js] .peca-balao[data-passo] {
-    transform-origin: bottom right;
-}
-
-section.explicacao[data-js] .peca-balao[data-passo]:not(.visivel) {
-    transform: translateY(8px) scale(0.9);
-}
-
-/* o digitando só existe durante a cena */
-section.explicacao[data-js] .peca-digitando.visivel {
-    visibility: visible;
-}
-
-/* o risco se desenha */
-section.explicacao[data-js] .risco {
-    transition: background-size 500ms ease-out;
-}
-
-section.explicacao[data-js] .mapa-perdido:not(.riscado) .risco {
-    background-size: 0% 1.5px;
-}
-
-/* ---------- Menos movimento ----------
-   O script nem liga as cenas (fica o estado final do HTML);
-   isto só garante que nada fique girando ou piscando. */
-
-@media (prefers-reduced-motion: reduce) {
-    .spinner,
-    .cursor::after,
-    .peca-digitando i {
-        animation: none;
-    }
-}
-
-/* ---------- Tablet e maiores ---------- */
+/* ---------- Tablet e maiores: passo com a tela ao lado (sem palco fixo) ---------- */
 
 @media (min-width: 768px) {
     section.explicacao {
@@ -618,33 +704,501 @@ section.explicacao[data-js] .mapa-perdido:not(.riscado) .risco {
         margin-bottom: 80px;
     }
 
-    .peca {
-        padding: 24px;
+    .exp-palco {
+        padding: 48px 40px 0;
+    }
+
+    .tela {
+        padding: 24px 24px 28px;
     }
 }
 
-/* ---------- Tela grande: zigue-zague ---------- */
-
 @media (min-width: 960px) {
-    .exp-lista {
-        gap: 120px;
+    .exp-passos {
+        gap: 96px;
     }
 
-    .exp-linha {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* sempre do mesmo lado: nada de zigue-zague */
+    .exp-passo {
+        grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
         gap: 80px;
+        align-items: center;
+    }
+}
+
+/* =========================================================
+   DEMO (só com [data-js="demo"], que o script põe no computador
+   com movimento): passos à esquerda, palco fixo à direita
+   ========================================================= */
+
+section.explicacao[data-js] .exp-demo {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: 64px;
+}
+
+section.explicacao[data-js] .exp-passos {
+    gap: 0;
+    padding-bottom: 20vh;
+}
+
+/* cada passo é uma pista longa: o texto trava no lugar enquanto a cena toca,
+   e só sai quando a pista acaba. A pista acompanha a duração da cena
+   (01 ~4s, 02 ~5s, 03 ~6s, 04 ~8s), para o scroll não atropelar a demo */
+section.explicacao[data-js] .exp-passo {
+    display: block;
+    min-height: var(--pista);
+    padding-top: 120px; /* respiro entre o texto que sai e o que entra */
+}
+
+section.explicacao[data-js] .exp-passo[data-passo="1"] { --pista: 160vh; }
+section.explicacao[data-js] .exp-passo[data-passo="2"] { --pista: 175vh; }
+section.explicacao[data-js] .exp-passo[data-passo="3"] { --pista: 195vh; }
+section.explicacao[data-js] .exp-passo[data-passo="4"] { --pista: 215vh; }
+
+section.explicacao[data-js] .exp-passo:first-child {
+    padding-top: 0;
+}
+
+section.explicacao[data-js] .exp-passo-texto {
+    position: sticky;
+    top: 174px; /* alinhado com o topo da janela no palco fixo (102px + 72px) */
+}
+
+/* a tela foi para o palco fixo: o palco do passo some */
+section.explicacao[data-js] .exp-passo .exp-palco {
+    display: none;
+}
+
+/* passo fora de foco: título apagado (cor, nunca opacidade) */
+section.explicacao[data-js] .exp-passo:not(.ativo) h3 {
+    color: var(--cor-3);
+}
+
+section.explicacao[data-js] .exp-passo.ativo .exp-passo-texto::before {
+    border-color: var(--cor-detalhe);
+    background-color: var(--cor-detalhe);
+}
+
+section.explicacao[data-js] .exp-passo.feito .exp-passo-texto::before {
+    border-color: var(--cor-detalhe);
+}
+
+/* ---------- O palco fixo: o céu e a janela do produto ---------- */
+
+.exp-fixo-palco {
+    position: sticky;
+    top: 102px; /* abaixo do menu fixo (70px) */
+    isolation: isolate;
+    display: grid;
+    height: min(600px, calc(100svh - 134px));
+    padding: 72px 56px 0;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+/* O céu: quatro camadas empilhadas na ordem da história. Cada passo acende
+   a sua camada por cima das anteriores, então a troca nunca passa por um vazio */
+.ceu {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+}
+
+.ceu-camada {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 900ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.ceu-noite {
+    opacity: 1;
+    background-color: var(--ceu-noite-2);
+    background-image: linear-gradient(to bottom, var(--ceu-noite-1), var(--ceu-noite-2));
+}
+
+.ceu-madrugada {
+    background-image: linear-gradient(to bottom, var(--ceu-madrugada-1), var(--ceu-madrugada-2));
+}
+
+.ceu-amanhecer {
+    background-image: linear-gradient(to bottom, var(--ceu-amanhecer-1), var(--ceu-amanhecer-2));
+}
+
+.ceu-dia {
+    background-image: linear-gradient(to bottom, var(--ceu-dia-1), var(--ceu-dia-2));
+}
+
+.exp-fixo-palco[data-hora="2"] .ceu-madrugada,
+.exp-fixo-palco[data-hora="3"] .ceu-madrugada,
+.exp-fixo-palco[data-hora="3"] .ceu-amanhecer,
+.exp-fixo-palco[data-hora="4"] .ceu-camada {
+    opacity: 1;
+}
+
+/* A janela: uma só, do começo ao fim, saindo pela borda de baixo */
+.app {
+    position: relative;
+    justify-self: center;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    width: 100%;
+    max-width: 680px;
+    height: 100%;
+    border: 1px solid var(--cor-borda);
+    border-bottom: 0;
+    border-radius: 16px 16px 0 0;
+    background-color: var(--cor-superficie);
+    box-shadow: var(--sombra-card);
+    font-family: var(--fonte-texto);
+    color: var(--cor-2);
+    overflow: hidden;
+}
+
+.app .material-symbols-outlined {
+    font-size: 1.125rem;
+    line-height: 1;
+}
+
+.app-topo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--cor-borda);
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.app-topo > .material-symbols-outlined {
+    color: var(--cor-detalhe);
+}
+
+.app-corpo {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    min-height: 0;
+}
+
+/* Coluna da conversa: a Ana, do começo ao fim */
+.app-conversa {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 16px;
+    min-height: 0;
+    padding: 16px 20px 20px;
+    border-right: 1px solid var(--cor-borda);
+}
+
+.app-contato {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.app-avatar {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--cor-superficie-2);
+    font-family: var(--fonte-titulo);
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.app-contato-nome {
+    display: grid;
+    color: var(--cor-3);
+    font-size: 0.75rem;
+}
+
+.app-contato-nome strong {
+    color: var(--cor-2);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.app-fio {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* só aparece o que já aconteceu na conversa */
+.app-fio > [data-fio]:not(.no-fio) {
+    display: none;
+}
+
+.app-fio > .chega {
+    animation: exp-chega 350ms ease-out both;
+}
+
+@keyframes exp-chega {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+
+.app-fio .vez > .balao:not(.visivel) {
+    visibility: hidden;
+}
+
+.app-fio .digitando.visivel {
+    visibility: visible;
+}
+
+.app-fio .vez > .balao.chega {
+    animation: exp-chega 300ms ease-out both;
+}
+
+.app-fio .balao {
+    font-size: 0.875rem;
+}
+
+.app-fio .consulta {
+    margin-top: 4px;
+}
+
+/* avisos da conversa: o que aconteceu sem ninguém escrever */
+.app-aviso {
+    justify-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background-color: var(--cor-superficie-2);
+    color: var(--cor-3);
+    font-size: 0.75rem;
+}
+
+.app-aviso .material-symbols-outlined {
+    font-size: 1rem;
+}
+
+.app-aviso time {
+    font-variant-numeric: tabular-nums;
+}
+
+.app-aviso-perdida {
+    background-color: color-mix(in srgb, var(--cor-perigo) 14%, var(--cor-superficie));
+    color: var(--cor-2);
+}
+
+.app-aviso-perdida:not(.riscado) .risco {
+    background-size: 0% 1.5px;
+}
+
+.app-aviso-perdida .risco {
+    transition: background-size 500ms ease-out;
+}
+
+/* a tag da resposta do agente: de prévia (02) a enviada (03) */
+.app-tag-envio {
+    background-color: var(--cor-superficie);
+}
+
+.app-tag-envio.tela-tag-ok {
+    background-color: var(--cor-detalhe);
+    color: var(--cor-2);
+    animation: exp-carimbo 350ms ease-out;
+}
+
+@keyframes exp-carimbo {
+    from { transform: scale(0.6); opacity: 0; }
+    to { transform: none; opacity: 1; }
+}
+
+/* Painel do passo: as telas dos passos, empilhadas, uma de cada vez */
+.app-painel {
+    display: grid;
+    min-height: 0;
+    overflow: hidden;
+}
+
+section.explicacao[data-js] .app-painel > .tela {
+    grid-area: 1 / 1;
+    max-width: none;
+    min-height: 0;
+    padding: 16px 24px 24px;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(12px);
+    transition:
+        opacity 250ms ease-in,
+        transform 250ms ease-in,
+        visibility 0s 250ms;
+}
+
+section.explicacao[data-js] .app-painel > .tela.ativa {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+        opacity 400ms ease-out 120ms,
+        transform 400ms ease-out 120ms,
+        visibility 0s;
+}
+
+/* o que a conversa ao lado já conta não se repete no painel */
+.app-painel .tela-mapa .mapa,
+.app-painel .tela-mapa .tela-relogio,
+.app-painel .tela-base .conversa,
+.app-painel .tela-base > .vez,
+.app-painel .tela-conexoes .conversa,
+.app-painel .tela-conexoes > .consulta {
+    display: none;
+}
+
+.app-painel .canais {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.app-painel .canais li {
+    min-height: 44px;
+}
+
+.exp-repetir {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 32px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 999px;
+    background-color: var(--cor-vidro-escuro);
+    color: var(--cor-2);
+    font-family: var(--fonte-texto);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background-color 220ms ease-out,
+        transform 120ms ease-out;
+}
+
+/* área de toque de 44px */
+.exp-repetir::after {
+    content: "";
+    position: absolute;
+    inset: -6px 0;
+}
+
+.exp-repetir .material-symbols-outlined {
+    font-size: 1rem;
+}
+
+.exp-repetir:hover {
+    background-color: var(--cor-vidro-escuro-hover);
+}
+
+.exp-repetir:active {
+    transform: translateY(1px);
+}
+
+.exp-repetir:focus-visible {
+    outline: 2px solid var(--cor-2);
+    outline-offset: 2px;
+    transition: none;
+}
+
+/* ---------- A consulta da Ana passa da conversa (03) para a revisão (04) ---------- */
+
+.viajante-copia {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    margin: 0;
+    pointer-events: none;
+    box-shadow: var(--sombra-card);
+    font-family: var(--fonte-texto);
+    color: var(--cor-2);
+}
+
+.viajante-copia .material-symbols-outlined {
+    font-size: 1.125rem;
+    line-height: 1;
+}
+
+/* a entrega: um anel que aparece e some uma vez (nunca um pulso repetido) */
+.recebe {
+    animation: exp-recebe 600ms ease-out;
+}
+
+@keyframes exp-recebe {
+    from { box-shadow: 0 0 0 3px var(--cor-detalhe); }
+    to { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ---------- Cenas: o que ainda não apareceu ---------- */
+
+section.explicacao[data-js] [data-surge] {
+    transition:
+        opacity 350ms ease-out,
+        transform 350ms ease-out;
+}
+
+section.explicacao[data-js] [data-surge]:not(.visivel) {
+    opacity: 0;
+    transform: translateY(6px);
+}
+
+section.explicacao[data-js] .tela-tag[data-surge]:not(.visivel) {
+    transform: scale(0.6);
+}
+
+section.explicacao[data-js] .consulta[data-surge]:not(.visivel) {
+    transform: translateY(16px);
+}
+
+section.explicacao[data-js] .digitando.visivel {
+    visibility: visible;
+}
+
+section.explicacao[data-js] .risco {
+    transition: background-size 500ms ease-out;
+}
+
+section.explicacao[data-js] .mapa-perdido:not(.riscado) .risco {
+    background-size: 0% 1.5px;
+}
+
+/* cursor da ficha sendo preenchida */
+.cursor::after {
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    margin-left: 1px;
+    background-color: var(--cor-detalhe);
+    vertical-align: -2px;
+}
+
+/* ---------- Menos movimento: o script nem monta a demo ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .spinner,
+    .digitando i,
+    .chega,
+    .app-tag-envio.tela-tag-ok {
+        animation: none;
     }
 
-    .exp-visual {
-        min-height: 360px;
+    .ceu-camada {
+        transition: none;
     }
-
-    /* nas linhas pares a peça vai para a esquerda */
-    .exp-linha:nth-child(even) .exp-texto {
-        order: 2;
-    }
-
-    /* a peça entra pelo lado em que está */
-    .exp-linha:nth-child(odd) .exp-visual { --de: translateX(48px); }
-    .exp-linha:nth-child(even) .exp-visual { --de: translateX(-48px); }
 }

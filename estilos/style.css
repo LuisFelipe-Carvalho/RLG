@@ -19,8 +19,19 @@
     --cor-grade: color-mix(in srgb, var(--cor-detalhe) 55%, transparent);
     --cor-brilho: color-mix(in srgb, var(--cor-detalhe) 22%, transparent);
     --cor-trilha: rgba(242, 242, 242, 0.14);
-    --cor-fundo-roxo: #15101F;
     --cor-perigo: #F87171;
+    --cor-vidro-escuro: rgba(13, 13, 13, 0.55);
+    --cor-vidro-escuro-hover: rgba(13, 13, 13, 0.75);
+
+    /* Céu da Explicação: da noite em que a Ana fica sem resposta ao dia da revisão do mês */
+    --ceu-noite-1: oklch(15% 0.035 262);
+    --ceu-noite-2: oklch(28% 0.065 258);
+    --ceu-madrugada-1: oklch(20% 0.03 248);
+    --ceu-madrugada-2: oklch(33% 0.045 240);
+    --ceu-amanhecer-1: oklch(27% 0.03 35);
+    --ceu-amanhecer-2: oklch(55% 0.085 52);
+    --ceu-dia-1: oklch(88% 0.02 85);
+    --ceu-dia-2: oklch(78% 0.035 75);
 
     --fonte-titulo: 'Sora', Arial, Helvetica, sans-serif;
     --fonte-texto: 'Inter', Arial, Helvetica, sans-serif;

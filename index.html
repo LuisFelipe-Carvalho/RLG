@@ -252,116 +252,224 @@
             <div class="exp-inner">
                 <div class="exp-cabecalho">
                     <h2 class="exp-titulo">Da primeira conversa à clínica rodando no automático</h2>
-                    <p>Automação boa não é a mais complexa, é a que encaixa na rotina que sua clínica já tem. Por isso todo projeto começa entendendo o seu fluxo antes de escrever uma linha de código.</p>
+                    <p>Todo projeto começa entendendo o seu fluxo, antes de escrever uma linha de código.</p>
                 </div>
 
-                <!-- Zigue-zague: texto de um lado, peça do produto do outro, invertendo a cada passo.
-                     As peças são feitas em HTML/CSS (sem fotos) e só ilustram o texto: aria-hidden.
-                     O HTML já é o estado final de cada cena; com JS (scripts/explicacao-anima.js)
-                     cada peça toca a sua cena quando entra na tela. -->
-                <ol class="exp-lista">
-                    <li class="exp-linha">
-                        <div class="exp-texto">
-                            <h3>Diagnóstico da operação</h3>
-                            <p>Mapeamos como sua clínica atende hoje: onde chega o paciente, quem responde, quanto tempo demora e onde ele desiste. Sai daqui um desenho claro dos gargalos e do que dá para automatizar já na primeira semana.</p>
-                        </div>
-                        <div class="exp-visual" aria-hidden="true">
-                            <div class="peca peca-mapa" data-cena="mapa">
-                                <p class="peca-titulo"><span class="material-symbols-outlined">route</span> Atendimento hoje <span class="mapa-relogio">09:16</span></p>
-                                <ol class="mapa">
-                                    <li data-passo>
-                                        <span class="mapa-hora">22:47</span>
-                                        <span class="mapa-texto">Paciente pergunta o horário no WhatsApp</span>
-                                    </li>
-                                    <li class="mapa-espera" data-passo>
-                                        <span class="mapa-hora"><span class="material-symbols-outlined">bedtime</span></span>
-                                        <span class="mapa-texto">A noite inteira sem resposta</span>
-                                    </li>
-                                    <li class="mapa-gargalo" data-passo>
-                                        <span class="mapa-hora">09:15</span>
-                                        <span class="mapa-texto">Recepção responde só no dia seguinte <span class="peca-tag" data-passo>Gargalo</span></span>
-                                    </li>
-                                    <li class="mapa-perdido" data-passo>
-                                        <span class="mapa-hora">09:16</span>
-                                        <span class="mapa-texto"><span class="risco">Paciente já marcou em outra clínica</span></span>
-                                    </li>
-                                </ol>
-                                <p class="peca-rodape" data-passo><span class="material-symbols-outlined">bolt</span> Automatizável na primeira semana</p>
+                <!-- Tela fixa (scripts/explicacao-anima.js): no computador, as telas de cada
+                     passo vão para um palco fixo à direita e viram uma demo contínua: a mesma
+                     conversa da Ana, da madrugada perdida até o resultado do mês. Cada passo
+                     toca a sua cena quando chega ao meio da tela.
+                     Sem JS, no celular ou com "reduzir movimento": cada passo mostra a sua
+                     tela logo abaixo, já no estado final. -->
+                <div class="exp-demo">
+                    <ol class="exp-passos">
+                        <li class="exp-passo" data-passo="1">
+                            <div class="exp-passo-texto">
+                                <h3>Diagnóstico da operação</h3>
+                                <p>Achamos onde sua clínica perde paciente hoje e o que já dá para automatizar na primeira semana.</p>
                             </div>
-                        </div>
-                    </li>
-
-                    <li class="exp-linha">
-                        <div class="exp-texto">
-                            <h3>Construção do agente</h3>
-                            <p>Treinamos o agente com as informações reais da sua clínica: horários, convênios, procedimentos, valores e tom de voz. Ele fala como a sua recepção fala, só que não dorme, não fica ocupado e não esquece de responder.</p>
-                        </div>
-                        <div class="exp-visual" aria-hidden="true">
-                            <div class="peca peca-base" data-cena="base">
-                                <p class="peca-titulo"><span class="material-symbols-outlined">tune</span> Base da sua clínica</p>
-                                <dl class="peca-campos">
-                                    <div><dt>Horários</dt><dd data-digita>Seg a sex, das 8h às 18h</dd></div>
-                                    <div><dt>Procedimentos</dt><dd data-digita>Limpeza, clareamento, implante</dd></div>
-                                    <div><dt>Convênios</dt><dd data-digita>Particular e convênios</dd></div>
-                                    <div><dt>Tom de voz</dt><dd data-digita>Acolhedor, como a sua recepção</dd></div>
-                                </dl>
-                                <p class="peca-legenda" data-passo>Prévia da resposta</p>
-                                <div class="base-resposta">
-                                    <div class="peca-digitando" data-passo><i></i><i></i><i></i></div>
-                                    <p class="peca-balao" data-passo>Oi, Ana! Tenho quinta às 10:30 ou 14:30. Qual fica melhor pra você?</p>
+                            <div class="exp-palco">
+                                <div class="tela tela-mapa" data-kind="product" data-cena="mapa" aria-hidden="true">
+                                    <div class="tela-topo">
+                                        <span class="material-symbols-outlined">route</span> Atendimento hoje
+                                        <span class="tela-relogio">09:16</span>
+                                    </div>
+                                    <div class="regua">
+                                        <div class="regua-faixa">
+                                            <span class="regua-aberto" style="--de: 8; --ate: 18"></span>
+                                            <span class="regua-ana" data-surge style="--em: 22.78"></span>
+                                        </div>
+                                        <div class="regua-horas"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
+                                        <p class="regua-legenda">
+                                            <span><i class="regua-chave regua-chave-aberto"></i>Recepção atende</span>
+                                            <span><i class="regua-chave regua-chave-ana"></i>Ana, 22:47</span>
+                                        </p>
+                                    </div>
+                                    <ol class="mapa">
+                                        <li data-surge>
+                                            <span class="mapa-hora">22:47</span>
+                                            <span class="mapa-texto">Ana pergunta no WhatsApp se tem horário no sábado</span>
+                                        </li>
+                                        <li class="mapa-espera" data-surge>
+                                            <span class="mapa-hora"><span class="material-symbols-outlined">bedtime</span></span>
+                                            <span class="mapa-texto">A noite inteira sem resposta</span>
+                                        </li>
+                                        <li data-surge>
+                                            <span class="mapa-hora">09:15</span>
+                                            <span class="mapa-texto">Recepção responde só no dia seguinte</span>
+                                        </li>
+                                        <li class="mapa-perdido" data-surge>
+                                            <span class="mapa-hora">09:16</span>
+                                            <span class="mapa-texto"><span class="risco">Ana já marcou em outra clínica</span></span>
+                                        </li>
+                                    </ol>
+                                    <p class="tela-achado" data-surge><span class="material-symbols-outlined">error</span> Gargalo: ninguém responde fora do horário</p>
                                 </div>
                             </div>
-                        </div>
-                    </li>
+                        </li>
 
-                    <li class="exp-linha">
-                        <div class="exp-texto">
-                            <h3>Integração e ativação</h3>
-                            <p>Conectamos o agente ao WhatsApp, ao Instagram, à sua agenda e à sua base de leads. Testamos com casos reais antes de ligar. Sua equipe recebe o que precisa saber em uma reunião curta e o resto acontece sozinho.</p>
-                        </div>
-                        <div class="exp-visual" aria-hidden="true">
-                            <div class="peca peca-conexoes" data-cena="conexoes">
-                                <p class="peca-titulo">
-                                    <span class="material-symbols-outlined">power_settings_new</span> Agente
-                                    <span class="chave-grupo"><span class="chave-rotulo">Ligado</span><span class="chave"><span class="chave-bolinha"></span></span></span>
-                                </p>
-                                <ul class="conexoes">
-                                    <li><span class="material-symbols-outlined conexao-icone">forum</span> WhatsApp <span class="conexao-status"><span class="spinner"></span><span class="material-symbols-outlined icone-ok">check_circle</span> <span class="conexao-rotulo">Conectado</span></span></li>
-                                    <li><span class="material-symbols-outlined conexao-icone">photo_camera</span> Instagram <span class="conexao-status"><span class="spinner"></span><span class="material-symbols-outlined icone-ok">check_circle</span> <span class="conexao-rotulo">Conectado</span></span></li>
-                                    <li><span class="material-symbols-outlined conexao-icone">calendar_month</span> Agenda <span class="conexao-status"><span class="spinner"></span><span class="material-symbols-outlined icone-ok">check_circle</span> <span class="conexao-rotulo">Conectado</span></span></li>
-                                    <li><span class="material-symbols-outlined conexao-icone">database</span> Base de leads <span class="conexao-status"><span class="spinner"></span><span class="material-symbols-outlined icone-ok">check_circle</span> <span class="conexao-rotulo">Conectado</span></span></li>
-                                </ul>
-                                <p class="peca-rodape" data-passo><span class="material-symbols-outlined">task_alt</span> Testado com casos reais antes de ligar</p>
+                        <li class="exp-passo" data-passo="2">
+                            <div class="exp-passo-texto">
+                                <h3>Construção do agente</h3>
+                                <p>Ele aprende seus horários, procedimentos e convênios, e responde com o jeito da sua recepção.</p>
                             </div>
-                        </div>
-                    </li>
-
-                    <li class="exp-linha">
-                        <div class="exp-texto">
-                            <h3>Ajuste contínuo pelos dados</h3>
-                            <p>Todo mês olhamos os números: taxa de confirmação, comparecimento, fechamento, CAC e ROI. Onde o funil vaza, a gente ajusta. A operação fica mais eficiente a cada ciclo, não estagnada.</p>
-                        </div>
-                        <div class="exp-visual" aria-hidden="true">
-                            <div class="peca peca-revisao" data-cena="revisao">
-                                <p class="peca-titulo"><span class="material-symbols-outlined">monitoring</span> Revisão do mês</p>
-                                <p class="grafico-legenda">Consultas confirmadas por dia <span class="peca-tag grafico-tag">Sábado ajustado</span></p>
-                                <div class="barras">
-                                    <div class="barra" style="--h: 0.82"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Seg</span></div>
-                                    <div class="barra" style="--h: 0.9"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Ter</span></div>
-                                    <div class="barra" style="--h: 0.76"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Qua</span></div>
-                                    <div class="barra" style="--h: 0.86"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Qui</span></div>
-                                    <div class="barra" style="--h: 0.8"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Sex</span></div>
-                                    <div class="barra barra-sab" style="--h: 0.74; --h-antes: 0.34"><div class="barra-area"><span class="barra-antes"></span><span class="barra-fill"></span></div><span class="barra-dia">Sáb</span></div>
+                            <div class="exp-palco">
+                                <div class="tela tela-base" data-kind="product" data-cena="base" aria-hidden="true">
+                                    <div class="tela-topo">
+                                        <span class="material-symbols-outlined">tune</span> Base da sua clínica
+                                        <span class="tela-pilula" data-rotulo-fim="Pronto">Pronto</span>
+                                    </div>
+                                    <div class="conversa">
+                                        <p class="balao balao-paciente" data-surge>Oi! Tem horário no sábado? <time>22:47</time></p>
+                                    </div>
+                                    <dl class="campos">
+                                        <div data-campo="horarios" class="em-uso"><dt>Horários</dt><dd data-digita>Seg a sex, 8h às 18h. Sáb, 8h às 12h</dd></div>
+                                        <div><dt>Procedimentos</dt><dd data-digita>Limpeza, clareamento, implante</dd></div>
+                                        <div><dt>Convênios</dt><dd data-digita>Particular e convênios</dd></div>
+                                        <div><dt>Tom de voz</dt><dd data-digita>Acolhedor e próximo</dd></div>
+                                    </dl>
+                                    <div class="vez">
+                                        <div class="digitando" data-surge><i></i><i></i><i></i></div>
+                                        <p class="balao balao-agente" data-surge>Tenho sim, Ana! Sábado às 10:30 ou 11:30. Qual prefere? <span class="tela-tag">Prévia</span></p>
+                                    </div>
                                 </div>
-                                <dl class="peca-campos">
-                                    <div class="campo-alerta" data-passo><dt>Onde vazava</dt><dd>Confirmação das consultas de sábado</dd></div>
-                                    <div data-passo><dt>Ajuste feito</dt><dd>Lembrete extra na sexta, às 18h</dd></div>
-                                    <div data-passo><dt>Próxima revisão</dt><dd>Daqui a 30 dias</dd></div>
-                                </dl>
                             </div>
+                        </li>
+
+                        <li class="exp-passo" data-passo="3">
+                            <div class="exp-passo-texto">
+                                <h3>Integração e ativação</h3>
+                                <p>Ligamos no WhatsApp, no Instagram e na sua agenda. A pergunta das 22:47 vira consulta marcada.</p>
+                            </div>
+                            <div class="exp-palco">
+                                <div class="tela tela-conexoes" data-kind="product" data-cena="conexoes" data-chave="ligada" aria-hidden="true">
+                                    <div class="tela-topo">
+                                        <span class="material-symbols-outlined">power_settings_new</span> Agente
+                                        <span class="chave-grupo"><span class="chave-rotulo">Ligado</span><span class="chave"><span class="chave-bolinha"></span></span></span>
+                                    </div>
+                                    <ul class="canais">
+                                        <li data-estado="ok"><span class="material-symbols-outlined">forum</span> WhatsApp <span class="canal-status"><span class="spinner"></span><span class="material-symbols-outlined icone-ok">check_circle</span></span></li>
+                                        <li data-estado="ok"><span class="material-symbols-outlined">photo_camera</span> Instagram <span class="canal-status"><span class="spinner"></span><span class="material-symbols-outlined icone-ok">check_circle</span></span></li>
+                                        <li data-estado="ok"><span class="material-symbols-outlined">calendar_month</span> Agenda <span class="canal-status"><span class="spinner"></span><span class="material-symbols-outlined icone-ok">check_circle</span></span></li>
+                                        <li data-estado="ok"><span class="material-symbols-outlined">database</span> Leads <span class="canal-status"><span class="spinner"></span><span class="material-symbols-outlined icone-ok">check_circle</span></span></li>
+                                    </ul>
+                                    <div class="conversa">
+                                        <p class="balao balao-paciente">Oi! Tem horário no sábado? <time>22:47</time></p>
+                                        <p class="balao balao-agente">Tenho sim, Ana! Sábado às 10:30 ou 11:30. Qual prefere? <span class="tela-tag tela-tag-ok" data-surge>Enviada 22:47</span></p>
+                                        <div class="vez">
+                                            <div class="digitando digitando-paciente" data-surge><i></i><i></i><i></i></div>
+                                            <p class="balao balao-paciente" data-surge>10:30, por favor! <time>22:48</time></p>
+                                        </div>
+                                        <div class="vez">
+                                            <div class="digitando" data-surge><i></i><i></i><i></i></div>
+                                            <p class="balao balao-agente" data-surge>Marcado! Te lembro na véspera. <time>22:48</time></p>
+                                        </div>
+                                    </div>
+                                    <div class="consulta" data-surge>
+                                        <span class="material-symbols-outlined">event_available</span>
+                                        <span class="consulta-texto"><strong>Sábado, 10:30</strong> Ana, avaliação</span>
+                                        <span class="tela-tag tela-tag-ok" data-surge>Agendado</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="exp-passo" data-passo="4">
+                            <div class="exp-passo-texto">
+                                <h3>Ajuste contínuo pelos dados</h3>
+                                <p>Todo mês olhamos os números, achamos onde o funil vaza e ajustamos. A clínica melhora a cada ciclo.</p>
+                            </div>
+                            <div class="exp-palco">
+                                <div class="tela tela-revisao" data-kind="product" data-cena="revisao" data-fase="ajustado" aria-hidden="true">
+                                    <div class="tela-topo">
+                                        <span class="material-symbols-outlined">monitoring</span> Revisão do mês
+                                    </div>
+                                    <div class="consulta" data-surge>
+                                        <span class="material-symbols-outlined">event_available</span>
+                                        <span class="consulta-texto"><strong>Sábado, 10:30</strong> Ana, avaliação</span>
+                                        <span class="tela-tag tela-tag-ok"><span class="troca" data-antes="Agendado">Confirmada</span></span>
+                                    </div>
+                                    <p class="grafico-legenda" data-surge>Consultas confirmadas por dia</p>
+                                    <div class="barras" data-surge>
+                                        <div class="barra" style="--h: 0.82"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Seg</span></div>
+                                        <div class="barra" style="--h: 0.9"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Ter</span></div>
+                                        <div class="barra" style="--h: 0.76"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Qua</span></div>
+                                        <div class="barra" style="--h: 0.86"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Qui</span></div>
+                                        <div class="barra" style="--h: 0.8"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Sex</span></div>
+                                        <div class="barra barra-sab" style="--h: 0.74; --h-antes: 0.34"><div class="barra-area"><span class="barra-antes"></span><span class="barra-fill"></span></div><span class="barra-dia">Sáb</span></div>
+                                    </div>
+                                    <dl class="campos">
+                                        <div class="campo-alerta" data-surge><dt>Onde vazava</dt><dd>Confirmação das consultas de sábado</dd></div>
+                                        <div data-surge><dt>Ajuste feito</dt><dd>Lembrete extra na sexta, às 18h</dd></div>
+                                        <div data-surge><dt>Próxima revisão</dt><dd>Daqui a 30 dias</dd></div>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+
+                    <!-- Palco fixo da demo: só existe com JS, no computador e com movimento.
+                         O céu muda a cada passo (noite, madrugada, amanhecer, dia) e a janela
+                         do produto é uma só: a conversa da Ana à esquerda, que vai se somando,
+                         e à direita o painel do passo (as telas acima, movidas pelo script). -->
+                    <div class="exp-fixo" hidden>
+                        <div class="exp-fixo-palco" data-hora="1">
+                            <div class="ceu" aria-hidden="true">
+                                <span class="ceu-camada ceu-noite"></span>
+                                <span class="ceu-camada ceu-madrugada"></span>
+                                <span class="ceu-camada ceu-amanhecer"></span>
+                                <span class="ceu-camada ceu-dia"></span>
+                            </div>
+                            <div class="app" data-kind="product" aria-hidden="true">
+                                <div class="app-topo">
+                                    <span class="material-symbols-outlined">forum</span> Atendimento da clínica
+                                    <span class="tela-relogio app-relogio">22:47</span>
+                                </div>
+                                <div class="app-corpo">
+                                    <div class="app-conversa">
+                                        <div class="app-contato">
+                                            <span class="app-avatar">A</span>
+                                            <span class="app-contato-nome"><strong>Ana</strong> WhatsApp</span>
+                                        </div>
+                                        <div class="app-fio">
+                                            <p class="balao balao-paciente" data-fio="pergunta">Oi! Tem horário no sábado? <time>22:47</time></p>
+                                            <p class="app-aviso" data-fio="noite"><span class="material-symbols-outlined">bedtime</span> A noite inteira sem resposta</p>
+                                            <p class="balao balao-recepcao" data-fio="tarde">Bom dia! Temos sábado às 10:30. <time>09:15</time></p>
+                                            <p class="app-aviso app-aviso-perdida" data-fio="perdida"><span class="risco">Ana marcou em outra clínica</span> <time>09:16</time></p>
+                                            <div class="vez" data-fio="agente">
+                                                <div class="digitando"><i></i><i></i><i></i></div>
+                                                <p class="balao balao-agente">Tenho sim, Ana! Sábado às 10:30 ou 11:30. Qual prefere? <span class="tela-tag app-tag-envio">Prévia</span></p>
+                                            </div>
+                                            <div class="vez" data-fio="escolha">
+                                                <div class="digitando digitando-paciente"><i></i><i></i><i></i></div>
+                                                <p class="balao balao-paciente">10:30, por favor! <time>22:48</time></p>
+                                            </div>
+                                            <div class="vez" data-fio="marcado">
+                                                <div class="digitando"><i></i><i></i><i></i></div>
+                                                <p class="balao balao-agente">Marcado! Te lembro na véspera. <time>22:48</time></p>
+                                            </div>
+                                            <div class="consulta" data-fio="consulta">
+                                                <span class="material-symbols-outlined">event_available</span>
+                                                <span class="consulta-texto"><strong>Sábado, 10:30</strong> Ana, avaliação</span>
+                                                <span class="tela-tag tela-tag-ok">Agendado</span>
+                                            </div>
+                                            <div class="vez" data-fio="lembrete">
+                                                <div class="digitando"><i></i><i></i><i></i></div>
+                                                <p class="balao balao-agente">Oi, Ana! Amanhã, sábado, às 10:30. Posso confirmar? <time>18:00</time></p>
+                                            </div>
+                                            <div class="vez" data-fio="confirma">
+                                                <div class="digitando digitando-paciente"><i></i><i></i><i></i></div>
+                                                <p class="balao balao-paciente">Pode, até amanhã! <time>18:02</time></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="app-painel"></div>
+                                </div>
+                            </div>
+                            <button type="button" class="exp-repetir"><span class="material-symbols-outlined" aria-hidden="true">replay</span> Repetir</button>
                         </div>
-                    </li>
-                </ol>
+                    </div>
+                </div>
             </div>
         </section>
 
