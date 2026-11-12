@@ -3,3 +3,6 @@ lambda/*.zip
 
 # Configuracoes locais do Claude Code
 .claude/
+
+# Prints e registros locais do Hallmark
+.hallmark/
