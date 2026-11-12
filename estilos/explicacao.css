@@ -1,0 +1,650 @@
+/* Hallmark · redesign: full (escopo: só a seção #explicacao) · theme: brand · zigue-zague pedido pelo dono (texto de um lado, peça do outro, invertendo a cada passo); layout.md desaconselha zigzag, mantido por pedido explícito e compensado com quatro peças de formas diferentes (linha do tempo, ficha, lista de conexões, revisão), nunca a mesma composição repetida · fotos trocadas por peças do produto feitas em HTML/CSS, na linguagem do hero, sem números inventados */
+/* Hallmark · pre-emit critique: cada peça mostra o que o passo entrega (o gargalo achado, a base que treina o agente, as conexões ligadas, o ajuste do mês) · uma revelação só na página, visível sem JS e parada com reduced-motion · zigue-zague (layout.md, variety) mantido por pedido explícito do dono, com a referência weppy */
+
+/* =========================================================
+   EXPLICAÇÃO - mobile first
+   Base: celular (texto em cima, peça embaixo).
+   Zigue-zague em duas colunas a partir de 960px.
+   ========================================================= */
+
+section.explicacao {
+    padding: 64px 20px 80px;
+    background-color: var(--cor-fundo-roxo);
+    background-image: linear-gradient(to bottom, var(--cor-1) 0%, var(--cor-fundo-roxo) 200px);
+    color: var(--cor-2);
+    overflow-x: clip; /* a peça entra de lado: nada de rolagem horizontal durante a entrada */
+}
+
+.exp-inner {
+    max-width: 1200px;
+    margin-inline: auto;
+}
+
+/* ---------- Cabeçalho ---------- */
+
+.exp-cabecalho {
+    margin-bottom: 56px;
+}
+
+.exp-titulo {
+    max-width: 22ch;
+    margin-bottom: 16px;
+    font-family: var(--fonte-titulo);
+    color: var(--cor-2);
+    font-size: clamp(2rem, 1.5rem + 2.5vw, 3rem);
+    line-height: 1.1;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    min-width: 0;
+}
+
+.exp-cabecalho p {
+    max-width: 60ch;
+    font-family: var(--fonte-texto);
+    color: var(--cor-3);
+    font-size: 1rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+}
+
+/* ---------- Linhas do zigue-zague ---------- */
+
+.exp-lista {
+    display: grid;
+    gap: 72px;
+    list-style: none;
+}
+
+.exp-linha {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    align-items: center;
+}
+
+.exp-texto h3 {
+    margin-bottom: 12px;
+    font-family: var(--fonte-titulo);
+    color: var(--cor-2);
+    font-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+    line-height: 1.2;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    min-width: 0;
+}
+
+.exp-texto p {
+    max-width: 52ch;
+    font-family: var(--fonte-texto);
+    color: var(--cor-3);
+    font-size: 1rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+}
+
+/* ---------- Palco da peça: só um brilho, sem moldura (nada de card dentro de card) ---------- */
+
+.exp-visual {
+    display: grid;
+    place-items: center;
+    padding: 24px 0;
+    background: radial-gradient(ellipse 60% 55% at 50% 50%, var(--cor-brilho), transparent 75%);
+}
+
+/* ---------- A peça (o pedaço do produto) ---------- */
+
+.peca {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 14px;
+    background-color: var(--cor-superficie);
+    font-family: var(--fonte-texto);
+    color: var(--cor-2);
+}
+
+.peca .material-symbols-outlined {
+    font-size: 1.125rem;
+    line-height: 1;
+}
+
+.peca-titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--cor-borda);
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.peca-titulo .material-symbols-outlined {
+    color: var(--cor-detalhe);
+}
+
+.peca-rodape {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    color: var(--cor-3);
+    font-size: 0.8125rem;
+}
+
+.peca-rodape .material-symbols-outlined {
+    color: var(--cor-detalhe);
+}
+
+.peca-tag {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--cor-perigo) 16%, transparent);
+    color: var(--cor-perigo);
+    font-size: 0.75rem;
+    font-weight: 600;
+    vertical-align: 1px;
+}
+
+/* 01 · Linha do tempo do atendimento de hoje */
+.mapa {
+    display: grid;
+    gap: 16px;
+    list-style: none;
+}
+
+.mapa li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 12px;
+    align-items: baseline;
+}
+
+/* traço que liga um momento ao seguinte */
+.mapa li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 22px;
+    bottom: -14px;
+    left: 20px;
+    width: 1px;
+    background-color: var(--cor-trilha);
+}
+
+.mapa-hora {
+    color: var(--cor-3);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.mapa-texto {
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.mapa-perdido .mapa-texto {
+    color: var(--cor-3);
+}
+
+/* risco por cima do texto (desenhado da esquerda para a direita na cena) */
+.risco {
+    background-image: linear-gradient(var(--cor-perigo), var(--cor-perigo));
+    background-repeat: no-repeat;
+    background-position: 0 55%;
+    background-size: 100% 1.5px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.mapa-espera .mapa-hora .material-symbols-outlined {
+    color: var(--cor-3);
+    font-size: 1rem;
+}
+
+.mapa-espera .mapa-texto {
+    color: var(--cor-3);
+    font-style: normal;
+}
+
+/* relógio no canto da peça */
+.mapa-relogio {
+    margin-left: auto;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background-color: var(--cor-superficie-2);
+    color: var(--cor-3);
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 02 e 04 · Campos de uma ficha */
+.peca-campos {
+    display: grid;
+    gap: 12px;
+}
+
+.peca-campos > div {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.peca-campos > div:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.peca-campos dt {
+    color: var(--cor-3);
+    font-size: 0.8125rem;
+}
+
+.peca-campos dd {
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.peca-campos .campo-alerta dd {
+    color: var(--cor-perigo);
+}
+
+.peca-legenda {
+    margin-top: 20px;
+    margin-bottom: 8px;
+    color: var(--cor-3);
+    font-size: 0.75rem;
+}
+
+.peca-balao {
+    max-width: 88%;
+    margin-left: auto;
+    padding: 12px;
+    border-radius: 12px;
+    border-bottom-right-radius: 4px;
+    background-color: var(--cor-detalhe-suave);
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+/* 03 · Conexões ligadas */
+.conexoes {
+    display: grid;
+    gap: 8px;
+    list-style: none;
+}
+
+.conexoes li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background-color: var(--cor-superficie-2);
+    font-size: 0.875rem;
+}
+
+.conexoes .conexao-icone {
+    color: var(--cor-3);
+}
+
+/* 02 · Agente digitando e cursor da digitação */
+.peca-campos dd {
+    min-height: 1.4em;
+}
+
+.cursor::after {
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    margin-left: 1px;
+    background-color: var(--cor-detalhe);
+    vertical-align: -2px;
+    animation: exp-cursor 0.8s steps(1) infinite;
+}
+
+@keyframes exp-cursor {
+    50% { opacity: 0; }
+}
+
+/* digitando e balão ocupam o mesmo lugar: nada pula na tela */
+.base-resposta {
+    display: grid;
+    justify-items: end;
+}
+
+.base-resposta > * {
+    grid-area: 1 / 1;
+}
+
+.peca-digitando {
+    align-self: start;
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border-bottom-right-radius: 4px;
+    background-color: var(--cor-detalhe-suave);
+    visibility: hidden;
+}
+
+.peca-digitando i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--cor-2);
+    animation: exp-digitando 1s ease-in-out infinite;
+}
+
+.peca-digitando i:nth-child(2) { animation-delay: 0.15s; }
+.peca-digitando i:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes exp-digitando {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-3px); opacity: 1; }
+}
+
+/* 03 · Chave do agente e status de cada canal */
+.chave-grupo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.chave-rotulo {
+    color: var(--cor-3);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.chave {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background-color: var(--cor-detalhe);
+    transition: background-color 250ms ease-out;
+}
+
+.chave-bolinha {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--cor-2);
+    transform: translateX(16px);
+    transition: transform 250ms ease-in-out;
+}
+
+.peca-conexoes[data-chave="desligada"] .chave {
+    background-color: var(--cor-superficie-2);
+}
+
+.peca-conexoes[data-chave="desligada"] .chave-bolinha {
+    transform: translateX(0);
+}
+
+.conexoes li {
+    transition: opacity 300ms ease-out;
+}
+
+.conexoes li[data-estado="espera"] {
+    opacity: 0.45;
+}
+
+.conexao-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    color: var(--cor-detalhe);
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: opacity 200ms ease-out;
+}
+
+.conexoes li[data-estado="espera"] .conexao-status {
+    opacity: 0;
+}
+
+.conexoes li[data-estado="conectando"] .conexao-status {
+    color: var(--cor-3);
+}
+
+.spinner {
+    display: none;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--cor-trilha);
+    border-top-color: var(--cor-detalhe);
+    border-radius: 50%;
+    animation: exp-gira 0.7s linear infinite;
+}
+
+.conexoes li[data-estado="conectando"] .spinner {
+    display: inline-block;
+}
+
+.conexoes li[data-estado="conectando"] .icone-ok {
+    display: none;
+}
+
+@keyframes exp-gira {
+    to { transform: rotate(360deg); }
+}
+
+/* 04 · Gráfico da revisão */
+.grafico-legenda {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: var(--cor-3);
+    font-size: 0.75rem;
+}
+
+.grafico-tag {
+    margin-left: 0;
+    background-color: var(--cor-detalhe-suave);
+    color: var(--cor-2);
+}
+
+.peca-revisao[data-fase="zero"] .grafico-tag,
+.peca-revisao[data-fase="vaza"] .grafico-tag {
+    background-color: color-mix(in srgb, var(--cor-perigo) 16%, transparent);
+    color: var(--cor-perigo);
+}
+
+.barras {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.barra {
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+}
+
+.barra-area {
+    position: relative;
+    width: 100%;
+    height: 96px;
+}
+
+.barra-fill,
+.barra-antes {
+    position: absolute;
+    inset: 0;
+    border-radius: 4px 4px 2px 2px;
+    transform-origin: bottom;
+}
+
+.barra-fill {
+    background-color: var(--cor-detalhe);
+    transform: scaleY(var(--h));
+    transition:
+        transform 600ms ease-out,
+        background-color 400ms ease-out;
+}
+
+/* onde o sábado estava antes do ajuste (contorno tracejado) */
+.barra-antes {
+    border: 1px dashed var(--cor-perigo);
+    transform: scaleY(var(--h-antes));
+    transition: opacity 300ms ease-out;
+}
+
+.barra-dia {
+    color: var(--cor-3);
+    font-size: 0.6875rem;
+}
+
+.barra:nth-child(2) .barra-fill { transition-delay: 60ms; }
+.barra:nth-child(3) .barra-fill { transition-delay: 120ms; }
+.barra:nth-child(4) .barra-fill { transition-delay: 180ms; }
+.barra:nth-child(5) .barra-fill { transition-delay: 240ms; }
+.barra:nth-child(6) .barra-fill { transition-delay: 300ms; }
+
+.peca-revisao[data-fase="zero"] .barra-fill {
+    transform: scaleY(0);
+}
+
+.peca-revisao[data-fase="zero"] .barra-antes,
+.peca-revisao[data-fase="vaza"] .barra-antes {
+    opacity: 0;
+}
+
+.peca-revisao[data-fase="vaza"] .barra-sab .barra-fill {
+    background-color: var(--cor-perigo);
+    transform: scaleY(var(--h-antes));
+}
+
+/* ---------- Entrada da linha e cenas (só com JS: data-js na seção) ----------
+   A linha entra quando aparece (texto sobe, peça vem do seu lado) e a peça
+   toca a sua cena (scripts/explicacao-anima.js). Os elementos com
+   data-passo aparecem quando a cena marca .visivel. */
+
+section.explicacao[data-js] :is(.exp-texto, .exp-visual) {
+    transition:
+        opacity 500ms ease-out,
+        transform 500ms ease-out;
+}
+
+.exp-texto { --de: translateY(16px); }
+.exp-visual { --de: translateY(24px); }
+
+section.explicacao[data-js] .exp-visual {
+    transition-delay: 100ms;
+}
+
+section.explicacao[data-js] .exp-linha:not(.revelado) :is(.exp-texto, .exp-visual) {
+    opacity: 0;
+    transform: var(--de);
+}
+
+section.explicacao[data-js] [data-passo] {
+    transition:
+        opacity 400ms ease-out,
+        transform 400ms ease-out;
+}
+
+section.explicacao[data-js] [data-passo]:not(.visivel) {
+    opacity: 0;
+    transform: translateY(8px);
+}
+
+/* o "Gargalo" salta e o balão estoura */
+section.explicacao[data-js] .peca-tag[data-passo]:not(.visivel) {
+    transform: scale(0.5);
+}
+
+section.explicacao[data-js] .peca-balao[data-passo] {
+    transform-origin: bottom right;
+}
+
+section.explicacao[data-js] .peca-balao[data-passo]:not(.visivel) {
+    transform: translateY(8px) scale(0.9);
+}
+
+/* o digitando só existe durante a cena */
+section.explicacao[data-js] .peca-digitando.visivel {
+    visibility: visible;
+}
+
+/* o risco se desenha */
+section.explicacao[data-js] .risco {
+    transition: background-size 500ms ease-out;
+}
+
+section.explicacao[data-js] .mapa-perdido:not(.riscado) .risco {
+    background-size: 0% 1.5px;
+}
+
+/* ---------- Menos movimento ----------
+   O script nem liga as cenas (fica o estado final do HTML);
+   isto só garante que nada fique girando ou piscando. */
+
+@media (prefers-reduced-motion: reduce) {
+    .spinner,
+    .cursor::after,
+    .peca-digitando i {
+        animation: none;
+    }
+}
+
+/* ---------- Tablet e maiores ---------- */
+
+@media (min-width: 768px) {
+    section.explicacao {
+        padding: 96px 48px 120px;
+    }
+
+    .exp-cabecalho {
+        margin-bottom: 80px;
+    }
+
+    .peca {
+        padding: 24px;
+    }
+}
+
+/* ---------- Tela grande: zigue-zague ---------- */
+
+@media (min-width: 960px) {
+    .exp-lista {
+        gap: 120px;
+    }
+
+    .exp-linha {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 80px;
+    }
+
+    .exp-visual {
+        min-height: 360px;
+    }
+
+    /* nas linhas pares a peça vai para a esquerda */
+    .exp-linha:nth-child(even) .exp-texto {
+        order: 2;
+    }
+
+    /* a peça entra pelo lado em que está */
+    .exp-linha:nth-child(odd) .exp-visual { --de: translateX(48px); }
+    .exp-linha:nth-child(even) .exp-visual { --de: translateX(-48px); }
+}

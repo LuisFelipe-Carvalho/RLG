@@ -65,23 +65,7 @@ window.addEventListener("resize", () => {
     }
 });
 
-/* Animação de revelar os cards ao scrollar (Explicação) */
-document.addEventListener('DOMContentLoaded', () => {
-    const cards = document.querySelectorAll('.card-explicacao');
-
-    const observador = new IntersectionObserver((entradas) => {
-        entradas.forEach(entrada => {
-            if (entrada.isIntersecting) {
-                entrada.target.classList.add('revelado');
-                observador.unobserve(entrada.target);
-            }
-        });
-    }, {
-        threshold: 0.2
-    });
-
-    cards.forEach(card => observador.observe(card));
-});
+/* Explicação: revelação e cenas ficam em scripts/explicacao-anima.js */
 
 /* Envio do formulário de contato para a AWS (API Gateway -> Lambda -> DynamoDB) */
 document.addEventListener('DOMContentLoaded', () => {

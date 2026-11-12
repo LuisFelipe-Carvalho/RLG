@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="estilos/home.css">
     <link rel="stylesheet" href="estilos/servicos.css">
     <link rel="stylesheet" href="estilos/como-funciona.css">
+    <link rel="stylesheet" href="estilos/explicacao.css">
     <link rel="shortcut icon" href="imagens-provisorias/favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -247,60 +248,120 @@
             </div>
         </section>
 
-        <section id="explicacao" class="explicacao grid">
-            <div class="container-3">
-                <div class="conteudo-explicacao">
-                    <div class="cabecalho-explicacao">
-                        <h2 class="titulo">Da primeira conversa à clínica rodando no automático</h2>
-                        <p>Automação boa não é a mais complexa, é a que encaixa na rotina que sua clínica já tem. Por isso todo projeto começa entendendo o seu fluxo antes de escrever uma linha de código.</p>
-                    </div>
-
-                    <div class="lista-cards-explicacao">
-                        <div class="card-explicacao">
-                            <div class="texto-card-explicacao">
-                                <span class="numero-card">01</span>
-                                <h3>Diagnóstico da operação</h3>
-                                <p>Mapeamos como sua clínica atende hoje: onde chega o paciente, quem responde, quanto tempo demora e onde ele desiste. Sai daqui um desenho claro dos gargalos e do que dá para automatizar já na primeira semana.</p>
-                            </div>
-                            <div class="imagem-card-explicacao">
-                                <img src="imagens/explicacao_1.png" alt="Emaranhado de contatos desorganizados à esquerda se reorganizando em fluxos paralelos e ordenados à direita">
-                            </div>
-                        </div>
-
-                        <div class="card-explicacao">
-                            <div class="texto-card-explicacao">
-                                <span class="numero-card">02</span>
-                                <h3>Construção do agente</h3>
-                                <p>Treinamos o agente com as informações reais da sua clínica: horários, convênios, procedimentos, valores e tom de voz. Ele fala como a sua recepção fala — só que não dorme, não fica ocupado e não esquece de responder.</p>
-                            </div>
-                            <div class="imagem-card-explicacao">
-                                <img src="imagens/explicacao_2.png" alt="Peças de quebra-cabeça com ícones de agenda, conversa e prontuário se encaixando em um painel único">
-                            </div>
-                        </div>
-
-                        <div class="card-explicacao">
-                            <div class="texto-card-explicacao">
-                                <span class="numero-card">03</span>
-                                <h3>Integração e ativação</h3>
-                                <p>Conectamos o agente ao WhatsApp, ao Instagram, à sua agenda e à sua base de leads. Testamos com casos reais antes de ligar. Sua equipe recebe o que precisa saber em uma reunião curta e o resto acontece sozinho.</p>
-                            </div>
-                            <div class="imagem-card-explicacao">
-                                <img src="imagens/explicacao_3.png" alt="Botão de ligar acionado em um celular, conectando o agente ao WhatsApp, ao Instagram, à agenda e à base de dados">
-                            </div>
-                        </div>
-
-                        <div class="card-explicacao">
-                            <div class="texto-card-explicacao">
-                                <span class="numero-card">04</span>
-                                <h3>Ajuste contínuo pelos dados</h3>
-                                <p>Todo mês olhamos os números: taxa de confirmação, comparecimento, fechamento, CAC e ROI. Onde o funil vaza, a gente ajusta. A operação fica mais eficiente a cada ciclo, não estagnada.</p>
-                            </div>
-                            <div class="imagem-card-explicacao">
-                                <img src="imagens/explicacao_4.png" alt="Painel de indicadores com gráfico de barras em alta, cercado por setas em ciclo contínuo">
-                            </div>
-                        </div>
-                    </div>
+        <section id="explicacao" class="explicacao">
+            <div class="exp-inner">
+                <div class="exp-cabecalho">
+                    <h2 class="exp-titulo">Da primeira conversa à clínica rodando no automático</h2>
+                    <p>Automação boa não é a mais complexa, é a que encaixa na rotina que sua clínica já tem. Por isso todo projeto começa entendendo o seu fluxo antes de escrever uma linha de código.</p>
                 </div>
+
+                <!-- Zigue-zague: texto de um lado, peça do produto do outro, invertendo a cada passo.
+                     As peças são feitas em HTML/CSS (sem fotos) e só ilustram o texto: aria-hidden.
+                     O HTML já é o estado final de cada cena; com JS (scripts/explicacao-anima.js)
+                     cada peça toca a sua cena quando entra na tela. -->
+                <ol class="exp-lista">
+                    <li class="exp-linha">
+                        <div class="exp-texto">
+                            <h3>Diagnóstico da operação</h3>
+                            <p>Mapeamos como sua clínica atende hoje: onde chega o paciente, quem responde, quanto tempo demora e onde ele desiste. Sai daqui um desenho claro dos gargalos e do que dá para automatizar já na primeira semana.</p>
+                        </div>
+                        <div class="exp-visual" aria-hidden="true">
+                            <div class="peca peca-mapa" data-cena="mapa">
+                                <p class="peca-titulo"><span class="material-symbols-outlined">route</span> Atendimento hoje <span class="mapa-relogio">09:16</span></p>
+                                <ol class="mapa">
+                                    <li data-passo>
+                                        <span class="mapa-hora">22:47</span>
+                                        <span class="mapa-texto">Paciente pergunta o horário no WhatsApp</span>
+                                    </li>
+                                    <li class="mapa-espera" data-passo>
+                                        <span class="mapa-hora"><span class="material-symbols-outlined">bedtime</span></span>
+                                        <span class="mapa-texto">A noite inteira sem resposta</span>
+                                    </li>
+                                    <li class="mapa-gargalo" data-passo>
+                                        <span class="mapa-hora">09:15</span>
+                                        <span class="mapa-texto">Recepção responde só no dia seguinte <span class="peca-tag" data-passo>Gargalo</span></span>
+                                    </li>
+                                    <li class="mapa-perdido" data-passo>
+                                        <span class="mapa-hora">09:16</span>
+                                        <span class="mapa-texto"><span class="risco">Paciente já marcou em outra clínica</span></span>
+                                    </li>
+                                </ol>
+                                <p class="peca-rodape" data-passo><span class="material-symbols-outlined">bolt</span> Automatizável na primeira semana</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="exp-linha">
+                        <div class="exp-texto">
+                            <h3>Construção do agente</h3>
+                            <p>Treinamos o agente com as informações reais da sua clínica: horários, convênios, procedimentos, valores e tom de voz. Ele fala como a sua recepção fala, só que não dorme, não fica ocupado e não esquece de responder.</p>
+                        </div>
+                        <div class="exp-visual" aria-hidden="true">
+                            <div class="peca peca-base" data-cena="base">
+                                <p class="peca-titulo"><span class="material-symbols-outlined">tune</span> Base da sua clínica</p>
+                                <dl class="peca-campos">
+                                    <div><dt>Horários</dt><dd data-digita>Seg a sex, das 8h às 18h</dd></div>
+                                    <div><dt>Procedimentos</dt><dd data-digita>Limpeza, clareamento, implante</dd></div>
+                                    <div><dt>Convênios</dt><dd data-digita>Particular e convênios</dd></div>
+                                    <div><dt>Tom de voz</dt><dd data-digita>Acolhedor, como a sua recepção</dd></div>
+                                </dl>
+                                <p class="peca-legenda" data-passo>Prévia da resposta</p>
+                                <div class="base-resposta">
+                                    <div class="peca-digitando" data-passo><i></i><i></i><i></i></div>
+                                    <p class="peca-balao" data-passo>Oi, Ana! Tenho quinta às 10:30 ou 14:30. Qual fica melhor pra você?</p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="exp-linha">
+                        <div class="exp-texto">
+                            <h3>Integração e ativação</h3>
+                            <p>Conectamos o agente ao WhatsApp, ao Instagram, à sua agenda e à sua base de leads. Testamos com casos reais antes de ligar. Sua equipe recebe o que precisa saber em uma reunião curta e o resto acontece sozinho.</p>
+                        </div>
+                        <div class="exp-visual" aria-hidden="true">
+                            <div class="peca peca-conexoes" data-cena="conexoes">
+                                <p class="peca-titulo">
+                                    <span class="material-symbols-outlined">power_settings_new</span> Agente
+                                    <span class="chave-grupo"><span class="chave-rotulo">Ligado</span><span class="chave"><span class="chave-bolinha"></span></span></span>
+                                </p>
+                                <ul class="conexoes">
+                                    <li><span class="material-symbols-outlined conexao-icone">forum</span> WhatsApp <span class="conexao-status"><span class="spinner"></span><span class="material-symbols-outlined icone-ok">check_circle</span> <span class="conexao-rotulo">Conectado</span></span></li>
+                                    <li><span class="material-symbols-outlined conexao-icone">photo_camera</span> Instagram <span class="conexao-status"><span class="spinner"></span><span class="material-symbols-outlined icone-ok">check_circle</span> <span class="conexao-rotulo">Conectado</span></span></li>
+                                    <li><span class="material-symbols-outlined conexao-icone">calendar_month</span> Agenda <span class="conexao-status"><span class="spinner"></span><span class="material-symbols-outlined icone-ok">check_circle</span> <span class="conexao-rotulo">Conectado</span></span></li>
+                                    <li><span class="material-symbols-outlined conexao-icone">database</span> Base de leads <span class="conexao-status"><span class="spinner"></span><span class="material-symbols-outlined icone-ok">check_circle</span> <span class="conexao-rotulo">Conectado</span></span></li>
+                                </ul>
+                                <p class="peca-rodape" data-passo><span class="material-symbols-outlined">task_alt</span> Testado com casos reais antes de ligar</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="exp-linha">
+                        <div class="exp-texto">
+                            <h3>Ajuste contínuo pelos dados</h3>
+                            <p>Todo mês olhamos os números: taxa de confirmação, comparecimento, fechamento, CAC e ROI. Onde o funil vaza, a gente ajusta. A operação fica mais eficiente a cada ciclo, não estagnada.</p>
+                        </div>
+                        <div class="exp-visual" aria-hidden="true">
+                            <div class="peca peca-revisao" data-cena="revisao">
+                                <p class="peca-titulo"><span class="material-symbols-outlined">monitoring</span> Revisão do mês</p>
+                                <p class="grafico-legenda">Consultas confirmadas por dia <span class="peca-tag grafico-tag">Sábado ajustado</span></p>
+                                <div class="barras">
+                                    <div class="barra" style="--h: 0.82"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Seg</span></div>
+                                    <div class="barra" style="--h: 0.9"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Ter</span></div>
+                                    <div class="barra" style="--h: 0.76"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Qua</span></div>
+                                    <div class="barra" style="--h: 0.86"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Qui</span></div>
+                                    <div class="barra" style="--h: 0.8"><div class="barra-area"><span class="barra-fill"></span></div><span class="barra-dia">Sex</span></div>
+                                    <div class="barra barra-sab" style="--h: 0.74; --h-antes: 0.34"><div class="barra-area"><span class="barra-antes"></span><span class="barra-fill"></span></div><span class="barra-dia">Sáb</span></div>
+                                </div>
+                                <dl class="peca-campos">
+                                    <div class="campo-alerta" data-passo><dt>Onde vazava</dt><dd>Confirmação das consultas de sábado</dd></div>
+                                    <div data-passo><dt>Ajuste feito</dt><dd>Lembrete extra na sexta, às 18h</dd></div>
+                                    <div data-passo><dt>Próxima revisão</dt><dd>Daqui a 30 dias</dd></div>
+                                </dl>
+                            </div>
+                        </div>
+                    </li>
+                </ol>
             </div>
         </section>
 
@@ -398,5 +459,6 @@
     <script src="scripts/script.js"></script>
     <script src="scripts/home-anima.js"></script>
     <script src="scripts/como-funciona.js"></script>
+    <script src="scripts/explicacao-anima.js"></script>
 </body>
 </html>
