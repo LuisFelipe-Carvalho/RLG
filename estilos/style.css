@@ -23,6 +23,11 @@
     --cor-vidro-escuro: rgba(13, 13, 13, 0.55);
     --cor-vidro-escuro-hover: rgba(13, 13, 13, 0.75);
 
+    /* Formulário do Agendar */
+    --cor-campo: var(--cor-1);
+    --cor-placeholder: #7A7A7A;
+    --cor-chip-marcado: color-mix(in srgb, var(--cor-detalhe) 22%, var(--cor-superficie));
+
     /* Céu da Explicação: da noite em que a Ana fica sem resposta ao dia da revisão do mês */
     --ceu-noite-1: oklch(15% 0.035 262);
     --ceu-noite-2: oklch(28% 0.065 258);
@@ -35,6 +40,7 @@
 
     --fonte-titulo: 'Sora', Arial, Helvetica, sans-serif;
     --fonte-texto: 'Inter', Arial, Helvetica, sans-serif;
+    --fonte-icone: 'Material Symbols Outlined';
 
 }
 
@@ -262,12 +268,6 @@ nav ul li a.ctf:hover {
 
 /* Home: os estilos da home ficam em estilos/home.css */
 
-/* Base compartilhada pelas seções (Home e Call) */
-.grid {
-    display: grid;
-    grid-template-columns: 30px 1fr 30px;
-}
-
 .titulo {
     color: var(--cor-2);
     font-weight: bold;
@@ -279,108 +279,9 @@ nav ul li a.ctf:hover {
 
 /* Serviços: os estilos ficam em estilos/servicos.css */
 
-/* Container da Call */
-div.container-3 {
-    grid-column: 2 / 3;
-}
-
 /* Explicação: os estilos ficam em estilos/explicacao.css */
 
-/* Call (Agendar) */
-section#call {
-    min-height: 90vh;
-    align-content: center;
-}
-
-.card-call {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-
-    background-color: #1E1729;
-    border: 1px solid rgba(138, 75, 255, 0.15);
-    border-radius: 20px;
-    padding: 40px 25px;
-
-    margin: 80px 0;
-}
-
-.conteudo-call {
-    flex: 1;
-}
-
-.conteudo-call > p {
-    color: var(--cor-3);
-    line-height: 1.5;
-}
-
-.formulario-call {
-    flex: 1;
-
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.campo-form {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.campo-form label {
-    color: var(--cor-2);
-    font-size: 0.9rem;
-}
-
-.campo-form input,
-.campo-form textarea {
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 12px 15px;
-
-    color: var(--cor-2);
-    font-family: inherit;
-    font-size: 1rem;
-
-    transition: border 0.3s;
-}
-
-.campo-form textarea {
-    resize: vertical;
-}
-
-.campo-form input::placeholder,
-.campo-form textarea::placeholder {
-    color: #6b6b6b;
-}
-
-.campo-form input:focus,
-.campo-form textarea:focus {
-    outline: none;
-    border: 1px solid var(--cor-detalhe);
-}
-
-.btn-form {
-    background-color: var(--cor-detalhe);
-    color: var(--cor-2);
-    font-weight: bold;
-    font-size: 1rem;
-
-    border: none;
-    border-radius: 8px;
-    padding: 15px;
-
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btn-form:hover {
-    background-color: var(--cor-hover);
-    box-shadow: 0px 0px 10px var(--cor-hover);
-}
-/* Fim do Call */
+/* Call (Agendar): os estilos ficam em estilos/agendar.css */
 
 /* Footer */
 footer {

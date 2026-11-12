@@ -59,26 +59,13 @@
 
     /* home: ajustes de tela grande ficam em estilos/home.css */
 
-    .grid {
-        grid-template-columns: 50px 1fr 50px;
-    }
-
     /* Como funciona: ajustes de tela grande ficam em estilos/como-funciona.css */
 
     /* Serviços: ajustes de tela grande ficam em estilos/servicos.css */
 
     /* Explicação: ajustes de tela grande ficam em estilos/explicacao.css */
 
-    /* Call (Agendar) */
-    .card-call {
-        flex-direction: row;
-        align-items: center;
-        gap: 60px;
-
-        max-width: 1100px;
-        margin: 80px auto;
-        padding: 50px;
-    }
+    /* Call (Agendar): ajustes de tela grande ficam em estilos/agendar.css */
 
     /* Footer */
     .conteudo-footer {

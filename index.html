@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="estilos/servicos.css">
     <link rel="stylesheet" href="estilos/como-funciona.css">
     <link rel="stylesheet" href="estilos/explicacao.css">
+    <link rel="stylesheet" href="estilos/agendar.css">
     <link rel="shortcut icon" href="imagens-provisorias/favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -473,37 +474,70 @@
             </div>
         </section>
 
-        <section id="call" class="grid">
-            <div class="container-3">
-                <div class="card-call">
-                    <div class="conteudo-call">
-                        <h2 class="titulo">Mande seus dados que a gente entra em contato com você.</h2>
-                        <p>Você mostra como sua clínica atende hoje. A gente mostra o que dá para automatizar, quanto tempo leva e quanto custa. Se não fizer sentido para o seu caso, a gente fala na hora. Não vendemos automação para clínica que ainda não precisa dela.</p>
-                    </div>
+        <section id="call" class="agendar">
+            <div class="agendar-inner">
+                <div class="agendar-texto">
+                    <h2 class="agendar-titulo">Veja o agente na sua clínica</h2>
+                    <p>Você mostra como sua clínica atende hoje. A gente mostra o que dá para automatizar, em quanto tempo e quanto custa. Se não fizer sentido para você, a gente fala na hora.</p>
+                </div>
 
-                    <form id="formulario-call" class="formulario-call" action="" method="post">
-                        <div class="campo-form">
+                <div class="agendar-caixa">
+                    <!-- Envio em scripts/script.js (API Gateway -> Lambda). A Lambda exige
+                         nome, email, telefone e motivo; o motivo é montado com os chips
+                         marcados mais o texto opcional. -->
+                    <form id="formulario-call" class="agendar-form" action="" method="post" novalidate>
+                        <div class="campo">
                             <label for="nome">Nome</label>
-                            <input type="text" id="nome" name="nome" placeholder="Seu nome completo" autocomplete="name" required>
+                            <input type="text" id="nome" name="nome" placeholder="Seu nome completo" autocomplete="name" maxlength="100" required aria-describedby="nome-erro">
+                            <p class="campo-erro" id="nome-erro"></p>
                         </div>
 
-                        <div class="campo-form">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" placeholder="seu@email.com" autocomplete="email" required>
+                        <div class="campo-dupla">
+                            <div class="campo">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" placeholder="seu@email.com" autocomplete="email" inputmode="email" maxlength="150" required aria-describedby="email-erro">
+                                <p class="campo-erro" id="email-erro"></p>
+                            </div>
+
+                            <div class="campo">
+                                <label for="telefone">Telefone (WhatsApp)</label>
+                                <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" autocomplete="tel" inputmode="tel" maxlength="30" required aria-describedby="telefone-erro">
+                                <p class="campo-erro" id="telefone-erro"></p>
+                            </div>
                         </div>
 
-                        <div class="campo-form">
-                            <label for="telefone">Telefone</label>
-                            <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" autocomplete="tel" required>
+                        <fieldset class="campo chips" aria-describedby="motivo-erro">
+                            <legend>O que mais pesa hoje?</legend>
+                            <div class="chips-lista">
+                                <label class="chip"><input type="checkbox" name="pesa" value="Mensagens sem resposta à noite"><span>Mensagens sem resposta à noite</span></label>
+                                <label class="chip"><input type="checkbox" name="pesa" value="Faltas e confirmações"><span>Faltas e confirmações</span></label>
+                                <label class="chip"><input type="checkbox" name="pesa" value="Horários vagos na agenda"><span>Horários vagos na agenda</span></label>
+                                <label class="chip"><input type="checkbox" name="pesa" value="Outro" aria-controls="outro-campo"><span>Outro</span></label>
+                            </div>
+                            <!-- aparece só com "Outro" marcado (CSS :has, funciona sem JS) -->
+                            <div class="campo chip-outro" id="outro-campo">
+                                <label for="outro">Qual?</label>
+                                <input type="text" id="outro" name="outro" placeholder="Ex.: paciente que some depois do orçamento" maxlength="150" aria-describedby="outro-erro">
+                                <p class="campo-erro" id="outro-erro"></p>
+                            </div>
+                        </fieldset>
+
+                        <div class="campo">
+                            <label for="motivo">Quer contar mais? <span class="campo-opcional">(opcional)</span></label>
+                            <textarea id="motivo" name="motivo" rows="3" placeholder="Ex.: quantas pessoas na recepção, quais convênios" maxlength="1800" aria-describedby="motivo-erro"></textarea>
+                            <p class="campo-erro" id="motivo-erro"></p>
                         </div>
 
-                        <div class="campo-form">
-                            <label for="motivo">Motivo do contato</label>
-                            <textarea id="motivo" name="motivo" rows="3" placeholder="Conte um pouco sobre a sua clínica e o que procura" required></textarea>
-                        </div>
-
-                        <button type="submit" class="btn-form">Agendar uma demonstração</button>
+                        <button type="submit" class="agendar-botao">Agendar uma demonstração</button>
+                        <p class="agendar-nota">Entraremos em contato em breve. Usamos seus dados só para isso.</p>
+                        <p class="agendar-status" role="status" aria-live="polite"></p>
                     </form>
+
+                    <div class="agendar-sucesso" tabindex="-1" hidden>
+                        <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                        <h3 class="agendar-sucesso-titulo">Recebemos seus dados!</h3>
+                        <p>Entraremos em contato em breve.</p>
+                    </div>
                 </div>
             </div>
         </section>

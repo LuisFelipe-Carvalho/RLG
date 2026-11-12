@@ -1,0 +1,376 @@
+/* Hallmark · redesign: full (escopo: só a seção #call, Agendar) · theme: brand · a única ação da página: texto curto à esquerda (o ganho, não o formulário) e o formulário numa superfície escura neutra à direita · sem o cartão roxo: o roxo fica só no botão, no foco e nos chips marcados · posture: restrained · copy: título de 6 palavras que casa com o botão; "Entraremos em contato em breve" sem prazo inventado */
+/* Hallmark · pre-emit critique: o motivo livre e obrigatório virou chips de clique (checkbox de verdade) mais um texto opcional; a Lambda não muda, o script monta o motivo · foco é outline de 2px que aparece na hora, borda constante · erro embaixo do campo com altura reservada, foco no primeiro inválido · sucesso e erro sem alert(), numa área role="status" e num painel que recebe o foco · sem JS o formulário segue visível e preenchível */
+
+/* =========================================================
+   AGENDAR - mobile first
+   Base: celular (texto em cima, formulário embaixo).
+   Duas colunas a partir de 960px.
+   ========================================================= */
+
+section.agendar {
+    padding: 64px 20px 96px;
+    background-color: var(--cor-1);
+    color: var(--cor-2);
+}
+
+.agendar-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+    max-width: 1200px;
+    margin-inline: auto;
+}
+
+/* ---------- Texto ---------- */
+
+.agendar-titulo {
+    max-width: 16ch;
+    margin-bottom: 16px;
+    font-family: var(--fonte-titulo);
+    color: var(--cor-2);
+    font-size: clamp(2rem, 1.5rem + 2.5vw, 3rem);
+    line-height: 1.1;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    min-width: 0;
+}
+
+.agendar-texto p {
+    max-width: 45ch;
+    font-family: var(--fonte-texto);
+    color: var(--cor-3);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+}
+
+/* ---------- Caixa do formulário ---------- */
+
+.agendar-caixa {
+    padding: 24px 20px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 20px;
+    background-color: var(--cor-superficie);
+    color: var(--cor-2);
+    font-family: var(--fonte-texto);
+}
+
+.agendar-form {
+    display: grid;
+    gap: 8px;
+}
+
+.agendar-form[hidden] {
+    display: none;
+}
+
+.campo-dupla {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+}
+
+.campo {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+}
+
+.campo label,
+.campo legend {
+    color: var(--cor-2);
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+.campo-opcional {
+    color: var(--cor-3);
+    font-weight: 400;
+}
+
+.campo input,
+.campo textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 16px;
+    border: 1px solid var(--cor-borda-campo, var(--cor-trilha));
+    border-radius: 10px;
+    background-color: var(--cor-campo);
+    color: var(--cor-2);
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.4;
+    transition: border-color 220ms ease-out;
+}
+
+.campo textarea {
+    resize: vertical;
+}
+
+.campo input::placeholder,
+.campo textarea::placeholder {
+    color: var(--cor-placeholder);
+}
+
+.campo input:hover,
+.campo textarea:hover {
+    --cor-borda-campo: var(--cor-3);
+}
+
+/* foco: anel por fora, na hora, a borda não muda de espessura */
+.campo input:focus-visible,
+.campo textarea:focus-visible {
+    outline: 2px solid var(--cor-detalhe);
+    outline-offset: 2px;
+    transition: none;
+}
+
+.campo input[aria-invalid="true"],
+.campo textarea[aria-invalid="true"] {
+    --cor-borda-campo: var(--cor-perigo);
+}
+
+/* a mensagem de erro tem o lugar reservado: o formulário não pula */
+.campo-erro {
+    min-height: 1lh;
+    color: var(--cor-perigo);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+}
+
+/* ---------- Chips: o que mais pesa hoje ---------- */
+
+.chips {
+    margin: 0 0 16px;
+    padding: 0;
+    border: 0;
+}
+
+.chips legend {
+    margin-bottom: 12px;
+    padding: 0;
+}
+
+.chips-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chip {
+    position: relative;
+    display: inline-flex;
+}
+
+/* o checkbox de verdade fica por cima do chip, invisível: clique, teclado e leitor de tela funcionam */
+.chip input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.chip span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 16px;
+    border: 1px solid var(--cor-trilha);
+    border-radius: 999px;
+    background-color: var(--cor-campo);
+    color: var(--cor-3);
+    font-size: 0.9375rem;
+    transition:
+        background-color 220ms ease-out,
+        border-color 220ms ease-out,
+        color 220ms ease-out;
+}
+
+.chip span::before {
+    content: "add";
+    font-family: var(--fonte-icone);
+    font-size: 1.125rem;
+    line-height: 1;
+}
+
+.chip:hover span {
+    border-color: var(--cor-3);
+    color: var(--cor-2);
+}
+
+.chip input:checked + span {
+    border-color: var(--cor-detalhe);
+    background-color: var(--cor-chip-marcado);
+    color: var(--cor-2);
+}
+
+.chip input:checked + span::before {
+    content: "check";
+}
+
+.chip input:focus-visible + span {
+    outline: 2px solid var(--cor-detalhe);
+    outline-offset: 2px;
+    transition: none;
+}
+
+/* "Outro": a caixa de texto aparece logo abaixo dos chips quando ele é marcado */
+.chip-outro {
+    margin-top: 16px;
+    animation: agendar-abre 220ms ease-out;
+}
+
+.chips:not(:has(input[value="Outro"]:checked)) .chip-outro {
+    display: none;
+}
+
+@keyframes agendar-abre {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: none; }
+}
+
+.chips[aria-invalid="true"] .chip span {
+    border-color: var(--cor-perigo);
+}
+
+/* ---------- Botão ---------- */
+
+.agendar-botao {
+    min-height: 52px;
+    margin-top: 8px;
+    padding: 12px 24px;
+    border: 0;
+    border-radius: 10px;
+    background-color: var(--cor-detalhe);
+    color: var(--cor-2);
+    font-family: var(--fonte-texto);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background-color 220ms ease-out,
+        transform 120ms ease-out;
+}
+
+.agendar-botao:hover {
+    background-color: var(--cor-hover);
+}
+
+.agendar-botao:active {
+    transform: translateY(1px);
+}
+
+.agendar-botao:focus-visible {
+    outline: 2px solid var(--cor-2);
+    outline-offset: 2px;
+    transition: none;
+}
+
+.agendar-botao:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.agendar-nota {
+    color: var(--cor-3);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.agendar-status:empty {
+    display: none;
+}
+
+.agendar-status {
+    padding: 12px 16px;
+    border-radius: 10px;
+    background-color: color-mix(in srgb, var(--cor-perigo) 14%, var(--cor-superficie));
+    color: var(--cor-2);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* ---------- Sucesso: o formulário dá lugar à confirmação ---------- */
+
+.agendar-sucesso {
+    display: grid;
+    justify-items: start;
+    gap: 12px;
+    padding-block: 24px;
+}
+
+.agendar-sucesso[hidden] {
+    display: none;
+}
+
+/* o painel recebe o foco só para o leitor de tela anunciar; não é um controle */
+.agendar-sucesso:focus {
+    outline: none;
+}
+
+.agendar-sucesso .material-symbols-outlined {
+    color: var(--cor-detalhe);
+    font-size: 2.5rem;
+}
+
+.agendar-sucesso-titulo {
+    font-family: var(--fonte-titulo);
+    color: var(--cor-2);
+    font-size: 1.75rem;
+    line-height: 1.2;
+}
+
+.agendar-sucesso p {
+    color: var(--cor-3);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+}
+
+/* ---------- Tablet e maiores ---------- */
+
+@media (min-width: 768px) {
+    section.agendar {
+        padding: 96px 48px 144px;
+    }
+
+    .agendar-caixa {
+        padding: 40px;
+    }
+
+    .campo-dupla {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (min-width: 960px) {
+    .agendar-inner {
+        grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+        gap: 64px;
+        align-items: start;
+    }
+
+    .agendar-texto {
+        position: sticky;
+        top: 134px;
+    }
+}
+
+/* ---------- Menos movimento ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .campo input,
+    .campo textarea,
+    .chip span,
+    .agendar-botao {
+        transition: none;
+    }
+
+    .chip-outro {
+        animation: none;
+    }
+}
