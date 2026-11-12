@@ -7,6 +7,7 @@
     <meta name="description" content="Regras de uso do site da Agência RLG: o que o site oferece, o formulário de contato, exemplos ilustrativos e propriedade intelectual.">
     <link rel="stylesheet" href="estilos/style.css">
     <link rel="stylesheet" href="estilos/telaGrande.css" media="screen">
+    <link rel="stylesheet" href="estilos/topo.css">
     <link rel="stylesheet" href="estilos/rodape.css">
     <link rel="stylesheet" href="estilos/legal.css">
     <link rel="shortcut icon" href="imagens-provisorias/favicon.ico" type="image/x-icon">
@@ -14,27 +15,42 @@
     <link rel="stylesheet" href="estilos/fontes.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="index.html#home" aria-label="Agência RLG, voltar ao início"><img src="imagens-provisorias/favicon-32x32.png" alt="Logo RLG" id="logo"></a>
+    <header class="topo">
+        <nav class="topo-pilula" aria-label="Principal">
+            <a href="index.html#home" class="topo-marca" aria-label="Agência RLG, voltar ao início">
+                <img src="imagens-provisorias/favicon-32x32.png" alt="" width="28" height="28">
+                <span class="topo-nome" aria-hidden="true">Agência<span>RLG</span></span>
+            </a>
 
-            <button id="btn-menu" aria-label="Abrir Menu">
+            <button id="btn-menu" class="topo-botao-menu" type="button" aria-expanded="false" aria-controls="menu-links" aria-label="Abrir menu">
                 <span class="linha"></span>
                 <span class="linha"></span>
                 <span class="linha"></span>
             </button>
 
-            <ul id="menu-links">
-                <img src="imagens-provisorias/favicon-32x32.png" alt="Logo RLG Menu" id="logo-menu">
+            <div id="menu-links" class="topo-menu">
+                <ul class="topo-links">
+                    <li><a href="index.html#home">Home</a></li>
+                    <li><a href="index.html#servicos">Serviços</a></li>
+                    <li><a href="index.html#como-funciona">Como funciona</a></li>
+                    <li><a href="index.html#explicacao">Explicação</a></li>
+                </ul>
+                <span class="topo-indicador" aria-hidden="true"></span>
 
-                <li><a href="index.html#home">Home</a></li>
-                <li><a href="index.html#servicos">Serviços</a></li>
-                <li><a href="index.html#como-funciona">Como funciona</a></li>
-                <li><a href="index.html#explicacao">Explicação</a></li>
-                <li><a href="index.html#call" class="ctf">Agendar</a></li>
-            </ul>
+                <a href="index.html#call" class="topo-cta">Agendar</a>
+
+                <div class="topo-contato">
+                    <p class="topo-contato-rotulo">Prefere falar direto?</p>
+                    <a href="tel:+5561991985926"><span class="material-symbols-outlined" aria-hidden="true">call</span> +55 (61) 99198-5926</a>
+                    <a href="https://www.instagram.com/agenciarlg" target="_blank" rel="noopener noreferrer">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        @agenciarlg
+                    </a>
+                </div>
+            </div>
         </nav>
     </header>
+    <div class="topo-veu" hidden></div>
 
     <main class="legal">
         <article class="legal-inner">

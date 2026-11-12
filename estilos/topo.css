@@ -1,0 +1,362 @@
+/* Hallmark · redesign: full (escopo: a barra de navegação, igual no index.html, privacidade.html e termos.html) · theme: brand · nav: pílula flutuante, solta 12px do topo, do tamanho do conteúdo, fundo translúcido com desfoque · a marca (ícone + AgênciaRLG, como no rodapé) leva ao início · um traço de 2px desliza até a seção ativa; o link ativo só muda de cor (nada pula) · no celular a mesma pílula abre uma gaveta com véu, contato no pé, Esc fecha e o foco fica preso nela */
+/* Hallmark · pre-emit critique: saiu a barra de largura total com space-around (logo e links fora da grade) e o botão de 52px mais pesado que o do topo da página · o desfoque fica num ::before, porque backdrop-filter na própria pílula prenderia a gaveta fixa dentro dela · só transform e opacity, tudo parado com reduced-motion · z: sticky-nav 300; véu 250 fica abaixo do topo, então a gaveta (dentro do topo) fica por cima dele */
+
+/* =========================================================
+   TOPO - mobile first
+   Base: celular e tablet (pílula com marca + botão de menu,
+   links numa gaveta). Links na pílula a partir de 900px.
+   ========================================================= */
+
+.topo {
+    position: sticky;
+    top: 0;
+    z-index: 300;
+    padding: 12px 12px 0;
+    pointer-events: none; /* o vão em volta da pílula deixa o clique passar */
+}
+
+.topo-pilula {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 56px;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding: 0 8px 0 16px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 999px;
+    font-family: var(--fonte-texto);
+    pointer-events: auto;
+}
+
+/* o vidro: no pseudo-elemento, para não prender a gaveta fixa dentro da pílula */
+.topo-pilula::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-color: var(--cor-pilula);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
+}
+
+/* ---------- Marca ---------- */
+
+.topo-marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    border-radius: 999px;
+    color: var(--cor-2);
+}
+
+.topo-marca img {
+    flex-shrink: 0;
+    border-radius: 6px;
+}
+
+.topo-nome {
+    font-family: var(--fonte-titulo);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--cor-2);
+    white-space: nowrap;
+}
+
+.topo-nome span {
+    color: var(--cor-detalhe);
+}
+
+/* ---------- Botão de menu (só no celular) ---------- */
+
+.topo-botao-menu {
+    position: relative;
+    z-index: 2; /* fica por cima da gaveta e vira o X */
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    margin-left: auto;
+    border: 0;
+    border-radius: 999px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: background-color 220ms ease-out;
+}
+
+.topo-botao-menu:hover {
+    background-color: var(--cor-vidro);
+}
+
+.topo-botao-menu .linha {
+    grid-area: 1 / 1;
+    width: 20px;
+    height: 2px;
+    border-radius: 2px;
+    background-color: var(--cor-2);
+    transition: transform 250ms ease-out, opacity 150ms ease-out;
+}
+
+.topo-botao-menu .linha:nth-child(1) { transform: translateY(-6px); }
+.topo-botao-menu .linha:nth-child(3) { transform: translateY(6px); }
+
+.topo-botao-menu[aria-expanded="true"] .linha:nth-child(1) { transform: rotate(45deg); }
+.topo-botao-menu[aria-expanded="true"] .linha:nth-child(2) { opacity: 0; }
+.topo-botao-menu[aria-expanded="true"] .linha:nth-child(3) { transform: rotate(-45deg); }
+
+/* ---------- Gaveta (celular) ---------- */
+
+.topo-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: min(86vw, 360px);
+    height: 100dvh;
+    padding: 88px 24px 32px;
+    border-left: 1px solid var(--cor-borda);
+    background-color: var(--cor-superficie);
+    overflow-y: auto;
+    transform: translateX(100%);
+    visibility: hidden;
+    transition:
+        transform 300ms ease-out,
+        visibility 0s 300ms;
+}
+
+.topo-menu.ativo-mobile {
+    transform: none;
+    visibility: visible;
+    transition: transform 300ms ease-out, visibility 0s;
+}
+
+.topo-links {
+    display: grid;
+    list-style: none;
+}
+
+.topo-links li + li {
+    border-top: 1px solid var(--cor-borda);
+}
+
+.topo-links a {
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+    color: var(--cor-2);
+    font-size: 1.25rem;
+    transition: color 220ms ease-out;
+}
+
+.topo-links a:hover,
+.topo-links a.ativo {
+    color: var(--cor-detalhe);
+}
+
+.topo-indicador {
+    display: none;
+}
+
+.topo-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0 24px;
+    border-radius: 999px;
+    background-color: var(--cor-detalhe);
+    color: var(--cor-2);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    transition:
+        background-color 220ms ease-out,
+        transform 120ms ease-out;
+}
+
+.topo-cta:hover {
+    background-color: var(--cor-hover);
+    color: var(--cor-2);
+}
+
+.topo-cta:active {
+    transform: translateY(1px);
+}
+
+/* contato no pé da gaveta */
+.topo-contato {
+    display: grid;
+    gap: 4px;
+    margin-top: auto;
+    padding-top: 24px;
+    border-top: 1px solid var(--cor-borda);
+}
+
+.topo-contato-rotulo {
+    margin-bottom: 4px;
+    color: var(--cor-3);
+    font-size: 0.875rem;
+}
+
+.topo-contato a {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    color: var(--cor-2);
+    font-size: 1rem;
+}
+
+.topo-contato .material-symbols-outlined,
+.topo-contato svg {
+    flex-shrink: 0;
+    color: var(--cor-detalhe);
+    font-size: 1.25rem;
+}
+
+/* o véu atrás da gaveta: clique fecha */
+.topo-veu {
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    background-color: var(--cor-veu);
+    animation: topo-veu-entra 300ms ease-out;
+}
+
+.topo-veu[hidden] {
+    display: none;
+}
+
+@keyframes topo-veu-entra {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* trava o scroll da página com a gaveta aberta (clip, nunca hidden: não quebra o sticky) */
+html.menu-aberto {
+    overflow: clip;
+}
+
+/* ---------- Foco ---------- */
+
+.topo a:focus-visible,
+.topo-botao-menu:focus-visible {
+    outline: 2px solid var(--cor-detalhe);
+    outline-offset: 2px;
+    transition: none;
+}
+
+.topo-cta:focus-visible {
+    outline-color: var(--cor-2);
+}
+
+/* ---------- Computador: os links na própria pílula ---------- */
+
+@media (min-width: 900px) {
+    .topo-pilula {
+        width: fit-content;
+        gap: 32px;
+    }
+
+    .topo-botao-menu,
+    .topo-contato {
+        display: none;
+    }
+
+    .topo-menu {
+        position: relative;
+        top: auto;
+        right: auto;
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
+        width: auto;
+        height: auto;
+        padding: 0;
+        border: 0;
+        background-color: transparent;
+        overflow: visible;
+        transform: none;
+        visibility: visible;
+        transition: none;
+    }
+
+    .topo-links {
+        display: flex;
+        gap: 4px;
+    }
+
+    .topo-links li + li {
+        border-top: 0;
+    }
+
+    .topo-links a {
+        min-height: 44px;
+        padding: 0 12px;
+        border-radius: 999px;
+        color: var(--cor-3);
+        font-size: 0.9375rem;
+    }
+
+    .topo-links a:hover,
+    .topo-links a.ativo {
+        color: var(--cor-2);
+    }
+
+    /* o traço: um só elemento, levado até o link ativo pelo script (--x, --w) */
+    .topo-indicador {
+        position: absolute;
+        bottom: 6px;
+        left: 0;
+        display: block;
+        width: 1px;
+        height: 2px;
+        border-radius: 2px;
+        background-color: var(--cor-detalhe);
+        transform-origin: left;
+        transform: translateX(var(--x, 0)) scaleX(var(--w, 0));
+        transition: transform 220ms ease-out;
+        pointer-events: none;
+    }
+
+    /* sem seção marcada (Home, Agendar, páginas legais): o traço encolhe até sumir */
+    .topo-menu:not([data-indicador]) .topo-indicador {
+        transform: translateX(var(--x, 0)) scaleX(0);
+    }
+
+    .topo-cta {
+        min-height: 44px;
+        padding: 0 20px;
+        font-size: 0.9375rem;
+        font-weight: 600;
+    }
+
+    .topo-veu {
+        display: none;
+    }
+}
+
+/* ---------- Menos movimento ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .topo-menu,
+    .topo-menu.ativo-mobile,
+    .topo-botao-menu,
+    .topo-botao-menu .linha,
+    .topo-links a,
+    .topo-indicador,
+    .topo-cta {
+        transition: none;
+    }
+
+    .topo-veu {
+        animation: none;
+    }
+}

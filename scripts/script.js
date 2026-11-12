@@ -1,69 +1,130 @@
-/* Nav Bar */
-const sections = document.querySelectorAll("section");
-const navLinks = document.querySelectorAll("nav ul li a");
+/* =========================================================
+   Barra de navegação (pílula do topo)
+   - Scroll-spy: a seção que cruza a linha a 40% da tela fica
+     ativa; o link dela muda de cor e o traço desliza até ele.
+     Só vale para links "#..." da própria página (nas páginas
+     legais os links vão para index.html#... e nada é marcado).
+   - Gaveta do celular: véu, Esc fecha, foco preso dentro dela,
+     scroll da página travado, aria-expanded no botão.
+   ========================================================= */
+(() => {
+    const menu = document.getElementById('menu-links');
+    const btnMenu = document.getElementById('btn-menu');
+    const veu = document.querySelector('.topo-veu');
+    if (!menu || !btnMenu) return;
 
-window.addEventListener("scroll", () => {
-    let current = "";
+    const indicador = menu.querySelector('.topo-indicador');
+    const linksDaLista = [...menu.querySelectorAll('.topo-links a')];
+    const linksDaPagina = [...menu.querySelectorAll('a[href^="#"]')];
+    const telaGrande = window.matchMedia('(min-width: 900px)');
 
-    // Linha de gatilho a 40% da altura da tela: a seção fica "ativa"
-    // quando entra na porção central do viewport, e não só ao topo.
-    const linhaGatilho = window.scrollY + window.innerHeight * 0.4;
+    /* ---------- Scroll-spy e traço deslizante ---------- */
 
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
+    let ativo = null;
 
-        if (linhaGatilho >= sectionTop) {
-            current = section.getAttribute("id");
+    function moverTraco() {
+        if (!indicador) return;
+        // Na Home (o topo da página) e no Agendar (o botão já é o destaque) não há traço
+        const alvo = ativo && linksDaLista.includes(ativo) && ativo.getAttribute('href') !== '#home' ? ativo : null;
+        if (!alvo || !telaGrande.matches) {
+            delete menu.dataset.indicador;
+            return;
+        }
+        menu.style.setProperty('--x', `${alvo.offsetLeft + 12}px`);
+        menu.style.setProperty('--w', String(Math.max(alvo.offsetWidth - 24, 0)));
+        menu.dataset.indicador = '';
+    }
+
+    function marcar(id) {
+        ativo = linksDaPagina.find(a => a.getAttribute('href') === `#${id}`) || null;
+        linksDaPagina.forEach(a => a.classList.toggle('ativo', a === ativo));
+        moverTraco();
+    }
+
+    const secoes = linksDaPagina
+        .map(a => document.getElementById(a.getAttribute('href').slice(1)))
+        .filter(Boolean);
+
+    if (secoes.length && 'IntersectionObserver' in window) {
+        // Uma linha fina a 40% da altura da tela (o mesmo gatilho da versão anterior)
+        const observador = new IntersectionObserver(entradas => {
+            entradas.forEach(entrada => {
+                if (entrada.isIntersecting) marcar(entrada.target.id);
+            });
+        }, { rootMargin: '-40% 0px -60% 0px' });
+        secoes.forEach(secao => observador.observe(secao));
+    }
+
+    // A largura dos links muda quando as fontes carregam e quando a tela muda
+    window.addEventListener('resize', moverTraco);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(moverTraco);
+
+    /* ---------- Gaveta do celular ---------- */
+
+    const focaveis = () => [btnMenu, ...menu.querySelectorAll('a[href], button')]
+        .filter(el => el.offsetParent !== null || el === btnMenu);
+
+    function abrir() {
+        menu.classList.add('ativo-mobile');
+        btnMenu.setAttribute('aria-expanded', 'true');
+        btnMenu.setAttribute('aria-label', 'Fechar menu');
+        if (veu) veu.hidden = false;
+        document.documentElement.classList.add('menu-aberto');
+        const primeiro = menu.querySelector('a[href]');
+        if (primeiro) primeiro.focus();
+    }
+
+    function fechar({ devolverFoco = false } = {}) {
+        if (!menu.classList.contains('ativo-mobile')) return;
+        menu.classList.remove('ativo-mobile');
+        btnMenu.setAttribute('aria-expanded', 'false');
+        btnMenu.setAttribute('aria-label', 'Abrir menu');
+        if (veu) veu.hidden = true;
+        document.documentElement.classList.remove('menu-aberto');
+        if (devolverFoco) btnMenu.focus();
+    }
+
+    btnMenu.addEventListener('click', () => {
+        if (menu.classList.contains('ativo-mobile')) fechar({ devolverFoco: true });
+        else abrir();
+    });
+
+    if (veu) veu.addEventListener('click', () => fechar({ devolverFoco: true }));
+
+    // Clicar num link leva à seção e fecha a gaveta
+    menu.querySelectorAll('a[href]').forEach(link => {
+        link.addEventListener('click', () => fechar());
+    });
+
+    document.addEventListener('keydown', evento => {
+        if (!menu.classList.contains('ativo-mobile')) return;
+
+        if (evento.key === 'Escape') {
+            fechar({ devolverFoco: true });
+            return;
+        }
+
+        // Foco preso: Tab circula entre o botão de fechar e os links da gaveta
+        if (evento.key === 'Tab') {
+            const lista = focaveis();
+            const primeiro = lista[0];
+            const ultimo = lista[lista.length - 1];
+            if (evento.shiftKey && document.activeElement === primeiro) {
+                evento.preventDefault();
+                ultimo.focus();
+            } else if (!evento.shiftKey && document.activeElement === ultimo) {
+                evento.preventDefault();
+                primeiro.focus();
+            }
         }
     });
 
-    navLinks.forEach(link => {
-        link.classList.remove("ativo");
-
-        if (link.getAttribute("href") === `#${current}`) {
-            link.classList.add("ativo");
-        }
+    // Na tela grande não existe gaveta: fecha se estiver aberta e recalcula o traço
+    telaGrande.addEventListener('change', () => {
+        fechar();
+        moverTraco();
     });
-});
-
-/* MENU HAMBURGUER! */
-const btnMenu = document.getElementById("btn-menu");
-const menuLinksMobile = document.getElementById("menu-links");
-
-btnMenu.addEventListener("click", () => {
-    menuLinksMobile.classList.toggle("ativo-mobile");
-    btnMenu.classList.toggle("ativo-mobile");
-});
-
-const todosOsLinks = document.querySelectorAll("nav ul li a");
-todosOsLinks.forEach(link => {
-    link.addEventListener("click", () => {
-        menuLinksMobile.classList.remove("ativo-mobile");
-        btnMenu.classList.remove("ativo-mobile");
-    });
-});
-
-/* Fecha o menu ao clicar fora dele */
-document.addEventListener("click", (evento) => {
-    const menuAberto = menuLinksMobile.classList.contains("ativo-mobile");
-
-    // Ignora cliques no proprio menu ou no botao (o botao ja tem seu toggle).
-    const clicouDentro = menuLinksMobile.contains(evento.target) || btnMenu.contains(evento.target);
-
-    if (menuAberto && !clicouDentro) {
-        menuLinksMobile.classList.remove("ativo-mobile");
-        btnMenu.classList.remove("ativo-mobile");
-    }
-});
-
-/* --- PREVENÇÃO DE BUG NO REDIMENSIONAMENTO DA TELA --- */
-window.addEventListener("resize", () => {
-
-    if (window.innerWidth >= 768) {
-        menuLinksMobile.classList.remove("ativo-mobile");
-        btnMenu.classList.remove("ativo-mobile");
-    }
-});
+})();
 
 /* Explicação: revelação e cenas ficam em scripts/explicacao-anima.js */
 

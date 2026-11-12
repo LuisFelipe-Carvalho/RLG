@@ -22,6 +22,8 @@
     --cor-perigo: #F87171;
     --cor-vidro-escuro: rgba(13, 13, 13, 0.55);
     --cor-vidro-escuro-hover: rgba(13, 13, 13, 0.75);
+    --cor-pilula: rgba(22, 22, 22, 0.72);
+    --cor-veu: rgba(0, 0, 0, 0.6);
 
     /* Formulário do Agendar */
     --cor-campo: var(--cor-1);
@@ -66,205 +68,32 @@ h1, h2, h3 {
 }
 
 section {
-    scroll-margin-top: 70px;
+    scroll-margin-top: 88px; /* a pílula do topo: 12px + 56px + respiro */
 }
 
 
-/* Nav bar */
+/* Links: base global */
 a {
     text-decoration: none;
     color: var(--cor-3);
 }
 
+/* Botão roxo principal (topo da página e Como funciona; cada seção ajusta o tamanho) */
 a.ctf {
     background-color: var(--cor-detalhe);
-    padding: 15px 50px;
+    padding: 16px 48px;
     border-radius: 5px;
     color: var(--cor-2);
     font-weight: bold;
-    transition: 0.3s;
+    transition: background-color 220ms ease-out;
 }
 
 a.ctf:hover {
     background-color: var(--cor-hover);
-    box-shadow: 1px 0px 5px var(--cor-hover);
     color: var(--cor-2);
 }
 
-a.ctf.ativo {
-    color: var(--cor-2);
-    padding-bottom: 8px;
-}
-
-a.ativo {
-    color: var(--cor-detalhe); 
-    border-bottom: 2px solid var(--cor-detalhe); 
-    padding-bottom: 5px;
-}
-
-img#logo {
-    border-radius: 3px;
-}
-
-header {
-    position: sticky;
-    top: 0;
-    z-index: 999;
-}
-
-nav {
-    background-color: var(--cor-nav);
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    padding: 0 10px;
-    height: 70px;
-    border-bottom: 1px solid #bfbfbf41;
-}
-
-nav ul {
-    gap: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    background-color: var(--cor-1);
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: auto;
-    width: 75%;
-    max-width: 350px;
-    height: 100vh;
-    padding: 80px 40px 40px 40px;
-    box-shadow: -10px 0 20px rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-
-    transform: translateX(100%);
-    visibility: hidden;
-    transition: transform 0.35s ease, visibility 0.35s ease;
-}
-
-nav li {
-    list-style-type: none;
-}
-
-nav a:hover {
-    color: var(--cor-hover);
-    transition: 0.3s;
-}
-
-img#logo-menu {
-    position: absolute; 
-    top: 12px; 
-    left: 40px; 
-    width: 26px; 
-    border-radius: 3px;
-}
-
-
-#btn-menu {
-    position: fixed; 
-    top: 23px;
-    right: 20px;
-    width: 30px;
-    height: 24px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    z-index: 1002;
-}
-
-#btn-menu .linha {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: var(--cor-3);
-    transition: all 0.3s ease-in-out;
-}
-
-#btn-menu .linha:nth-child(1) { top: 0px; }
-#btn-menu .linha:nth-child(2) { top: 10px; }
-#btn-menu .linha:nth-child(3) { top: 20px; }
-
-#btn-menu.ativo-mobile .linha:nth-child(1) {
-    top: 10px;
-    transform: rotate(45deg);
-}
-
-#btn-menu.ativo-mobile .linha:nth-child(2) {
-    opacity: 0;
-}
-
-#btn-menu.ativo-mobile .linha:nth-child(3) {
-    top: 10px;
-    transform: rotate(-45deg);
-}
-
-
-#btn-menu.ativo-mobile .linha {
-    background-color: #fff;
-}
-
-nav ul.ativo-mobile {
-    transform: translateX(0);
-    visibility: visible;
-}
-
-nav ul li a {
-    color: var(--cor-2);
-    font-size: 1.1rem;
-    font-weight: normal;
-    position: relative;
-    display: inline-block;
-    transition: color 0.3s ease;
-}
-nav ul li a.ativo {
-    color: var(--cor-detalhe);
-    font-weight: bold;
-}
-
-nav ul li a.ativo::before {
-    content: '';
-    position: absolute;
-    left: -20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 80%;
-}
-
-nav ul li {
-    width: 100%;
-    margin-bottom: 25px;
-}
-
-nav ul li:last-child {
-    margin-top: auto;
-    margin-bottom: 0;
-}
-
-nav ul li a.ctf {
-    display: block;
-    width: 100%;
-    text-align: center;
-    padding: 16px 0;
-    border-radius: 6px;
-    font-weight: bold;
-    font-size: 1.1rem;
-}
-
-nav ul li a:hover {
-    color: var(--cor-hover);
-
-}
-
-nav ul li a.ctf:hover {
-    color: var(--cor-2);
-}
-/* Fim da nav bar! */
+/* Barra de navegação: os estilos ficam em estilos/topo.css */
 
 /* Home: os estilos da home ficam em estilos/home.css */
 
