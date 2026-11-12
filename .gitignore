@@ -1,2 +1,5 @@
 # Pacote de upload da Lambda: e gerado a partir do lambda_function.py
 lambda/*.zip
+
+# Configuracoes locais do Claude Code
+.claude/
