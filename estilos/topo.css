@@ -257,6 +257,18 @@ html.menu-aberto {
     outline-color: var(--cor-2);
 }
 
+/* A marca não ganha contorno (ficava uma borda roxa em volta da logo e do nome):
+   quem navega com Tab vê o nome sublinhado */
+.topo .topo-marca:focus-visible {
+    outline: none;
+}
+
+.topo-marca:focus-visible .topo-nome {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+}
+
 /* ---------- Computador: os links na própria pílula ---------- */
 
 @media (min-width: 900px) {

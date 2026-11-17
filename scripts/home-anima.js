@@ -95,6 +95,8 @@
     visual.dataset.js = 'anima';
     if (troca) troca.dataset.js = 'anima';
     mostrarPasso(0);
+    // Liga a transição das frases só depois do primeiro quadro já escondido
+    if (troca) requestAnimationFrame(() => requestAnimationFrame(() => { troca.dataset.transicao = ''; }));
 
     let naTela = false;
     const atualizar = () => (naTela && !document.hidden ? iniciar() : pausar());
@@ -111,7 +113,7 @@
         if (!movimentoReduzido.matches) return;
         pausar();
         delete visual.dataset.js;
-        if (troca) delete troca.dataset.js;
+        if (troca) { delete troca.dataset.js; delete troca.dataset.transicao; }
         elementos.forEach(el => el.classList.remove('visivel'));
         verbos.forEach(v => v.classList.remove('ativo'));
     });
