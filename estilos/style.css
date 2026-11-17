@@ -30,15 +30,31 @@
     --cor-placeholder: #7A7A7A;
     --cor-chip-marcado: color-mix(in srgb, var(--cor-detalhe) 22%, var(--cor-superficie));
 
-    /* Céu da Explicação: da noite em que a Ana fica sem resposta ao dia da revisão do mês */
+    /* Céu da Explicação: da noite em que a Ana fica sem resposta ao dia da revisão do mês.
+       Ocupa a tela toda e o texto fica direto sobre ele: -1 é o alto, -2 o pé e -3 a névoa
+       que corre devagar. Nas três fases escuras nada passa de 47% de luz (o texto claro
+       fica acima de 4.5:1); no dia nada fica abaixo de 80% (o texto escuro idem) */
     --ceu-noite-1: oklch(15% 0.035 262);
-    --ceu-noite-2: oklch(28% 0.065 258);
-    --ceu-madrugada-1: oklch(20% 0.03 248);
-    --ceu-madrugada-2: oklch(33% 0.045 240);
-    --ceu-amanhecer-1: oklch(27% 0.03 35);
-    --ceu-amanhecer-2: oklch(55% 0.085 52);
-    --ceu-dia-1: oklch(88% 0.02 85);
-    --ceu-dia-2: oklch(78% 0.035 75);
+    --ceu-noite-2: oklch(26% 0.06 258);
+    --ceu-noite-3: oklch(33% 0.06 255);
+    --ceu-madrugada-1: oklch(19% 0.03 248);
+    --ceu-madrugada-2: oklch(31% 0.045 240);
+    --ceu-madrugada-3: oklch(37% 0.04 235);
+    --ceu-amanhecer-1: oklch(24% 0.035 35);
+    --ceu-amanhecer-2: oklch(42% 0.08 48);
+    --ceu-amanhecer-3: oklch(47% 0.09 55);
+    --ceu-dia-1: oklch(91% 0.015 85);
+    --ceu-dia-2: oklch(80% 0.035 75);
+    --ceu-dia-3: oklch(86% 0.03 80);
+    /* o fim do dia: o céu volta ao fundo da página antes da seção seguinte */
+    --ceu-fim-1: var(--cor-1);
+    --ceu-fim-2: var(--cor-1);
+    --ceu-fim-3: oklch(19% 0.01 262);
+    /* tinta do texto sobre o céu de dia */
+    --ceu-tinta: oklch(20% 0.02 70);
+    --ceu-tinta-2: oklch(30% 0.025 70);
+    /* texto corrido claro sobre o céu escuro (mais claro que --cor-3 por causa da névoa) */
+    --ceu-texto-claro: #D4D4D4;
 
     /* Onda da home: um só tom, o roxo da marca, do quase preto ao lilás */
     --onda-1: oklch(16% 0.045 293);

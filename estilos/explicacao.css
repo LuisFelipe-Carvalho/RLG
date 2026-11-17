@@ -1,5 +1,5 @@
-/* Hallmark · redesign: full (escopo: só a seção #explicacao) · theme: brand · composição: Pinned (layout.md 13) com o padrão Sticky diptych (scroll-choreography.md 4), o único padrão de scroll da página · os passos à esquerda e um palco fixo à direita com UMA janela do produto que se transforma: a conversa da Ana fica viva à esquerda e vai se somando, o painel do passo à direita muda (diagnóstico, base, canais, revisão) · signature: o céu atrás da janela vai da noite (a pergunta das 22:47 sem resposta) ao dia (a revisão do mês) · imagery: product built, data-kind product, sem fotos · posture: committed, o céu é a superfície declarada do palco; o roxo da marca volta a ser só sinal (agente, chave ligada, consulta) */
-/* Hallmark · pre-emit critique: saiu o palco roxo sólido e o fundo roxo da seção (o roxo como superfície apagava o roxo como sinal) · uma ideia só: o produto contínuo sobre o céu, sem pacotes viajando (só o cartão da consulta passa da conversa para a revisão) · o céu troca por opacidade, camadas empilhadas (sem queda no meio), sem brilho nem gradiente roxo-azul · a cena toca no limiar do passo, por tempo, nunca presa ao scroll · celular (< 960px): os passos num carrossel de arrastar para o lado (scroll-snap, só CSS), com pontinhos e a cena de cada cartão tocando uma vez quando ele aparece (scripts/explicacao-celular.js); o passo 3 não repete a pergunta da Ana · reduced-motion e sem JS: o mesmo carrossel, tudo pronto, sobre o céu de cada passo · texto da janela sempre sobre a superfície escura dela, nunca sobre o céu */
+/* Hallmark · redesign: full (escopo: só a seção #explicacao) · theme: brand · composição: Pinned (layout.md 13) com o padrão Sticky diptych (scroll-choreography.md 4), o único padrão de scroll da página, movido pelo GSAP (scripts/explicacao-gsap.js) · os passos à esquerda e uma janela do produto fixa à direita que se transforma: a conversa da Ana fica viva à esquerda e vai se somando, o painel do passo à direita muda (diagnóstico, base, canais, revisão) · signature: o céu da seção, na tela toda, vai da noite (a pergunta das 22:47 sem resposta) ao dia (a revisão do mês) e volta ao escuro da página no fim · imagery: product built, data-kind product, sem fotos · posture: committed, o céu é a superfície declarada da seção; o roxo da marca volta a ser só sinal (agente, chave ligada, consulta) */
+/* Hallmark · pre-emit critique: saiu o palco em caixa (a animação ficava presa num quadrado); o céu passou a ser a seção inteira, preso ao topo enquanto ela passa, e a janela flutua inteira sobre ele · o céu é o da história, não a onda roxa da home: repetir a assinatura da hero a apagaria, e roxo com o azul da noite cairia no 2a · a tinta do texto acompanha o céu (clara nas fases escuras, escura no dia) e vira de uma vez no meio da troca, onde a cor do céu passa rápido; as cores do céu foram escolhidas para o texto ficar acima de 4.5:1 em todas as fases · as bordas da seção se fundem com o fundo da página e no fim o céu volta ao escuro antes do Agendar · a cena toca no limiar do passo, por tempo, nunca presa ao scroll · celular (< 960px): os passos num carrossel de arrastar para o lado (scroll-snap, só CSS), com pontinhos, a cena de cada cartão tocando uma vez quando ele aparece e o céu da seção na hora do cartão à vista · reduced-motion e sem JS: o mesmo carrossel, tudo pronto, sobre o céu de CSS parado (sem JS, a noite) · texto da janela sempre sobre a superfície escura dela · gate 29 (julgado): a névoa que corre no céu (scripts/explicacao-ceu.js) é a matéria da assinatura, não brilho decorativo: larga, lenta, de um só tom por fase, nunca passa da luz que mantém o texto acima de 4.5:1, pausa fora da tela e para com reduzir movimento · a janela tem só a borda, sem sombra: escura sobre o céu ela já se separa */
 
 /* =========================================================
    EXPLICAÇÃO - mobile first
@@ -9,11 +9,131 @@
    passos à esquerda, palco fixo à direita.
    ========================================================= */
 
+/* A fase do céu: 0 noite, 1 madrugada, 2 amanhecer, 3 dia, 4 fim (o fundo da página).
+   Registrada como número para poder transitar e alimentar opacidades e a tinta */
+@property --ceu-fase {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0;
+}
+
 section.explicacao {
     --exp-margem: 20px; /* a margem lateral; o carrossel do celular sangra até a borda */
-    padding: 64px var(--exp-margem) 80px;
+    --exp-topo: 64px;
+    --ceu-fase: 0;
+    /* A tinta acompanha o céu: clara nas fases escuras, escura no dia. Vira de uma
+       vez no meio da troca (fase 2.5 e, na volta ao escuro, 3.5), nunca fica cinza */
+    --exp-dia: calc(clamp(0, (var(--ceu-fase) - 2.5) * 1000, 1) - clamp(0, (var(--ceu-fase) - 3.5) * 1000, 1));
+    --exp-tinta: color-mix(in srgb, var(--ceu-tinta) calc(var(--exp-dia) * 100%), var(--cor-2));
+    --exp-tinta-2: color-mix(in srgb, var(--ceu-tinta-2) calc(var(--exp-dia) * 100%), var(--ceu-texto-claro));
+    --exp-trilha: color-mix(in srgb, var(--exp-tinta) 18%, transparent);
+    position: relative;
+    isolation: isolate;
+    /* o céu é fixo na tela e esta máscara o mostra só enquanto a seção passa
+       (clip-path recorta até filhos fixos; overflow não, e quebraria o sticky do palco) */
+    clip-path: inset(0);
+    padding: var(--exp-topo) var(--exp-margem) 80px;
     background-color: var(--cor-1);
-    color: var(--cor-2);
+    color: var(--exp-tinta);
+    transition: --ceu-fase 900ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* fora do computador (celular, sem rolagem presa), cada passo põe a sua hora */
+section.explicacao[data-hora="2"] { --ceu-fase: 1; }
+section.explicacao[data-hora="3"] { --ceu-fase: 2; }
+section.explicacao[data-hora="4"] { --ceu-fase: 3; }
+
+/* com o GSAP no comando, a fase acompanha a rolagem sem transição própria */
+section.explicacao[data-gsap] {
+    transition: none;
+}
+
+/* ---------- O céu: a tela toda enquanto a seção passa ---------- */
+
+/* Fixo na tela, atrás de tudo da seção; o clip-path da seção o recorta, então ele
+   aparece só dentro dela, como uma janela aberta para o céu */
+.exp-ceu {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+}
+
+/* Quatro camadas empilhadas na ordem da história (mais o fim): cada uma acende por
+   cima das anteriores conforme a fase, então a troca nunca passa por um vazio */
+.ceu-camada {
+    position: absolute;
+    inset: 0;
+}
+
+.ceu-noite {
+    background-color: var(--ceu-noite-2);
+    background-image: linear-gradient(to bottom, var(--ceu-noite-1), var(--ceu-noite-2));
+}
+
+.ceu-madrugada {
+    opacity: clamp(0, var(--ceu-fase), 1);
+    background-image: linear-gradient(to bottom, var(--ceu-madrugada-1), var(--ceu-madrugada-2));
+}
+
+.ceu-amanhecer {
+    opacity: clamp(0, var(--ceu-fase) - 1, 1);
+    background-image: linear-gradient(to bottom, var(--ceu-amanhecer-1), var(--ceu-amanhecer-2));
+}
+
+.ceu-dia {
+    opacity: clamp(0, var(--ceu-fase) - 2, 1);
+    background-image: linear-gradient(to bottom, var(--ceu-dia-1), var(--ceu-dia-2));
+}
+
+.ceu-fim {
+    opacity: clamp(0, var(--ceu-fase) - 3, 1);
+    background-color: var(--ceu-fim-1);
+}
+
+/* a névoa viva (scripts/explicacao-ceu.js) entra por cima quando fica pronta */
+.exp-ceu canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 600ms ease-out;
+}
+
+.exp-ceu[data-pronto] canvas {
+    opacity: 1;
+}
+
+/* As bordas da seção se fundem com o fundo da página: o céu nunca começa
+   nem termina numa linha seca */
+section.explicacao::before,
+section.explicacao::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+section.explicacao::before {
+    top: -2px; /* cobre a linha que o recorte arredonda para fora na borda */
+    height: 202px;
+    background-image: linear-gradient(to bottom, var(--cor-1), transparent);
+}
+
+section.explicacao::after {
+    bottom: -2px;
+    height: 282px;
+    background-image: linear-gradient(to bottom, transparent, var(--cor-1) 72%);
+}
+
+/* no carrossel, o fade fica só no pé, abaixo dos pontinhos (no dia eles são escuros) */
+@media (max-width: 959px) {
+    section.explicacao::after {
+        height: 88px;
+        background-image: linear-gradient(to bottom, transparent, var(--cor-1));
+    }
 }
 
 .exp-inner {
@@ -31,7 +151,7 @@ section.explicacao {
     max-width: 22ch;
     margin-bottom: 16px;
     font-family: var(--fonte-titulo);
-    color: var(--cor-2);
+    color: var(--exp-tinta);
     font-size: clamp(2rem, 1.5rem + 2.5vw, 3rem);
     line-height: 1.1;
     text-wrap: balance;
@@ -42,7 +162,7 @@ section.explicacao {
 .exp-cabecalho p {
     max-width: 60ch;
     font-family: var(--fonte-texto);
-    color: var(--cor-3);
+    color: var(--exp-tinta-2);
     font-size: 1.125rem;
     line-height: 1.6;
     text-wrap: pretty;
@@ -79,12 +199,12 @@ section.explicacao {
     place-items: center;
     width: 40px;
     height: 40px;
-    border: 1px solid var(--cor-trilha);
+    border: 1px solid var(--exp-trilha);
     border-radius: 50%;
     font-family: var(--fonte-titulo);
     font-size: 1rem;
     font-weight: 600;
-    color: var(--cor-2);
+    color: var(--exp-tinta);
     transition:
         background-color 300ms ease-out,
         border-color 300ms ease-out;
@@ -94,7 +214,7 @@ section.explicacao {
     margin-bottom: 8px;
     padding-top: 4px;
     font-family: var(--fonte-titulo);
-    color: var(--cor-2);
+    color: var(--exp-tinta);
     font-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
     line-height: 1.2;
     text-wrap: balance;
@@ -106,38 +226,17 @@ section.explicacao {
 .exp-passo-texto p {
     max-width: 45ch;
     font-family: var(--fonte-texto);
-    color: var(--cor-3);
+    color: var(--exp-tinta-2);
     font-size: 1.0625rem;
     line-height: 1.6;
     text-wrap: pretty;
 }
 
-/* ---------- Palco: o céu daquele passo, a tela sai pela borda de baixo ---------- */
+/* ---------- Palco do passo: a tela, direto sobre o céu da seção ---------- */
 
 .exp-palco {
     display: flex;
-    align-items: flex-end;
     justify-content: center;
-    padding: 28px 16px 0;
-    border-radius: 20px;
-    background-color: var(--ceu-noite-2);
-    background-image: linear-gradient(to bottom, var(--ceu-noite-1), var(--ceu-noite-2));
-    overflow: hidden;
-}
-
-.exp-passo[data-passo="2"] .exp-palco {
-    background-color: var(--ceu-madrugada-2);
-    background-image: linear-gradient(to bottom, var(--ceu-madrugada-1), var(--ceu-madrugada-2));
-}
-
-.exp-passo[data-passo="3"] .exp-palco {
-    background-color: var(--ceu-amanhecer-2);
-    background-image: linear-gradient(to bottom, var(--ceu-amanhecer-1), var(--ceu-amanhecer-2));
-}
-
-.exp-passo[data-passo="4"] .exp-palco {
-    background-color: var(--ceu-dia-2);
-    background-image: linear-gradient(to bottom, var(--ceu-dia-1), var(--ceu-dia-2));
 }
 
 /* ---------- A tela (o pedaço do produto) ---------- */
@@ -147,8 +246,7 @@ section.explicacao {
     max-width: 460px;
     padding: 20px 20px 24px;
     border: 1px solid var(--cor-borda);
-    border-bottom: 0;
-    border-radius: 14px 14px 0 0;
+    border-radius: 14px;
     background-color: var(--cor-superficie);
     font-family: var(--fonte-texto);
     color: var(--cor-2);
@@ -721,15 +819,11 @@ section.explicacao {
         display: none;
     }
 
-    /* todos os cartões com a mesma altura: o céu preenche, a tela fica embaixo */
+    /* todos os cartões com a mesma altura (a tela fica logo abaixo do texto) */
     .exp-passo {
         grid-template-rows: auto minmax(0, 1fr);
         gap: 16px;
         scroll-snap-align: start;
-    }
-
-    .exp-palco {
-        padding: 20px 12px 0;
     }
 
     .tela {
@@ -774,7 +868,7 @@ section.explicacao {
     width: 24px;
     height: 8px;
     border-radius: 999px;
-    background-color: var(--cor-trilha);
+    background-color: var(--exp-trilha);
     transform: scaleX(0.34);
     transition:
         transform 250ms ease-out,
@@ -802,15 +896,12 @@ section.explicacao {
 @media (min-width: 768px) {
     section.explicacao {
         --exp-margem: 48px;
-        padding: 96px var(--exp-margem) 120px;
+        --exp-topo: 96px;
+        padding: var(--exp-topo) var(--exp-margem) 120px;
     }
 
     .exp-cabecalho {
         margin-bottom: 80px;
-    }
-
-    .exp-palco {
-        padding: 48px 40px 0;
     }
 
     .tela {
@@ -843,23 +934,79 @@ section.explicacao[data-js="demo"] .exp-demo {
 }
 
 section.explicacao[data-js="demo"] .exp-passos {
+    grid-column: 1;
+    grid-row: 1;
     gap: 0;
     padding-bottom: 20vh;
 }
 
+section.explicacao[data-js="demo"] .exp-fixo {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+/* ---------- Movimento preso à rolagem (scripts/explicacao-gsap.js) ---------- */
+
+/* A linha dos passos: trava ao lado dos textos e se desenha com a rolagem */
+.exp-trilho {
+    position: sticky;
+    top: 102px; /* igual ao palco fixo */
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    justify-self: start;
+    width: 4px;
+    height: min(600px, calc(100svh - 134px));
+    margin-left: -28px;
+    pointer-events: none;
+}
+
+.exp-trilho svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+/* sem vector-effect: com ele o traço do DrawSVG vira tracejado. O viewBox tem
+   4 de largura para 4px, então 2 unidades de traço são 2px na tela */
+.exp-trilho line {
+    stroke-width: 2;
+}
+
+.exp-trilho-base {
+    stroke: var(--exp-trilha);
+}
+
+.exp-trilho-linha {
+    stroke: var(--cor-detalhe);
+}
+
+/* A bolinha do número entra e sai com o texto do passo (--marca: 0 a 1, vinda
+   do GSAP; sem ele fica em 1) */
+section.explicacao[data-js="demo"] .exp-passo-texto::before {
+    opacity: var(--marca, 1);
+    scale: calc(0.5 + 0.5 * var(--marca, 1));
+}
+
+/* As letras do título giram em 3D ao entrar */
+section.explicacao[data-js="demo"] .exp-passo-texto h3 {
+    perspective: 600px;
+}
+
 /* cada passo é uma pista longa: o texto trava no lugar enquanto a cena toca,
    e só sai quando a pista acaba. A pista acompanha a duração da cena
-   (01 ~4s, 02 ~5s, 03 ~6s, 04 ~8s), para o scroll não atropelar a demo */
+   (01 ~9s, 02 ~7s, 03 ~10s, 04 ~9s), para o scroll não atropelar a demo */
 section.explicacao[data-js="demo"] .exp-passo {
     display: block;
     min-height: var(--pista);
     padding-top: 120px; /* respiro entre o texto que sai e o que entra */
 }
 
-section.explicacao[data-js="demo"] .exp-passo[data-passo="1"] { --pista: 160vh; }
-section.explicacao[data-js="demo"] .exp-passo[data-passo="2"] { --pista: 175vh; }
-section.explicacao[data-js="demo"] .exp-passo[data-passo="3"] { --pista: 195vh; }
-section.explicacao[data-js="demo"] .exp-passo[data-passo="4"] { --pista: 215vh; }
+section.explicacao[data-js="demo"] .exp-passo[data-passo="1"] { --pista: 230vh; }
+section.explicacao[data-js="demo"] .exp-passo[data-passo="2"] { --pista: 210vh; }
+section.explicacao[data-js="demo"] .exp-passo[data-passo="3"] { --pista: 250vh; }
+section.explicacao[data-js="demo"] .exp-passo[data-passo="4"] { --pista: 250vh; }
 
 section.explicacao[data-js="demo"] .exp-passo:first-child {
     padding-top: 0;
@@ -877,7 +1024,7 @@ section.explicacao[data-js="demo"] .exp-passo .exp-palco {
 
 /* passo fora de foco: título apagado (cor, nunca opacidade) */
 section.explicacao[data-js="demo"] .exp-passo:not(.ativo) h3 {
-    color: var(--cor-3);
+    color: var(--exp-tinta-2);
 }
 
 section.explicacao[data-js="demo"] .exp-passo.ativo .exp-passo-texto::before {
@@ -889,73 +1036,26 @@ section.explicacao[data-js="demo"] .exp-passo.feito .exp-passo-texto::before {
     border-color: var(--cor-detalhe);
 }
 
-/* ---------- O palco fixo: o céu e a janela do produto ---------- */
+/* ---------- O palco fixo: a janela do produto, solta sobre o céu ---------- */
 
 .exp-fixo-palco {
     position: sticky;
     top: 102px; /* abaixo do menu fixo (70px) */
-    isolation: isolate;
     display: grid;
     height: min(600px, calc(100svh - 134px));
-    padding: 72px 56px 0;
-    border-radius: 20px;
-    overflow: hidden;
+    padding-top: 72px; /* o topo da janela fica na altura do texto travado (174px) */
 }
 
-/* O céu: quatro camadas empilhadas na ordem da história. Cada passo acende
-   a sua camada por cima das anteriores, então a troca nunca passa por um vazio */
-.ceu {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-}
-
-.ceu-camada {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 900ms cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-.ceu-noite {
-    opacity: 1;
-    background-color: var(--ceu-noite-2);
-    background-image: linear-gradient(to bottom, var(--ceu-noite-1), var(--ceu-noite-2));
-}
-
-.ceu-madrugada {
-    background-image: linear-gradient(to bottom, var(--ceu-madrugada-1), var(--ceu-madrugada-2));
-}
-
-.ceu-amanhecer {
-    background-image: linear-gradient(to bottom, var(--ceu-amanhecer-1), var(--ceu-amanhecer-2));
-}
-
-.ceu-dia {
-    background-image: linear-gradient(to bottom, var(--ceu-dia-1), var(--ceu-dia-2));
-}
-
-.exp-fixo-palco[data-hora="2"] .ceu-madrugada,
-.exp-fixo-palco[data-hora="3"] .ceu-madrugada,
-.exp-fixo-palco[data-hora="3"] .ceu-amanhecer,
-.exp-fixo-palco[data-hora="4"] .ceu-camada {
-    opacity: 1;
-}
-
-/* A janela: uma só, do começo ao fim, saindo pela borda de baixo */
+/* A janela: uma só, do começo ao fim, inteira e sem caixa em volta */
 .app {
     position: relative;
-    justify-self: center;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     width: 100%;
-    max-width: 680px;
     height: 100%;
     border: 1px solid var(--cor-borda);
-    border-bottom: 0;
-    border-radius: 16px 16px 0 0;
+    border-radius: 16px;
     background-color: var(--cor-superficie);
-    box-shadow: var(--sombra-card);
     font-family: var(--fonte-texto);
     color: var(--cor-2);
     overflow: hidden;
@@ -1174,8 +1274,8 @@ section.explicacao[data-js="demo"] .app-painel > .tela.ativa {
 
 .exp-repetir {
     position: absolute;
-    top: 8px;
-    right: 16px;
+    top: 16px;
+    right: 0;
     z-index: 2;
     display: inline-flex;
     align-items: center;
@@ -1293,6 +1393,231 @@ section.explicacao[data-js] .mapa-perdido:not(.riscado) .risco {
     vertical-align: -2px;
 }
 
+/* =========================================================
+   A janela que conta sozinha (só na demo do computador)
+   O problema e a solução em movimento exagerado, de propósito:
+   mensagens chegam com mola, o painel vira como um cartão e uma
+   camada por cima do palco (.exp-efeitos, criada pelo
+   scripts/explicacao-anima.js) traz a noite, o carimbo, a
+   ligação, o placar e o que voa. Tudo nela é temporário.
+   ========================================================= */
+
+/* as mensagens chegam com mola, crescendo do lado de quem fala */
+section.explicacao[data-js="demo"] .app-fio > .chega,
+section.explicacao[data-js="demo"] .app-fio .vez > .balao.chega {
+    animation: exp-mola 560ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+section.explicacao[data-js="demo"] .app-fio > [data-fio],
+section.explicacao[data-js="demo"] .app-fio .balao {
+    transform-origin: left bottom;
+}
+
+section.explicacao[data-js="demo"] .app-fio .balao-agente,
+section.explicacao[data-js="demo"] .app-fio .balao-recepcao,
+section.explicacao[data-js="demo"] .app-fio > .vez:has(> .balao-agente) {
+    transform-origin: right bottom;
+}
+
+section.explicacao[data-js="demo"] .app-fio > .app-aviso {
+    transform-origin: center;
+}
+
+@keyframes exp-mola {
+    from { opacity: 0; transform: translateY(28px) scale(0.45) rotate(-4deg); }
+    45% { opacity: 1; }
+    to { opacity: 1; transform: none; }
+}
+
+/* o painel do passo vira como um cartão, com impulso */
+section.explicacao[data-js="demo"] .app-painel {
+    perspective: 1200px;
+}
+
+section.explicacao[data-js="demo"] .app-painel > .tela {
+    transform: translateX(56px) rotateY(-32deg) scale(0.9);
+    transform-origin: left center;
+}
+
+section.explicacao[data-js="demo"] .app-painel > .tela.ativa {
+    transform: none;
+    transition:
+        opacity 360ms ease-out 100ms,
+        transform 760ms cubic-bezier(0.34, 1.4, 0.64, 1) 100ms,
+        visibility 0s;
+}
+
+/* as barras crescem com mola; o sábado ajustado sobe com mais impulso ainda */
+section.explicacao[data-js="demo"] .app-painel .barra-fill {
+    transition:
+        transform 800ms cubic-bezier(0.34, 1.56, 0.64, 1),
+        background-color 400ms ease-out;
+}
+
+section.explicacao[data-js="demo"] .app-painel .tela-revisao[data-fase="ajustado"] .barra-sab .barra-fill {
+    transition:
+        transform 950ms cubic-bezier(0.34, 2, 0.64, 1),
+        background-color 400ms ease-out;
+}
+
+/* a Ana foi embora: o contato fica vazio, tracejado */
+.app-contato.foi .app-avatar {
+    border: 1.5px dashed var(--cor-3);
+    background-color: transparent;
+    color: transparent;
+}
+
+.app-contato.foi .app-contato-nome strong {
+    color: var(--cor-3);
+}
+
+/* ---------- A camada dos efeitos ---------- */
+
+.exp-efeitos {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.exp-efeitos > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* 01 · a noite cobre a janela e um relógio enorme corre */
+.efeito-noite {
+    display: grid;
+    place-content: center;
+    gap: 12px;
+    border-radius: 16px;
+    background-color: color-mix(in srgb, var(--ceu-noite-1) 88%, transparent);
+    text-align: center;
+}
+
+.efeito-noite-hora {
+    font-family: var(--fonte-titulo);
+    font-size: clamp(4rem, 7vw, 6.5rem);
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--cor-2);
+}
+
+.efeito-noite-espera {
+    font-family: var(--fonte-texto);
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--cor-perigo);
+}
+
+/* 01 · o carimbo */
+.efeito-carimbo {
+    padding: 10px 20px;
+    border: 3px solid var(--cor-perigo);
+    border-radius: 12px;
+    background-color: var(--cor-superficie);
+    font-family: var(--fonte-titulo);
+    font-size: 1.875rem;
+    font-weight: 700;
+    line-height: 1.1;
+    white-space: nowrap;
+    color: var(--cor-perigo);
+}
+
+/* a onda de choque (sinal de que algo aconteceu ali) */
+.efeito-onda {
+    border: 2px solid var(--cor-detalhe);
+}
+
+.efeito-onda-perigo {
+    border-color: var(--cor-perigo);
+}
+
+/* 02 · a linha que liga a ficha à resposta */
+.efeito-ligacao {
+    overflow: visible;
+}
+
+.efeito-ligacao path {
+    fill: none;
+    stroke: var(--cor-detalhe);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+}
+
+.efeito-ligacao circle {
+    fill: var(--cor-detalhe);
+}
+
+/* 03 · o placar: o que era espera virou resposta na hora */
+.efeito-placar {
+    display: grid;
+    align-content: center;
+    gap: 28px;
+    padding: 24px 28px;
+    background-color: var(--cor-superficie);
+    font-family: var(--fonte-texto);
+}
+
+.efeito-placar-linha {
+    display: grid;
+    gap: 6px;
+    justify-items: start;
+}
+
+.efeito-placar-rotulo {
+    font-size: 0.9375rem;
+    color: var(--cor-3);
+}
+
+.efeito-placar-valor {
+    position: relative;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2.75rem, 4.5vw, 3.75rem);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.efeito-placar-nota {
+    font-size: 0.9375rem;
+    color: var(--cor-2);
+}
+
+.efeito-placar-antes .efeito-placar-valor {
+    color: var(--cor-perigo);
+}
+
+.efeito-placar-agora .efeito-placar-valor {
+    color: var(--cor-detalhe);
+}
+
+.efeito-placar-risca {
+    position: absolute;
+    top: 52%;
+    left: -6px;
+    right: -6px;
+    height: 5px;
+    border-radius: 3px;
+    background-color: var(--cor-2);
+    transform: scaleX(0);
+    transform-origin: left center;
+}
+
+/* 04 · o ajuste que voa até o sábado */
+.efeito-chip {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background-color: var(--cor-detalhe-suave);
+    font-family: var(--fonte-texto);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--cor-2);
+}
+
 /* ---------- Menos movimento: o script nem monta a demo ---------- */
 
 @media (prefers-reduced-motion: reduce) {
@@ -1307,7 +1632,8 @@ section.explicacao[data-js] .mapa-perdido:not(.riscado) .risco {
         animation: none;
     }
 
-    .ceu-camada {
+    section.explicacao,
+    .exp-ceu canvas {
         transition: none;
     }
 }

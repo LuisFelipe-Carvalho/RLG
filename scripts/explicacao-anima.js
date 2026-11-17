@@ -25,6 +25,9 @@
    aparece já pronta. "Repetir" toca a cena do passo de novo.
    Ajudantes, estados das telas e o controle de modo (só um
    modo montado por vez): scripts/explicacao-cenas.js
+   O movimento preso à rolagem (GSAP) fica em
+   scripts/explicacao-gsap.js e ouve 'exp:montou' e
+   'exp:desmontou', que este arquivo dispara.
    No celular: o carrossel de scripts/explicacao-celular.js.
    Sem JS, com "reduzir movimento" ou entre 960 e 1120px:
    cada passo mostra a sua tela no estado final.
@@ -61,6 +64,10 @@
     const RELOGIO = { 0: '22:47', 1: '09:16', 2: '22:47', 3: '22:48', 4: '18:02' };
 
     const noFio = nome => fio.querySelector(`[data-fio="${nome}"]`);
+    const app = secao.querySelector('.app');
+    const conversa = secao.querySelector('.app-conversa');
+    const contato = secao.querySelector('.app-contato');
+    const avatar = secao.querySelector('.app-avatar');
     const tagEnvio = fio.querySelector('.app-tag-envio');
 
     function marcarEnviada(enviada) {
@@ -76,6 +83,7 @@
             el.querySelectorAll('.digitando').forEach(esconder);
         });
         noFio('perdida').classList.toggle('riscado', n === 1);
+        contato.classList.toggle('foi', n === 1); // no fim do 01 a Ana já foi embora
         marcarEnviada(n >= 3);
         relogioApp.textContent = RELOGIO[n];
     }
@@ -91,111 +99,359 @@
     // Mensagens saem da conversa (a conversa da manhã recolhe)
     async function saem(exec, nomes) {
         const els = nomes.map(noFio).filter(el => el.classList.contains('no-fio'));
-        els.forEach(el => el.animate(
-            [{ opacity: 1 }, { opacity: 0, transform: 'translateY(-6px)' }],
-            { duration: 220, easing: 'ease-in', fill: 'forwards' }
+        // despencam, uma atrás da outra, girando
+        els.forEach((el, i) => el.animate(
+            [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateY(48px) rotate(${i % 2 ? 7 : -7}deg) scale(0.8)` }],
+            { duration: 420, delay: i * 90, easing: 'cubic-bezier(0.5, 0, 0.75, 0)', fill: 'forwards' }
         ));
-        await pausa(exec, 240);
+        await pausa(exec, 420 + els.length * 90);
         els.forEach(el => {
             el.getAnimations().forEach(a => a.cancel());
             el.classList.remove('no-fio', 'chega');
         });
     }
 
-    /* ---------- 01 · Atendimento hoje: o gargalo ---------- */
+    /* ---------- Efeitos: o exagero que conta a história ----------
+       Uma camada por cima do palco (a janela corta o que passa da borda; a
+       camada, não). Tudo o que um efeito cria ou anima fica guardado no exec
+       da cena e é desfeito no parar(), então voltar ou repetir nunca deixa
+       resto na tela. */
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const camada = document.createElement('div');
+    camada.className = 'exp-efeitos';
+    camada.setAttribute('aria-hidden', 'true');
+
+    // Caixa de um elemento em relação ao palco (com as transformações de agora)
+    function caixa(el) {
+        const a = el.getBoundingClientRect();
+        const b = palcoFixo.getBoundingClientRect();
+        return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height };
+    }
+
+    function guarda(exec, no) {
+        (exec.nos || (exec.nos = [])).push(no);
+        return no;
+    }
+
+    function cria(exec, classe, sobre) {
+        const no = document.createElement('div');
+        no.className = classe;
+        camada.appendChild(no);
+        if (sobre) poe(no, sobre);
+        return guarda(exec, no);
+    }
+
+    function poe(no, r) {
+        no.style.left = `${r.x}px`;
+        no.style.top = `${r.y}px`;
+        if (r.w !== undefined) no.style.width = `${r.w}px`;
+        if (r.h !== undefined) no.style.height = `${r.h}px`;
+    }
+
+    // Uma animação que a cena espera: se a cena parar, interrompe
+    function anima(exec, el, quadros, opcoes) {
+        const a = el.animate(quadros, { fill: 'both', ...opcoes });
+        (exec.anims || (exec.anims = [])).push(a);
+        return a.finished.then(
+            () => { if (!exec.ativa) throw PARADA; return a; },
+            () => { throw PARADA; }
+        );
+    }
+
+    // Uma animação solta, que a cena não espera
+    const solta = (exec, el, quadros, opcoes) => anima(exec, el, quadros, { fill: 'none', ...opcoes }).catch(() => {});
+
+    // Cresce de grande para o tamanho certo, com um tranco
+    const bate = (exec, el, de = 1.8) => solta(exec, el, [
+        { transform: `scale(${de})`, opacity: 0 },
+        { transform: 'scale(0.9)', opacity: 1, offset: 0.6 },
+        { transform: 'none', opacity: 1 }
+    ], { duration: 520, easing: 'ease-out' });
+
+    // Treme (somado ao que o GSAP já faz na janela)
+    const treme = (exec, el, forca = 10) => solta(exec, el, [
+        { transform: 'translate(0, 0)' },
+        { transform: `translate(${-forca}px, 2px) rotate(-0.6deg)` },
+        { transform: `translate(${forca * 0.9}px, -2px) rotate(0.5deg)` },
+        { transform: `translate(${-forca * 0.6}px, 1px)` },
+        { transform: `translate(${forca * 0.35}px, 0)` },
+        { transform: 'translate(0, 0)' }
+    ], { duration: 460, easing: 'ease-out', composite: 'add' });
+
+    // Uma onda de choque que sai do elemento, na forma dele (redonda no que é
+    // redondo, cartão no que é cartão) e cresce o mesmo tanto para todos os lados
+    function onda(exec, el, perigo = false) {
+        const r = caixa(el);
+        const folga = 4;
+        const no = cria(exec, perigo ? 'efeito-onda efeito-onda-perigo' : 'efeito-onda',
+            { x: r.x - folga, y: r.y - folga, w: r.w + folga * 2, h: r.h + folga * 2 });
+        const raio = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
+        no.style.borderRadius = raio * 2 >= Math.min(r.w, r.h) ? '999px' : `${raio + folga}px`;
+        const cresce = 36;
+        const sx = 1 + (cresce * 2) / (r.w + folga * 2);
+        const sy = 1 + (cresce * 2) / (r.h + folga * 2);
+        anima(exec, no, [
+            { transform: 'scale(1)', opacity: 1 },
+            { transform: `scale(${sx}, ${sy})`, opacity: 0 }
+        ], { duration: 700, easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' }).catch(() => {}).finally(() => no.remove());
+    }
+
+    // Uma linha que se desenha de um elemento (borda esquerda) a outro (borda direita)
+    async function liga(exec, de, ate) {
+        const a = caixa(de);
+        const b = caixa(ate);
+        const x1 = a.x;
+        const y1 = a.y + a.h / 2;
+        const x2 = b.x + b.w;
+        const y2 = b.y + b.h / 2;
+        const svg = guarda(exec, document.createElementNS(NS, 'svg'));
+        svg.setAttribute('class', 'efeito-ligacao');
+        svg.setAttribute('width', palcoFixo.clientWidth);
+        svg.setAttribute('height', palcoFixo.clientHeight);
+        const caminho = document.createElementNS(NS, 'path');
+        caminho.setAttribute('d', `M ${x1} ${y1} C ${x1 - 90} ${y1}, ${x2 + 90} ${y2}, ${x2} ${y2}`);
+        const pontas = [[x1, y1], [x2, y2]].map(([x, y]) => {
+            const c = document.createElementNS(NS, 'circle');
+            c.setAttribute('cx', x);
+            c.setAttribute('cy', y);
+            c.setAttribute('r', 5);
+            c.style.transformOrigin = `${x}px ${y}px`;
+            return c;
+        });
+        svg.append(caminho, ...pontas);
+        camada.appendChild(svg);
+        const comprimento = caminho.getTotalLength();
+        caminho.style.strokeDasharray = comprimento;
+        await anima(exec, pontas[0], [{ transform: 'scale(0)' }, { transform: 'scale(1)' }], { duration: 200, easing: 'ease-out' });
+        await anima(exec, caminho, [{ strokeDashoffset: comprimento }, { strokeDashoffset: 0 }], { duration: 650, easing: 'cubic-bezier(0.65, 0, 0.35, 1)' });
+        await anima(exec, pontas[1], [{ transform: 'scale(0)' }, { transform: 'scale(1.6)', offset: 0.6 }, { transform: 'scale(1)' }], { duration: 300 });
+        return svg;
+    }
+
+    async function some(exec, no, ms = 300) {
+        await anima(exec, no, [{ opacity: 1 }, { opacity: 0 }], { duration: ms, easing: 'ease-in' });
+        no.remove();
+    }
+
+    /* ---------- 01 · O problema: a noite em que ninguém respondeu ---------- */
 
     const mapa = {
         async tocar(tela, exec) {
             entra('pergunta');
-            await pausa(exec, 300);
-            mostrar(tela.querySelector('.regua-ana'));
+            await pausa(exec, 500);
+            const marca = tela.querySelector('.regua-ana');
+            mostrar(marca);
+            onda(exec, marca, true);
             await pausa(exec, 600);
 
-            // A noite passa: o relógio corre de 22:47 até 09:15
+            // A noite: a janela escurece e um relógio enorme corre até a manhã
             entra('noite');
+            const noite = cria(exec, 'efeito-noite', caixa(app));
+            const hora = document.createElement('span');
+            hora.className = 'efeito-noite-hora';
+            hora.textContent = '22:47';
+            const espera = document.createElement('span');
+            espera.className = 'efeito-noite-espera';
+            espera.textContent = 'Ana esperando resposta';
+            noite.append(hora, espera);
+            await anima(exec, noite, [{ opacity: 0 }, { opacity: 1 }], { duration: 450, easing: 'ease-out' });
+
             const inicio = 22 * 60 + 47;
             const fim = (24 + 9) * 60 + 15;
-            const QUADROS = 36;
+            const QUADROS = 64;
             for (let q = 1; q <= QUADROS; q++) {
-                relogioApp.textContent = relogioTexto(Math.round(inicio + (fim - inicio) * (q / QUADROS)));
-                await pausa(exec, 35);
+                const agora = Math.round(inicio + (fim - inicio) * (q / QUADROS));
+                const passou = agora - inicio;
+                relogioApp.textContent = relogioTexto(agora);
+                hora.textContent = relogioTexto(agora);
+                espera.textContent = `Ana esperando há ${Math.floor(passou / 60)}h${String(passou % 60).padStart(2, '0')}`;
+                if (q % 8 === 0) solta(exec, hora, [{ transform: 'scale(1.1)' }, { transform: 'none' }], { duration: 220, easing: 'ease-out' });
+                await pausa(exec, 38);
             }
+            treme(exec, espera, 6);
+            await pausa(exec, 900);
+            await some(exec, noite, 400);
 
+            // A recepção responde, tarde demais
             entra('tarde');
-            await pausa(exec, 700);
+            await pausa(exec, 900);
+
+            // A Ana vai embora: o contato sai voando da janela
+            const r = caixa(avatar);
+            const voo = cria(exec, 'app-avatar', r);
+            voo.textContent = avatar.textContent;
+            contato.classList.add('foi');
             relogioApp.textContent = '09:16';
             const perdida = entra('perdida');
-            await pausa(exec, 350);
+            await anima(exec, voo, [
+                { transform: 'none', opacity: 1 },
+                { transform: 'translate(10px, -36px) rotate(-18deg) scale(1.35)', opacity: 1, offset: 0.3 },
+                { transform: `translate(${-(r.x + 120)}px, -180px) rotate(-200deg) scale(0.5)`, opacity: 0 }
+            ], { duration: 950, easing: 'cubic-bezier(0.5, 0, 0.75, 0)' });
+            voo.remove();
             perdida.classList.add('riscado');
-            await pausa(exec, 600);
-            mostrar(tela.querySelector('.tela-achado'));
+
+            // O carimbo bate e a janela treme
+            const col = caixa(conversa);
+            const carimbo = cria(exec, 'efeito-carimbo', { x: col.x + col.w / 2, y: col.y + col.h * 0.62 });
+            carimbo.textContent = 'Paciente perdida';
+            await anima(exec, carimbo, [
+                { transform: 'translate(-50%, -50%) rotate(-16deg) scale(3)', opacity: 0 },
+                { transform: 'translate(-50%, -50%) rotate(-8deg) scale(1)', opacity: 1 }
+            ], { duration: 280, easing: 'cubic-bezier(0.5, 0, 0.75, 0)' });
+            treme(exec, app, 12);
+            await pausa(exec, 1300);
+            await some(exec, carimbo);
+
+            // O diagnóstico: o gargalo aparece no painel
+            const achado = tela.querySelector('.tela-achado');
+            mostrar(achado);
+            bate(exec, achado, 1.4);
+            await pausa(exec, 350);
+            treme(exec, achado, 6);
         }
     };
 
-    /* ---------- 02 · Base da clínica: o agente aprende e responde a Ana ---------- */
+    /* ---------- 02 · O agente aprende a clínica e responde a Ana ---------- */
 
     const base = {
         async tocar(tela, exec) {
-            // A manhã perdida recolhe: fica só a pergunta das 22:47
+            // A manhã perdida despenca: fica só a pergunta das 22:47, e a Ana volta
             await saem(exec, ['noite', 'tarde', 'perdida']);
+            contato.classList.remove('foi');
+            bate(exec, avatar, 2.2);
             relogioApp.textContent = '22:47';
-            await pausa(exec, 200);
+            bate(exec, relogioApp, 1.5);
+            await pausa(exec, 400);
 
             // A ficha da clínica é preenchida, campo a campo
             for (const dd of tela.querySelectorAll('[data-digita]')) {
+                solta(exec, dd.parentElement, [
+                    { transform: 'translateX(32px)', opacity: 0 },
+                    { transform: 'none', opacity: 1 }
+                ], { duration: 420, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
                 dd.classList.add('cursor');
                 const texto = dd.dataset.texto;
                 for (let i = 1; i <= texto.length; i++) {
                     dd.textContent = texto.slice(0, i);
-                    await pausa(exec, 18);
+                    await pausa(exec, 14);
                 }
-                await pausa(exec, 120);
+                await pausa(exec, 80);
                 dd.classList.remove('cursor');
             }
 
             // O agente usa a ficha para responder a pergunta da Ana
             await pausa(exec, 300);
             marcarEnviada(false);
-            await digitaEMostra(exec, entra('agente'), 1100);
-            tela.querySelector('[data-campo="horarios"]').classList.add('em-uso');
-            await pausa(exec, 500);
-            tela.querySelector('.tela-pilula').textContent = 'Pronto';
+            const vez = entra('agente');
+            await digitaEMostra(exec, vez, 1000);
+            await pausa(exec, 250);
+
+            // A ligação: a resposta saiu dos horários da ficha
+            const horarios = tela.querySelector('[data-campo="horarios"]');
+            horarios.classList.add('em-uso');
+            const linha = await liga(exec, horarios, vez.querySelector('.balao'));
+            onda(exec, vez.querySelector('.balao'));
+            await pausa(exec, 1400);
+            await some(exec, linha, 400);
+
+            const pilula = tela.querySelector('.tela-pilula');
+            pilula.textContent = 'Pronto';
+            bate(exec, pilula, 2);
         }
     };
 
-    /* ---------- 03 · Agente ligado: a resposta vai e a consulta é marcada ---------- */
+    /* ---------- 03 · A solução: o agente ligado responde na hora ---------- */
 
     const conexoes = {
         async tocar(tela, exec) {
-            await pausa(exec, 200);
+            await pausa(exec, 250);
 
-            // A chave liga o agente
+            // A chave liga o agente, com um estalo
             tela.dataset.chave = 'ligada';
             tela.querySelector('.chave-rotulo').textContent = 'Ligado';
-            await pausa(exec, 400);
+            const chave = tela.querySelector('.chave');
+            onda(exec, chave);
+            bate(exec, chave, 1.6);
+            await pausa(exec, 450);
 
-            // Cada canal conecta, um por vez
+            // Cada canal entra e conecta, um por vez
             for (const li of tela.querySelectorAll('.canais li')) {
+                solta(exec, li, [
+                    { transform: 'translateX(40px) scale(0.9)', opacity: 0 },
+                    { transform: 'none', opacity: 1 }
+                ], { duration: 420, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
                 li.dataset.estado = 'conectando';
-                await pausa(exec, 350);
+                await pausa(exec, 300);
                 li.dataset.estado = 'ok';
-                await pausa(exec, 100);
+                bate(exec, li.querySelector('.icone-ok'), 2.4);
+                await pausa(exec, 80);
             }
 
-            // A prévia vira resposta enviada às 22:47
+            // A virada: a resposta sai às 22:47, na hora
             await pausa(exec, 300);
             marcarEnviada(true);
-            await pausa(exec, 700);
+            bate(exec, tagEnvio, 2.6);
+            onda(exec, tagEnvio);
+            await pausa(exec, 600);
+
+            // O placar cobre o painel: a espera de 10h28 vira resposta na hora
+            const placar = cria(exec, 'efeito-placar', caixa(painel));
+            const linha = (classe, rotulo, valor, nota) => {
+                const l = document.createElement('div');
+                l.className = `efeito-placar-linha ${classe}`;
+                const [a, b, c] = ['efeito-placar-rotulo', 'efeito-placar-valor', 'efeito-placar-nota'].map(k => {
+                    const e = document.createElement('span');
+                    e.className = k;
+                    return e;
+                });
+                a.textContent = rotulo;
+                b.textContent = valor;
+                c.textContent = nota;
+                l.append(a, b, c);
+                return l;
+            };
+            const antes = linha('efeito-placar-antes', 'Antes', '10h28', 'sem resposta, e a Ana foi embora');
+            const agora = linha('efeito-placar-agora', 'Agora', 'Na hora', 'resposta às 22:47, de madrugada ou não');
+            const risca = document.createElement('i');
+            risca.className = 'efeito-placar-risca';
+            antes.querySelector('.efeito-placar-valor').append(risca);
+            agora.style.opacity = '0';
+            placar.append(antes, agora);
+            await anima(exec, placar, [
+                { opacity: 0, transform: 'translateX(40px) rotateY(-20deg)' },
+                { opacity: 1, transform: 'none' }
+            ], { duration: 500, easing: 'cubic-bezier(0.34, 1.4, 0.64, 1)' });
+            await pausa(exec, 500);
+            await anima(exec, risca, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 380, easing: 'cubic-bezier(0.65, 0, 0.35, 1)' });
+            treme(exec, antes, 6);
+            await pausa(exec, 300);
+            agora.style.opacity = '';
+            const valorAgora = agora.querySelector('.efeito-placar-valor');
+            solta(exec, agora, [{ opacity: 0, transform: 'translateY(24px)' }, { opacity: 1, transform: 'none' }], { duration: 400, easing: 'ease-out' });
+            bate(exec, valorAgora, 2.4);
+            await pausa(exec, 250);
+            onda(exec, valorAgora);
+            await pausa(exec, 1700);
+            await some(exec, placar, 350);
 
             // A Ana escolhe e o agente marca
-            await digitaEMostra(exec, entra('escolha'), 900);
+            await digitaEMostra(exec, entra('escolha'), 800);
             relogioApp.textContent = '22:48';
-            await pausa(exec, 400);
-            await digitaEMostra(exec, entra('marcado'), 900);
-            await pausa(exec, 400);
+            await pausa(exec, 350);
+            await digitaEMostra(exec, entra('marcado'), 800);
+            await pausa(exec, 350);
 
-            // A consulta entra na agenda
-            entra('consulta');
+            // A consulta cai na conversa
+            const consulta = entra('consulta');
+            consulta.classList.remove('chega');
+            await anima(exec, consulta, [
+                { transform: 'perspective(600px) translateY(-70px) rotateX(80deg) scale(0.8)', opacity: 0 },
+                { transform: 'none', opacity: 1 }
+            ], { duration: 700, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', fill: 'none' });
+            onda(exec, consulta);
+            onda(exec, avatar);
         }
     };
 
@@ -216,28 +472,47 @@
 
             // Na véspera, o lembrete sai e a Ana confirma
             relogioApp.textContent = '18:00';
-            await digitaEMostra(exec, entra('lembrete'), 900);
-            await pausa(exec, 500);
+            await digitaEMostra(exec, entra('lembrete'), 800);
+            await pausa(exec, 450);
             relogioApp.textContent = '18:02';
-            await digitaEMostra(exec, entra('confirma'), 800);
+            await digitaEMostra(exec, entra('confirma'), 700);
             await pausa(exec, 300);
             troca.textContent = troca.dataset.depois;
-            await pausa(exec, 700);
+            bate(exec, troca.parentElement, 2.2);
+            onda(exec, consulta);
+            await pausa(exec, 800);
 
-            // O mês inteiro: as barras crescem, o sábado fica baixo
+            // O mês inteiro: as barras crescem com mola, o sábado fica baixo
             mostrar(tela.querySelector('.grafico-legenda'));
             mostrar(tela.querySelector('.barras'));
             await pausa(exec, 200);
             tela.dataset.fase = 'vaza';
-            await pausa(exec, 1200);
+            await pausa(exec, 1100);
+            const sabado = tela.querySelector('.barra-sab .barra-area');
+            onda(exec, sabado, true);
+            treme(exec, sabado, 5);
             mostrar(vazava);
-            await pausa(exec, 900);
+            bate(exec, vazava, 1.3);
+            await pausa(exec, 1000);
 
-            // O ajuste: o sábado sobe
+            // O ajuste voa até o sábado, e o sábado sobe
             mostrar(ajuste);
-            await pausa(exec, 500);
+            await pausa(exec, 450);
+            const origem = caixa(ajuste.querySelector('dd'));
+            const chip = cria(exec, 'efeito-chip', { x: origem.x, y: origem.y });
+            chip.textContent = ajuste.querySelector('dd').textContent;
+            const alvo = caixa(sabado);
+            const dx = alvo.x + alvo.w / 2 - origem.x - chip.offsetWidth / 2;
+            const dy = alvo.y - origem.y;
+            await anima(exec, chip, [
+                { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                { transform: `translate(${dx * 0.5}px, ${Math.min(dy, 0) - 70}px) scale(1.1) rotate(-6deg)`, opacity: 1, offset: 0.5 },
+                { transform: `translate(${dx}px, ${dy}px) scale(0.3)`, opacity: 0.2 }
+            ], { duration: 850, easing: 'cubic-bezier(0.65, 0, 0.35, 1)' });
+            chip.remove();
             tela.dataset.fase = 'ajustado';
-            await pausa(exec, 900);
+            onda(exec, sabado);
+            await pausa(exec, 1000);
             mostrar(proxima);
         }
     };
@@ -297,13 +572,13 @@
         const b = posicao(destino);
         const em = (x, y, s) => `translate(${x}px, ${y}px) scale(${s})`;
         const xm = (a.x + b.x) / 2;
-        const ym = Math.min(a.y, b.y) - 40;
+        const ym = Math.min(a.y, b.y) - 120;
         const anim = v.animate([
             { transform: em(a.x, a.y, 1) },
-            { transform: em(a.x, a.y, 1.03), offset: 0.15 },
-            { transform: em(xm, ym, 1.03), offset: 0.55 },
-            { transform: em(b.x, b.y, 1) }
-        ], { duration: 1000, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' });
+            { transform: `${em(a.x, a.y + 10, 0.92)} rotate(2deg)`, offset: 0.12 },
+            { transform: `${em(xm, ym, 1.18)} rotate(-8deg)`, offset: 0.55 },
+            { transform: `${em(b.x, b.y, 1)} rotate(0deg)` }
+        ], { duration: 1150, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' });
         meu.anim = anim;
 
         try {
@@ -320,6 +595,8 @@
         destino.style.transition = '';
         destino.classList.add('recebe');
         setTimeout(() => destino.classList.remove('recebe'), 600);
+        onda(meu, destino);
+        treme(meu, destino, 5);
         v.remove();
         meu.viajante = null;
         meu.anim = null;
@@ -334,6 +611,8 @@
             exec.ativa = false;
             if (exec.anim) exec.anim.cancel();
             if (exec.viajante) exec.viajante.remove();
+            (exec.anims || []).forEach(a => a.cancel());
+            (exec.nos || []).forEach(no => no.remove());
         }
         exec = null;
     }
@@ -369,7 +648,7 @@
             item.passo.classList.toggle('ativo', i + 1 === n);
             item.passo.classList.toggle('feito', i + 1 < n);
         });
-        palcoFixo.dataset.hora = String(n);
+        secao.dataset.hora = String(n); // o céu da seção (estilos/explicacao.css)
         atual = n;
 
         const item = itens[n - 1];
@@ -387,11 +666,12 @@
     function montar() {
         secao.dataset.js = 'demo';
         fixo.hidden = false;
+        palcoFixo.appendChild(camada);
         itens.forEach(item => painel.appendChild(item.tela));
 
         // Antes do primeiro passo chegar, a janela espera pronta para começar
         atual = 0;
-        palcoFixo.dataset.hora = '1';
+        secao.dataset.hora = '1';
         itens[0].tela.classList.add('ativa');
         itens[0].cena.preparar(itens[0].tela);
         fioEm(0);
@@ -404,9 +684,13 @@
             });
         }, { rootMargin: '-25% 0px -74% 0px' });
         itens.forEach(item => observador.observe(item.texto));
+
+        // O movimento preso à rolagem (GSAP) monta depois que a demo existe
+        secao.dispatchEvent(new CustomEvent('exp:montou'));
     }
 
     function desmontar() {
+        secao.dispatchEvent(new CustomEvent('exp:desmontou'));
         parar();
         if (observador) observador.disconnect();
         observador = null;
@@ -416,8 +700,10 @@
             item.passo.classList.remove('ativo', 'feito');
             item.cena.final(item.tela);
         });
+        camada.remove();
         fixo.hidden = true;
         delete secao.dataset.js;
+        delete secao.dataset.hora;
         atual = 0;
     }
 

@@ -338,6 +338,18 @@
         </section>
 
         <section id="explicacao" class="explicacao">
+            <!-- O céu: ocupa a tela toda enquanto a seção passa (fixo, recortado pela seção) e
+                 vai da noite ao dia, um passo de cada vez (data-hora na seção, ou a
+                 rolagem no computador). As camadas de CSS são o céu sem JS; o canvas
+                 (scripts/explicacao-ceu.js) põe a névoa correndo por cima. -->
+            <div class="exp-ceu" aria-hidden="true">
+                <span class="ceu-camada ceu-noite"></span>
+                <span class="ceu-camada ceu-madrugada"></span>
+                <span class="ceu-camada ceu-amanhecer"></span>
+                <span class="ceu-camada ceu-dia"></span>
+                <span class="ceu-camada ceu-fim"></span>
+                <canvas></canvas>
+            </div>
             <div class="exp-inner">
                 <div class="exp-cabecalho">
                     <h2 class="exp-titulo">Da primeira conversa à clínica rodando no automático</h2>
@@ -498,17 +510,11 @@
                     </ol>
 
                     <!-- Palco fixo da demo: só existe com JS, no computador e com movimento.
-                         O céu muda a cada passo (noite, madrugada, amanhecer, dia) e a janela
+                         Sem caixa: a janela flutua sobre o céu da seção. A janela
                          do produto é uma só: a conversa da Ana à esquerda, que vai se somando,
                          e à direita o painel do passo (as telas acima, movidas pelo script). -->
                     <div class="exp-fixo" hidden>
-                        <div class="exp-fixo-palco" data-hora="1">
-                            <div class="ceu" aria-hidden="true">
-                                <span class="ceu-camada ceu-noite"></span>
-                                <span class="ceu-camada ceu-madrugada"></span>
-                                <span class="ceu-camada ceu-amanhecer"></span>
-                                <span class="ceu-camada ceu-dia"></span>
-                            </div>
+                        <div class="exp-fixo-palco">
                             <div class="app" data-kind="product" aria-hidden="true">
                                 <div class="app-topo">
                                     <span class="material-symbols-outlined">forum</span> Atendimento da clínica
@@ -691,6 +697,13 @@
     <script src="scripts/como-funciona.js"></script>
     <script src="scripts/explicacao-cenas.js"></script>
     <script src="scripts/explicacao-anima.js"></script>
+    <!-- GSAP 3.13 (gratuito, inclusive os plugins), servido do próprio site: nada vai a CDN de terceiros -->
+    <script src="scripts/vendor/gsap/gsap.min.js"></script>
+    <script src="scripts/vendor/gsap/ScrollTrigger.min.js"></script>
+    <script src="scripts/vendor/gsap/SplitText.min.js"></script>
+    <script src="scripts/vendor/gsap/DrawSVGPlugin.min.js"></script>
+    <script src="scripts/explicacao-gsap.js"></script>
     <script src="scripts/explicacao-celular.js"></script>
+    <script src="scripts/explicacao-ceu.js"></script>
 </body>
 </html>

@@ -5,6 +5,8 @@
    arrasta para o lado (scroll-snap, só CSS). Este script:
    - cria os pontinhos embaixo (tocar leva ao passo), em
      qualquer navegador, com ou sem movimento;
+   - leva o céu da seção (data-hora) à hora do cartão à
+     vista, da noite ao dia;
    - toca a cena de cada passo uma vez, quando a tela do
      produto dele está de fato à vista; voltando a um passo
      já visto, ele está pronto.
@@ -29,6 +31,7 @@
     if (!trilho || !passos.length) return;
 
     const comMovimento = window.matchMedia('(prefers-reduced-motion: no-preference)');
+    const celular = window.matchMedia('(max-width: 959px)');
 
     /* ---------- Pontinhos (não dependem de nada além do scroll) ---------- */
 
@@ -65,6 +68,10 @@
             if (j === i) b.setAttribute('aria-current', 'step');
             else b.removeAttribute('aria-current');
         });
+
+        // O céu da seção acompanha o cartão à vista (no computador quem manda é a demo)
+        if (celular.matches) secao.dataset.hora = String(i + 1);
+        else if (secao.dataset.js !== 'demo') delete secao.dataset.hora;
     }
 
     function irPara(i) {
