@@ -223,55 +223,114 @@
         <section id="como-funciona" class="como">
             <div class="como-inner">
                 <div class="como-cabecalho">
-                    <h2 class="como-titulo">Como funciona nossa empresa</h2>
-                    <p>A gente não entrega um sistema e some. Instalamos o agente dentro do WhatsApp e do Instagram que sua clínica já usa, conectamos na sua agenda e acompanhamos os números todo mês. Sem trocar de software, sem treinar equipe em plataforma nova.</p>
+                    <h2 class="como-titulo">Funciona no que sua clínica já usa</h2>
+                    <p>Sem trocar de software e sem treinar equipe. A gente instala, conecta e acompanha os números todo mês.</p>
                 </div>
 
-                <!-- Mapa de conexões (scripts/como-funciona.js): o agente no centro,
-                     ligado ao WhatsApp e ao Instagram (entrada) e ao que ele faz (saída).
-                     Clicar num destino acende o caminho e mostra o painel dele.
-                     Sem JS: sem linhas, os destinos são links e os 4 painéis ficam abertos. -->
-                <div class="rede">
-                    <svg class="rede-linhas" aria-hidden="true"></svg>
-
-                    <div class="rede-grade">
-                        <ul class="rede-entradas" aria-label="Onde o paciente chama a clínica">
-                            <li class="rede-no rede-entrada">
-                                <span class="material-symbols-outlined" aria-hidden="true">forum</span>
-                                WhatsApp
-                            </li>
-                            <li class="rede-no rede-entrada">
-                                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                                Instagram
-                            </li>
-                        </ul>
-
-                        <div class="rede-no rede-agente">
-                            <img src="imagens/logo/rlg-white.svg" alt="" width="40" height="40">
-                            <span>Agente RLG</span>
+                <!-- Camadas da clínica (scripts/como-funciona.js): as ferramentas que a clínica
+                     já usa empilhadas em perspectiva, com o Agente RLG como a camada de luz entre
+                     o paciente (WhatsApp e Instagram) e o que ele faz (agenda, lembretes, CRM,
+                     dashboard). As lâminas chegam soltas e se juntam conforme a rolagem (GSAP);
+                     clicar numa delas a tira da pilha e mostra o painel dela ao lado.
+                     Sem JS: as lâminas são links e os 7 painéis ficam abertos. -->
+                <div class="camadas">
+                    <div class="camadas-palco">
+                        <div class="pilha">
+                            <div class="pilha-abas" aria-label="Camadas da clínica">
+                                <a href="#painel-whatsapp" id="aba-whatsapp" class="lamina lamina-canal" style="--i: 6">
+                                    <span class="lamina-face face-whatsapp" aria-hidden="true">
+                                        <i class="m-balao"></i><i class="m-balao m-direita"></i><i class="m-balao m-curto"></i>
+                                    </span>
+                                    <span class="lamina-rotulo"><span class="material-symbols-outlined" aria-hidden="true">forum</span>WhatsApp</span>
+                                </a>
+                                <a href="#painel-instagram" id="aba-instagram" class="lamina lamina-canal" style="--i: 5">
+                                    <span class="lamina-face face-instagram" aria-hidden="true">
+                                        <i class="m-avatar"></i><i class="m-balao"></i><i class="m-balao m-direita m-curto"></i>
+                                    </span>
+                                    <span class="lamina-rotulo"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>Instagram</span>
+                                </a>
+                                <a href="#painel-agente" id="aba-agente" class="lamina lamina-agente" style="--i: 4">
+                                    <span class="lamina-face face-agente" aria-hidden="true">
+                                        <img src="imagens/logo/rlg-white.svg" alt="" width="56" height="56">
+                                    </span>
+                                    <span class="lamina-rotulo">Agente RLG</span>
+                                </a>
+                                <a href="#painel-agenda" id="aba-agenda" class="lamina lamina-destino" style="--i: 3">
+                                    <span class="lamina-face face-agenda" aria-hidden="true">
+                                        <i></i><i></i><i></i><i></i><i></i><i class="m-marcado"></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                    </span>
+                                    <span class="lamina-rotulo"><span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>Agenda</span>
+                                </a>
+                                <a href="#painel-lembretes" id="aba-lembretes" class="lamina lamina-destino" style="--i: 2">
+                                    <span class="lamina-face face-lembretes" aria-hidden="true">
+                                        <i class="m-balao m-direita"></i><i class="m-pilula m-marcado"></i><i class="m-pilula"></i>
+                                    </span>
+                                    <span class="lamina-rotulo"><span class="material-symbols-outlined" aria-hidden="true">notifications_active</span>Lembretes</span>
+                                </a>
+                                <a href="#painel-crm" id="aba-crm" class="lamina lamina-destino" style="--i: 1">
+                                    <span class="lamina-face face-crm" aria-hidden="true">
+                                        <i></i><i></i><i></i><i class="m-marcado"></i><i></i><i></i><i></i><i></i>
+                                    </span>
+                                    <span class="lamina-rotulo"><span class="material-symbols-outlined" aria-hidden="true">database</span>CRM ou planilha</span>
+                                </a>
+                                <a href="#painel-dashboard" id="aba-dashboard" class="lamina lamina-destino" style="--i: 0">
+                                    <span class="lamina-face face-dashboard" aria-hidden="true">
+                                        <i style="--altura: 100%"></i><i style="--altura: 72%"></i><i style="--altura: 60%"></i>
+                                    </span>
+                                    <span class="lamina-rotulo"><span class="material-symbols-outlined" aria-hidden="true">monitoring</span>Dashboard</span>
+                                </a>
+                            </div>
                         </div>
 
-                        <div class="rede-destinos" aria-label="O que o agente faz">
-                            <a href="#painel-agenda" id="aba-agenda" class="rede-no rede-destino">
-                                <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
-                                Agenda
-                            </a>
-                            <a href="#painel-lembretes" id="aba-lembretes" class="rede-no rede-destino">
-                                <span class="material-symbols-outlined" aria-hidden="true">notifications_active</span>
-                                Lembretes
-                            </a>
-                            <a href="#painel-crm" id="aba-crm" class="rede-no rede-destino">
-                                <span class="material-symbols-outlined" aria-hidden="true">database</span>
-                                CRM ou planilha
-                            </a>
-                            <a href="#painel-dashboard" id="aba-dashboard" class="rede-no rede-destino">
-                                <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
-                                Dashboard
-                            </a>
-                        </div>
+                        <!-- Tour: a pilha percorre as lâminas sozinha enquanto está à vista.
+                             Para ao passar o mouse, ao focar e de vez no primeiro clique. -->
+                        <button type="button" class="camadas-tour" aria-pressed="false" hidden>
+                            <span class="tour-icone" aria-hidden="true"></span>
+                            <span class="tour-texto">Pausar</span>
+                        </button>
                     </div>
 
-                    <div class="rede-paineis">
+                    <div class="camadas-paineis">
+                        <div class="painel" id="painel-whatsapp">
+                            <div class="painel-texto">
+                                <h3>Responde na hora</h3>
+                                <p>Seu paciente tem resposta de madrugada ou no domingo, sem esperar a recepção abrir.</p>
+                            </div>
+                            <div class="painel-peca peca-conversa" aria-hidden="true">
+                                <p class="peca-topo"><span class="material-symbols-outlined">forum</span> WhatsApp</p>
+                                <p class="peca-msg">Oi! Tem horário no sábado? <time>22:47</time></p>
+                                <p class="peca-msg peca-msg-agente">Tenho sim, Ana! Sábado às 10:30 ou 11:30. Qual prefere? <time>22:47</time></p>
+                            </div>
+                        </div>
+
+                        <div class="painel" id="painel-instagram">
+                            <div class="painel-texto">
+                                <h3>Atende a DM também</h3>
+                                <p>Quem chega pelo Instagram tem a mesma resposta. Quando o caso pede, sua equipe assume a conversa.</p>
+                            </div>
+                            <div class="painel-peca peca-conversa" aria-hidden="true">
+                                <p class="peca-topo"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg> Mensagem direta</p>
+                                <p class="peca-msg">Vocês fazem clareamento? Queria entender como funciona</p>
+                                <p class="peca-nota"><span class="material-symbols-outlined">forum</span> Sua equipe assumiu a conversa</p>
+                            </div>
+                        </div>
+
+                        <div class="painel" id="painel-agente">
+                            <div class="painel-texto">
+                                <h3>Treinado na sua clínica</h3>
+                                <p>Aprende seus horários, procedimentos e convênios, e responde com o jeito da sua recepção.</p>
+                            </div>
+                            <div class="painel-peca peca-treino" aria-hidden="true">
+                                <p class="peca-topo"><img src="imagens/logo/rlg-white.svg" alt="" width="16" height="16"> O que o agente sabe</p>
+                                <ul class="peca-chips">
+                                    <li class="marcado">Seus horários</li>
+                                    <li class="marcado">Procedimentos</li>
+                                    <li class="marcado">Convênios</li>
+                                    <li class="marcado">Jeito da recepção</li>
+                                </ul>
+                            </div>
+                        </div>
+
                         <div class="painel" id="painel-agenda">
                             <div class="painel-texto">
                                 <h3>Responde e agenda</h3>
@@ -694,7 +753,6 @@
     <script src="scripts/script.js"></script>
     <script src="scripts/home-fundo.js"></script>
     <script src="scripts/home-anima.js"></script>
-    <script src="scripts/como-funciona.js"></script>
     <script src="scripts/explicacao-cenas.js"></script>
     <script src="scripts/explicacao-anima.js"></script>
     <!-- GSAP 3.13 (gratuito, inclusive os plugins), servido do próprio site: nada vai a CDN de terceiros -->
@@ -702,6 +760,7 @@
     <script src="scripts/vendor/gsap/ScrollTrigger.min.js"></script>
     <script src="scripts/vendor/gsap/SplitText.min.js"></script>
     <script src="scripts/vendor/gsap/DrawSVGPlugin.min.js"></script>
+    <script src="scripts/como-funciona.js"></script>
     <script src="scripts/explicacao-gsap.js"></script>
     <script src="scripts/explicacao-celular.js"></script>
     <script src="scripts/explicacao-ceu.js"></script>

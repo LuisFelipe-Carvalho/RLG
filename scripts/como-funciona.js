@@ -1,41 +1,46 @@
 /* =========================================================
-   Como funciona: mapa de conexões.
+   Como funciona: camadas da clínica.
 
-   O agente fica no centro, ligado ao WhatsApp e ao Instagram
-   (entrada) e aos quatro destinos (saída). Os destinos viram
-   abas: clicar em um acende o caminho entrada -> agente ->
-   destino, um pulso de luz percorre esse caminho uma vez e o
-   painel do destino aparece embaixo.
+   As ferramentas que a clínica já usa ficam empilhadas em
+   perspectiva (só CSS, estilos/como-funciona.css). As sete
+   lâminas são abas: a escolhida sai da pilha e o painel dela
+   aparece.
 
-   As linhas são desenhadas a partir da posição real de cada
-   nó, então ficam certas em qualquer largura (no celular o
-   mapa fica na vertical e as curvas descem).
+   Montagem: as lâminas chegam soltas e se juntam conforme a
+   rolagem (GSAP ScrollTrigger com scrub move a variável
+   --junta de 0 a 1 no palco; o CSS faz o resto).
 
-   Sem JS: sem linhas, os destinos são links para os painéis
-   e os quatro painéis ficam abertos. Com "reduzir movimento"
-   o caminho acende sem desenho nem pulso.
+   Tour: enquanto a seção está à vista, a pilha passa sozinha
+   de lâmina em lâmina a cada TEMPO. A barrinha no botão da
+   aba escolhida mostra quanto falta (é o fim da animação
+   dela que avança o tour). Segura ao passar o mouse, ao
+   focar algo da seção e fora da tela; para de vez no
+   primeiro clique numa lâmina; o botão pausa e continua.
+
+   Sem JS: as lâminas são links para os painéis e os sete
+   painéis ficam abertos. Sem GSAP ou com "reduzir movimento"
+   a pilha já vem montada; com "reduzir movimento" também não
+   há tour nem deslize.
    ========================================================= */
 (() => {
-    const mapa = document.querySelector('#como-funciona .rede');
-    if (!mapa) return;
+    const camadas = document.querySelector('#como-funciona .camadas');
+    if (!camadas) return;
 
-    const svg = mapa.querySelector('.rede-linhas');
-    const agente = mapa.querySelector('.rede-agente');
-    const entradas = [...mapa.querySelectorAll('.rede-entrada')];
-    const abas = [...mapa.querySelectorAll('.rede-destino')];
-    const lista = mapa.querySelector('.rede-destinos');
+    const palco = camadas.querySelector('.camadas-palco');
+    const lista = camadas.querySelector('.pilha-abas');
+    const botao = camadas.querySelector('.camadas-tour');
+    const paineisCaixa = camadas.querySelector('.camadas-paineis');
+    const abas = lista ? [...lista.querySelectorAll('.lamina')] : [];
     const paineis = abas.map(aba => document.getElementById(aba.hash.slice(1)));
-    if (!svg || !agente || !abas.length || paineis.includes(null)) return;
+    if (!palco || !botao || !paineisCaixa || !abas.length || paineis.includes(null)) return;
 
-    const movimentoReduzido = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const NS = 'http://www.w3.org/2000/svg';
-
-    // Tempo (ms) que o pulso leva para cruzar a entrada antes de seguir para o destino
-    const ATRASO_DESTINO = 450;
+    const TEMPO = 5000;
+    const movimentoReduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     /* ---------- Abas (acessíveis) ---------- */
 
     lista.setAttribute('role', 'tablist');
+    lista.setAttribute('aria-orientation', 'vertical');
     abas.forEach((aba, i) => {
         aba.setAttribute('role', 'tab');
         aba.setAttribute('aria-controls', paineis[i].id);
@@ -44,76 +49,11 @@
         paineis[i].tabIndex = 0;
     });
 
-    /* ---------- Linhas ---------- */
-
-    // Cada caminho tem três camadas: a trilha apagada, a linha acesa e o pulso
-    const criarCaminho = () => {
-        const g = document.createElementNS(NS, 'g');
-        const camadas = ['linha-trilha', 'linha-acesa', 'linha-pulso'].map(classe => {
-            const p = document.createElementNS(NS, 'path');
-            p.setAttribute('class', classe);
-            g.appendChild(p);
-            return p;
-        });
-        svg.appendChild(g);
-        return { g, camadas };
-    };
-
-    const caminhosEntrada = entradas.map(criarCaminho);
-    const caminhosDestino = abas.map(criarCaminho);
-
-    // Curva de um nó a outro. Na horizontal sai pela direita e entra pela
-    // esquerda; na vertical (celular) sai por baixo e entra por cima.
-    const curva = (de, para, base, horizontal) => {
-        const a = de.getBoundingClientRect();
-        const b = para.getBoundingClientRect();
-        let x1, y1, x2, y2;
-        if (horizontal) {
-            x1 = a.right; y1 = a.top + a.height / 2;
-            x2 = b.left;  y2 = b.top + b.height / 2;
-        } else {
-            x1 = a.left + a.width / 2; y1 = a.bottom;
-            x2 = b.left + b.width / 2; y2 = b.top;
-        }
-        x1 -= base.left; x2 -= base.left; y1 -= base.top; y2 -= base.top;
-        if (horizontal) {
-            const meio = (x2 - x1) / 2;
-            return `M${x1},${y1} C${x1 + meio},${y1} ${x2 - meio},${y2} ${x2},${y2}`;
-        }
-        const meio = (y2 - y1) / 2;
-        return `M${x1},${y1} C${x1},${y1 + meio} ${x2},${y2 - meio} ${x2},${y2}`;
-    };
-
-    const desenharLinhas = () => {
-        const base = mapa.getBoundingClientRect();
-        svg.setAttribute('viewBox', `0 0 ${base.width} ${base.height}`);
-
-        // Horizontal quando o agente está à direita das entradas
-        const horizontal = agente.getBoundingClientRect().left > entradas[0].getBoundingClientRect().right;
-
-        const aplicar = ({ camadas }, d) => {
-            camadas.forEach(p => p.setAttribute('d', d));
-            const comprimento = Math.ceil(camadas[0].getTotalLength());
-            camadas.forEach(p => p.style.setProperty('--comp', `${comprimento}px`));
-        };
-
-        caminhosEntrada.forEach((c, i) => aplicar(c, curva(entradas[i], agente, base, horizontal)));
-        caminhosDestino.forEach((c, i) => aplicar(c, curva(agente, abas[i], base, horizontal)));
-    };
-
-    // Reinicia a animação do pulso (tirar e pôr a classe no mesmo quadro não basta)
-    const pulsar = (pulso, atraso) => {
-        pulso.classList.remove('pulsando');
-        void pulso.getBoundingClientRect();
-        pulso.style.setProperty('--atraso', `${atraso}ms`);
-        pulso.classList.add('pulsando');
-    };
-
-    /* ---------- Escolher um destino ---------- */
+    /* ---------- Escolher uma lâmina ---------- */
 
     let atual = -1;
 
-    const escolher = (indice, { focar = false, animar = true } = {}) => {
+    const escolher = (indice, { focar = false } = {}) => {
         if (indice === atual) return;
         atual = indice;
 
@@ -122,22 +62,79 @@
             aba.setAttribute('aria-selected', String(ativa));
             aba.tabIndex = ativa ? 0 : -1;
             paineis[i].hidden = !ativa;
-            caminhosDestino[i].g.classList.toggle('aceso', ativa);
         });
-        caminhosEntrada.forEach(c => c.g.classList.add('aceso'));
-        agente.classList.add('aceso');
 
         if (focar) abas[indice].focus();
+    };
 
-        if (animar && !movimentoReduzido.matches) {
-            caminhosEntrada.forEach(c => pulsar(c.camadas[2], 0));
-            pulsar(caminhosDestino[indice].camadas[2], ATRASO_DESTINO);
-        }
+    /* ---------- Tour ---------- */
+
+    // 'rodando' ou 'parado'; o que segura o tour sem pará-lo fica em `segura`
+    let tour = movimentoReduzido ? 'parado' : 'rodando';
+    const segura = { mouse: false, foco: false, fora: true, montando: false };
+
+    const atualizarTour = () => {
+        camadas.dataset.tour = tour;
+        camadas.toggleAttribute('data-segura', Object.values(segura).some(Boolean));
+        const parado = tour !== 'rodando';
+        botao.setAttribute('aria-pressed', String(parado));
+        botao.querySelector('.tour-texto').textContent = parado ? 'Continuar' : 'Pausar';
+    };
+
+    // A barrinha da aba escolhida terminou: próxima lâmina, de cima para baixo
+    lista.addEventListener('animationend', evento => {
+        if (evento.animationName !== 'tour-progresso' || tour !== 'rodando') return;
+        escolher((atual + 1) % abas.length);
+    });
+
+    botao.addEventListener('click', () => {
+        tour = tour === 'rodando' ? 'parado' : 'rodando';
+        atualizarTour();
+    });
+
+    // Mouse em cima da pilha ou do painel segura (toque não conta: o toque numa aba já para)
+    [palco, paineisCaixa].forEach(el => {
+        el.addEventListener('pointerenter', e => {
+            if (e.pointerType !== 'mouse') return;
+            segura.mouse = true;
+            atualizarTour();
+        });
+        el.addEventListener('pointerleave', e => {
+            if (e.pointerType !== 'mouse') return;
+            segura.mouse = palco.matches(':hover') || paineisCaixa.matches(':hover');
+            atualizarTour();
+        });
+    });
+
+    // Foco em qualquer coisa da seção (abas, painel, botão) segura
+    const dentro = el => el && (palco.contains(el) || paineisCaixa.contains(el));
+    [palco, paineisCaixa].forEach(el => {
+        el.addEventListener('focusin', () => { segura.foco = true; atualizarTour(); });
+        el.addEventListener('focusout', e => {
+            segura.foco = dentro(e.relatedTarget);
+            atualizarTour();
+        });
+    });
+
+    // Fora da tela segura (e o tour só começa quando a pilha aparece)
+    new IntersectionObserver(([entrada]) => {
+        segura.fora = !entrada.isIntersecting;
+        atualizarTour();
+    }, { threshold: 0.5 }).observe(palco);
+
+    /* ---------- Clique e teclado ---------- */
+
+    // Escolher com a mão para o tour de vez: a pessoa assumiu o controle
+    const assumir = () => {
+        if (tour !== 'rodando') return;
+        tour = 'parado';
+        atualizarTour();
     };
 
     abas.forEach((aba, i) => {
         aba.addEventListener('click', evento => {
             evento.preventDefault();
+            assumir();
             escolher(i);
         });
     });
@@ -145,23 +142,53 @@
     // Setas, Home e End trocam de aba (padrão de abas do WAI-ARIA)
     lista.addEventListener('keydown', evento => {
         const teclas = {
-            ArrowRight: atual + 1, ArrowDown: atual + 1,
-            ArrowLeft: atual - 1, ArrowUp: atual - 1,
+            ArrowDown: atual + 1, ArrowRight: atual + 1,
+            ArrowUp: atual - 1, ArrowLeft: atual - 1,
             Home: 0, End: abas.length - 1
         };
         if (!(evento.key in teclas)) return;
         evento.preventDefault();
+        assumir();
         const total = abas.length;
         escolher((teclas[evento.key] + total) % total, { focar: true });
     });
 
+    /* ---------- Montagem presa à rolagem ---------- */
+
+    const montar = () => {
+        if (movimentoReduzido || !window.gsap || !window.ScrollTrigger) return;
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Enquanto não está montada: sem transição nas lâminas e o tour espera
+        const marcar = junta => {
+            const montando = junta < 0.999;
+            if (montando === segura.montando) return;
+            segura.montando = montando;
+            palco.toggleAttribute('data-montando', montando);
+            atualizarTour();
+        };
+
+        gsap.fromTo(palco, { '--junta': 0 }, {
+            '--junta': 1,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: palco,
+                start: 'top 90%',
+                end: 'center 70%',
+                scrub: 0.6
+            },
+            onStart: () => marcar(0),
+            onUpdate: () => marcar(parseFloat(gsap.getProperty(palco, '--junta')))
+        });
+        marcar(parseFloat(gsap.getProperty(palco, '--junta')));
+    };
+
     /* ---------- Ligar ---------- */
 
-    mapa.dataset.js = 'rede';
-    desenharLinhas();
-    escolher(0, { animar: false });
-
-    new ResizeObserver(desenharLinhas).observe(mapa);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(desenharLinhas);
-
+    camadas.style.setProperty('--tempo', `${TEMPO}ms`);
+    camadas.dataset.js = 'camadas';
+    botao.hidden = movimentoReduzido;
+    atualizarTour();
+    escolher(0);
+    montar();
 })();

@@ -18,6 +18,10 @@
     --sombra-card: 0 18px 40px rgba(0, 0, 0, 0.45);
     --cor-grade: color-mix(in srgb, var(--cor-detalhe) 55%, transparent);
     --cor-brilho: color-mix(in srgb, var(--cor-detalhe) 22%, transparent);
+    --cor-brilho-forte: color-mix(in srgb, var(--cor-detalhe) 45%, transparent);
+    /* Lâminas do Como funciona: vidro escuro, e a escolhida um tom de roxo */
+    --cor-lamina: color-mix(in srgb, var(--cor-superficie) 72%, transparent);
+    --cor-lamina-acesa: color-mix(in srgb, var(--cor-detalhe) 18%, var(--cor-superficie));
     --cor-trilha: rgba(242, 242, 242, 0.14);
     --cor-perigo: #F87171;
     --cor-vidro-escuro: rgba(13, 13, 13, 0.55);

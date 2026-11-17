@@ -1,28 +1,38 @@
-/* Hallmark · redesign: full (escopo: só a seção #como-funciona, branch v2-como-funciona-mapa) · theme: brand · shape: mapa de conexões (referências Synthesized e Contiant), para não repetir a forma de passos da Explicação · o Agente RLG no centro, ligado ao WhatsApp e ao Instagram (entrada) e à agenda, aos lembretes, ao CRM e ao dashboard (saída) · signature: clicar num destino acende o caminho entrada, agente, destino, e um pulso de luz corre por ele uma vez · interação só por clique (e setas no teclado), nada se move sozinho · sem JS: sem linhas, os destinos são links e os 4 painéis ficam abertos */
-/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V5 · weakest: H, sete nós e um painel disputam o olho; o nó do agente é o maior, só o caminho escolhido tem cor e o resto fica na cor da trilha */
-/* Hallmark · dropped imagens/como_funciona.png e o botão "Próximo passo" · o dono não gostava da foto (ia trocá-la) e cada destino agora é clicável; o arquivo da foto continua no repositório */
+/* Hallmark · redesign: full (escopo: só a seção #como-funciona, branch v2-como-funciona-v4) · theme: brand (tokens de estilos/style.css, Sora + Inter, roxo da marca, onda da home) · shape: camadas da clínica, escolha do dono, no lugar do mapa de nós (lido como "cara de IA", o desenho de qualquer site de automação) · as ferramentas que a clínica já usa empilhadas em perspectiva e o Agente RLG como a lâmina de luz entre o paciente e elas · signature: as lâminas chegam soltas e se juntam na pilha conforme a rolagem (GSAP, scrub); a escolhida sai da pilha · as 7 lâminas são abas com botão de 44px · tour a pedido do dono: troca a cada 5s só à vista, segura com mouse e foco, botão visível de pausar, para de vez no primeiro clique, nenhum com menos movimento (18, WCAG 2.2.2) · sem JS: lâminas são links e os 7 painéis ficam abertos */
+/* Hallmark · pre-emit critique: P4 H4 E5 S4 R4 V4 · weakest: H, sete lâminas com rótulo competem com o painel; só a lâmina do agente tem cor e só a escolhida acende */
+/* Hallmark · dismissed 49 ("Quero isso na minha clínica" quebra de propósito em 320px; o botão é do site todo) · answered 40 (contraste do roxo #8B5CF6 é do site todo, pendente fora desta seção) */
+/* Hallmark · reworded "Como funciona nossa empresa" to "Funciona no que sua clínica já usa", e o parágrafo de 50 para 18 palavras · escolha do dono (fala do ganho dele, não da empresa) */
 
 /* =========================================================
    COMO FUNCIONA - mobile first
-   Base: celular (mapa na vertical, destinos em grade 2x2).
-   Mapa na horizontal a partir de 900px.
+   A pilha é 3D só com CSS: .pilha gira para a vista
+   isométrica e cada lâmina sobe --i vezes o --vao.
+   Os rótulos giram de volta e ficam de frente, no canto
+   direito de cada lâmina.
+   Celular: uma coluna, pilha pequena, a lâmina escolhida sobe.
+   Computador (>= 1120px): pilha à esquerda, texto à direita,
+   a lâmina escolhida desliza para fora.
    ========================================================= */
 
 section.como {
-    padding: 64px 20px 80px;
+    padding: 64px 16px 80px;
     background-color: var(--cor-1);
+    /* A luz da camada do agente vaza para a seção */
+    background-image: radial-gradient(45% 35% at 40% 52%, var(--cor-brilho), transparent 70%);
     color: var(--cor-2);
 }
 
 .como-inner {
     max-width: 1200px;
     margin-inline: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
 }
 
 /* ---------- Cabeçalho ---------- */
 
 .como-cabecalho {
-    margin-bottom: 40px;
+    margin-bottom: 24px;
 }
 
 .como-titulo {
@@ -39,227 +49,445 @@ section.como {
 .como-cabecalho p {
     font-family: var(--fonte-texto);
     color: var(--cor-3);
-    font-size: 1rem;
+    font-size: 1.0625rem;
     line-height: 1.6;
-    max-width: 60ch;
+    max-width: 48ch;
     text-wrap: pretty;
 }
 
-/* ---------- Palco do mapa ---------- */
+/* ---------- Palco e pilha ---------- */
 
-.rede {
+.camadas {
+    display: contents;
+}
+
+.camadas-palco {
+    /* Medidas da pilha: lado da lâmina, vão entre lâminas,
+       quanto a escolhida sai e sobe, largura dos rótulos */
+    --w: 156px;
+    --vao: 58px;
+    --sai: 0px;
+    --sobe: 6px;
+    --rotulo: 124px;
+    --giro-x: 60deg;
+    --giro-z: 45deg;
+    /* Montagem: 0 = lâminas soltas, 1 = pilha montada. Sem JS, sem GSAP
+       ou com menos movimento fica em 1. --espalha é o quanto se soltam. */
+    --junta: 1;
+    --solto: calc(1 - var(--junta));
+    --espalha: 0.55;
+
     position: relative;
-    isolation: isolate;
-    padding: 32px 16px;
-    border: 1px solid var(--cor-borda);
-    border-radius: 24px;
-    background-color: var(--cor-superficie);
-    /* Grade de pontos, como uma prancheta de diagrama */
-    background-image: radial-gradient(var(--cor-borda) 1px, transparent 1px);
-    background-size: 24px 24px;
+    /* Altura: losango da base (0,707 W) + 6 vãos projetados (0,866) + folga */
+    /* + 64px para o botão de pausar o tour */
+    height: calc(var(--w) * 0.707 + var(--vao) * 0.866 * 6 + 40px + 64px);
+    width: calc(var(--w) * 1.414 + 12px + var(--rotulo));
+    max-width: 100%;
+    margin-inline: auto;
     font-family: var(--fonte-texto);
 }
 
-.rede-linhas {
+/* Halo da lâmina do agente. Fica em 2D, atrás da pilha: brilho
+   (box-shadow) numa lâmina 3D faz o navegador cortá-la ao meio. */
+.camadas-palco::before {
+    content: "";
     position: absolute;
-    inset: 0;
-    z-index: -1;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
+    left: calc(var(--w) * 0.707 - var(--w));
+    top: calc(24px + var(--w) * 0.354 + 2 * var(--vao) * 0.866 - var(--w));
+    width: calc(var(--w) * 2);
+    height: calc(var(--w) * 2);
+    background-image: radial-gradient(closest-side, var(--cor-brilho-forte), transparent);
+    opacity: var(--junta);
     pointer-events: none;
 }
 
-/* ---------- Nós ---------- */
-
-.rede-grade {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    justify-items: center;
-    gap: 48px;
+.pilha {
+    position: absolute;
+    width: var(--w);
+    height: var(--w);
+    /* O losango começa na borda esquerda do palco e a lâmina do topo fica a 24px do alto */
+    left: calc(var(--w) * 0.207);
+    top: calc(var(--vao) * 0.866 * 6 + var(--w) * 0.354 - var(--w) / 2 + 24px);
+    transform: rotateX(var(--giro-x)) rotateZ(var(--giro-z));
+    transform-style: preserve-3d;
 }
 
-.rede-entradas {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
+.pilha-abas {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
     list-style: none;
 }
 
-.rede-no {
-    display: flex;
+/* ---------- Lâminas ---------- */
+
+.lamina {
+    position: absolute;
+    inset: 0;
+    display: block;
+    transform-style: preserve-3d;
+    /* Lugar na pilha (+ quanto a escolhida sobe e sai) + o desvio de quando está solta */
+    transform:
+        translateZ(calc(var(--i) * var(--vao) + var(--lev, 0px) + var(--solto) * var(--espalha) * var(--dz)))
+        translate(
+            calc(var(--sai-x, 0px) + var(--solto) * var(--espalha) * var(--dx)),
+            calc(-1 * var(--sai-x, 0px) + var(--solto) * var(--espalha) * var(--dy)))
+        rotateZ(calc(var(--solto) * var(--rz)));
+    transition-property: transform;
+    transition-duration: 480ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    color: var(--cor-2);
+    text-decoration: none;
+}
+
+/* Para onde cada lâmina se solta (no plano da pilha: x+y- é direita na tela,
+   x-y+ é esquerda; dz afasta na vertical). Opacidade nunca na .lamina:
+   ela é preserve-3d, e opacidade achataria o 3D; vai nos filhos. */
+#aba-whatsapp  { --dx: -90px; --dy: 90px;   --dz: 200px;  --rz: -28deg; }
+#aba-instagram { --dx: 110px; --dy: -110px; --dz: 130px;  --rz: 20deg; }
+#aba-agente    { --dx: -20px; --dy: 20px;   --dz: 60px;   --rz: 40deg; }
+#aba-agenda    { --dx: -130px; --dy: 130px; --dz: 0px;    --rz: -16deg; }
+#aba-lembretes { --dx: 120px; --dy: -120px; --dz: -60px;  --rz: 24deg; }
+#aba-crm       { --dx: -100px; --dy: 100px; --dz: -130px; --rz: -32deg; }
+#aba-dashboard { --dx: 80px;  --dy: -80px;  --dz: -200px; --rz: 14deg; }
+
+/* Enquanto monta, a rolagem manda: sem transição correndo atrás dela */
+.camadas-palco[data-montando] .lamina {
+    transition: none;
+}
+
+/* Espessura: uma segunda face, mais escura, logo abaixo */
+.lamina::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    background-color: var(--cor-1);
+    transform: translateZ(-6px);
+    opacity: calc(0.2 + 0.8 * var(--junta));
+}
+
+.lamina-face {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    padding: 14%;
+    border: 1px solid var(--cor-trilha);
+    border-radius: 20px;
+    background-color: var(--cor-lamina);
+    opacity: calc(0.2 + 0.8 * var(--junta));
+    transition-property: border-color, background-color;
+    transition-duration: 300ms;
+    transition-timing-function: ease-out;
+}
+
+.lamina-face i {
+    display: block;
+    border-radius: 6px;
+    background-color: var(--cor-trilha);
+}
+
+.lamina-face .m-marcado {
+    background-color: var(--cor-detalhe);
+}
+
+/* Rótulo: um botão no canto direito da lâmina, girado de volta
+   para ficar de frente. É a área de clique principal: das lâminas
+   de baixo só aparece uma faixa, as de cima as cobrem. */
+.lamina-rotulo {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
-    border: 1px solid var(--cor-trilha);
-    background-color: var(--cor-superficie-2);
-    color: var(--cor-2);
-    font-size: 0.9375rem;
-    font-weight: 600;
-}
-
-.rede-no .material-symbols-outlined {
-    font-size: 1.25rem;
-    color: var(--cor-3);
-}
-
-.rede-entrada {
+    width: max-content;
+    max-width: var(--rotulo);
     min-height: 44px;
-    padding: 8px 16px;
+    padding: 4px 16px;
+    overflow: hidden;
+    border: 1px solid var(--cor-trilha);
+    border-radius: 22px;
+    background-color: var(--cor-superficie);
+    transform-origin: 0 0;
+    transform: rotateZ(calc(-1 * var(--giro-z))) rotateX(calc(-1 * var(--giro-x))) translate(12px, -50%);
+    color: var(--cor-3);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.15;
+    /* Os botões só aparecem no fim da montagem */
+    opacity: calc((var(--junta) - 0.7) * 3.4);
+    transition-property: color, border-color, background-color;
+    transition-duration: 300ms;
+    transition-timing-function: ease-out;
+}
+
+.lamina-rotulo .material-symbols-outlined {
+    flex-shrink: 0;
+    font-size: 1.125rem;
+}
+
+.lamina-rotulo svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+}
+
+/* Barra do tour: enche em --tempo na aba escolhida enquanto o tour roda */
+.lamina-rotulo::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background-color: var(--cor-detalhe);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+}
+
+.camadas[data-tour="rodando"] .lamina[aria-selected="true"] .lamina-rotulo::after {
+    animation: tour-progresso var(--tempo, 5s) linear forwards;
+}
+
+.camadas[data-tour="rodando"][data-segura] .lamina[aria-selected="true"] .lamina-rotulo::after {
+    animation-play-state: paused;
+}
+
+@keyframes tour-progresso {
+    to { transform: scaleX(1); }
+}
+
+/* Desenhos em cada face: o que a ferramenta mostra, em traço */
+.face-whatsapp,
+.face-instagram,
+.face-lembretes {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    gap: 10%;
+}
+
+.face-whatsapp .m-balao,
+.face-instagram .m-balao,
+.face-lembretes .m-balao {
+    width: 70%;
+    height: 14px;
+}
+
+.lamina-face .m-direita {
+    justify-self: end;
+}
+
+.lamina-face .m-curto {
+    width: 45%;
+}
+
+.face-instagram .m-avatar {
+    width: 22%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+}
+
+.face-lembretes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.face-lembretes .m-balao {
+    grid-column: 1 / -1;
+    width: 85%;
+    height: 22px;
+}
+
+.face-lembretes .m-pilula {
+    height: 12px;
     border-radius: 999px;
 }
 
-.rede-entrada svg {
-    flex-shrink: 0;
-    color: var(--cor-3);
-}
-
-/* O agente: o nó maior, no centro */
-.rede-agente {
-    flex-direction: column;
-    justify-content: center;
-    gap: 8px;
-    width: 136px;
-    aspect-ratio: 1;
-    border-radius: 32px;
-    border-color: var(--cor-detalhe);
-    background-color: var(--cor-detalhe-suave);
-    font-family: var(--fonte-titulo);
-    font-size: 1rem;
-    transition: box-shadow 400ms ease-out;
-}
-
-.rede-agente img {
-    display: block;
-}
-
-.rede-agente.aceso {
-    box-shadow: 0 16px 40px -12px color-mix(in srgb, var(--cor-detalhe) 70%, transparent);
-}
-
-/* Destinos: abas (com JS) ou links para os painéis (sem JS).
-   Celular e tablet: os 4 numa fileira só, para todas as linhas descerem
-   direto do agente (numa grade 2x2 as de baixo passariam por trás das de cima) */
-.rede-destinos {
-    display: grid;
+.face-agenda {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 4px;
-    width: 100%;
+    gap: 8%;
 }
 
-.rede-destino {
-    flex-direction: column;
-    justify-content: center;
-    gap: 4px;
-    min-height: 72px;
-    padding: 8px 4px;
-    border-radius: 16px;
-    font-size: 0.75rem;
-    line-height: 1.2;
-    text-align: center;
-    text-decoration: none;
+.face-crm {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-content: center;
+    gap: 12% 8%;
+}
+
+.face-crm i {
+    height: 10px;
+}
+
+.face-dashboard {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: end;
+    gap: 12%;
+}
+
+.face-dashboard i {
+    height: var(--altura);
+    border-radius: 6px 6px 2px 2px;
+}
+
+/* A lâmina do agente: luz, nos tons da onda da home */
+.face-agente {
+    place-items: center;
+    border-color: var(--onda-3);
+    background-color: var(--onda-2);
+    background-image:
+        radial-gradient(70% 60% at 30% 25%, var(--onda-4), transparent 70%),
+        radial-gradient(80% 70% at 75% 80%, var(--onda-3), transparent 75%);
+}
+
+.face-agente img {
+    width: 30%;
+    height: auto;
+}
+
+/* ---------- Lâminas clicáveis (todas são abas) ---------- */
+
+.lamina {
     cursor: pointer;
-    transition-property: background-color, border-color, color;
+}
+
+.lamina:hover .lamina-face {
+    border-color: var(--cor-3);
+}
+
+.lamina:hover .lamina-rotulo {
+    border-color: var(--cor-3);
+    color: var(--cor-2);
+}
+
+.lamina:focus-visible {
+    outline: none;
+}
+
+.lamina:focus-visible .lamina-face {
+    border: 2px solid var(--cor-2);
+    transition: none;
+}
+
+.lamina:focus-visible .lamina-rotulo {
+    outline: 2px solid var(--cor-2);
+    outline-offset: 2px;
+    color: var(--cor-2);
+    transition: none;
+}
+
+.lamina:active .lamina-rotulo {
+    background-color: var(--cor-superficie-2);
+}
+
+/* A escolhida sobe, sai da pilha e acende */
+.lamina[aria-selected="true"] {
+    --lev: var(--sobe);
+    --sai-x: var(--sai);
+}
+
+.lamina[aria-selected="true"] .lamina-face {
+    border-color: var(--cor-detalhe);
+}
+
+.lamina[aria-selected="true"]:not(.lamina-agente) .lamina-face {
+    background-color: var(--cor-lamina-acesa);
+}
+
+.lamina[aria-selected="true"] .lamina-face i:not(.m-marcado) {
+    background-color: var(--cor-3);
+}
+
+.lamina[aria-selected="true"] .lamina-rotulo {
+    border-color: var(--cor-detalhe);
+    background-color: var(--cor-lamina-acesa);
+    color: var(--cor-2);
+}
+
+/* A do agente é luz: o branco marca a escolha */
+.lamina-agente[aria-selected="true"] .lamina-face {
+    border-color: var(--cor-2);
+}
+
+/* ---------- Botão de pausar o tour ---------- */
+
+.camadas-tour {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 20px;
+    border: 1px solid var(--cor-trilha);
+    border-radius: 999px;
+    background-color: var(--cor-superficie);
+    color: var(--cor-3);
+    font-family: var(--fonte-texto);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: calc((var(--junta) - 0.7) * 3.4);
+    transition-property: color, border-color, background-color;
     transition-duration: 220ms;
     transition-timing-function: ease-out;
 }
 
-.rede-destino:hover {
+.camadas-tour[hidden] {
+    display: none;
+}
+
+.camadas-tour:hover {
     border-color: var(--cor-3);
-}
-
-.rede-destino[aria-selected="true"] {
-    border-color: var(--cor-detalhe);
-    background-color: var(--cor-detalhe-suave);
-}
-
-.rede-destino[aria-selected="true"] .material-symbols-outlined {
     color: var(--cor-2);
 }
 
-.rede-destino:focus-visible {
+.camadas-tour:focus-visible {
     outline: 2px solid var(--cor-2);
     outline-offset: 3px;
+    color: var(--cor-2);
     transition: none;
 }
 
-.rede-destino:active {
-    transform: translateY(1px);
+.camadas-tour:active {
+    background-color: var(--cor-superficie-2);
 }
 
-/* ---------- Linhas ---------- */
-
-.rede-linhas path {
-    fill: none;
-    stroke-linecap: round;
+/* Ícone em CSS: duas barras (pausar) ou um triângulo (continuar) */
+.tour-icone {
+    width: 10px;
+    height: 12px;
+    border-inline: 3px solid currentColor;
 }
 
-.linha-trilha {
-    stroke: var(--cor-trilha);
-    stroke-width: 1.5;
-}
-
-/* A linha acesa se desenha (e recolhe) por cima da trilha */
-.linha-acesa {
-    stroke: var(--cor-detalhe);
-    stroke-width: 2;
-    stroke-dasharray: var(--comp) var(--comp);
-    stroke-dashoffset: var(--comp);
-    transition: stroke-dashoffset 500ms cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-.aceso .linha-acesa {
-    stroke-dashoffset: 0;
-}
-
-/* O pulso: um traço curto e claro que corre pelo caminho uma vez */
-.linha-pulso {
-    stroke: var(--onda-4);
-    stroke-width: 3;
-    stroke-dasharray: 32px var(--comp);
-    stroke-dashoffset: 32px;
-    opacity: 0;
-}
-
-.linha-pulso.pulsando {
-    animation: pulso 900ms ease-in-out var(--atraso, 0ms) forwards;
-}
-
-@keyframes pulso {
-    0% { opacity: 1; stroke-dashoffset: 32px; }
-    85% { opacity: 1; }
-    100% { opacity: 0; stroke-dashoffset: calc(-1 * var(--comp)); }
-}
-
-/* Sem JS não há linhas: o SVG fica vazio */
-.rede:not([data-js]) .rede-linhas {
-    display: none;
+.camadas-tour[aria-pressed="true"] .tour-icone {
+    width: 0;
+    height: 0;
+    border-block: 6px solid transparent;
+    border-inline: 10px solid currentColor;
+    border-inline-end-width: 0;
 }
 
 /* ---------- Painéis ---------- */
 
-.rede-paineis {
+.camadas-paineis {
     display: grid;
-    gap: 16px;
-    margin-top: 40px;
+    gap: 40px;
+    margin-top: 32px;
 }
 
 .painel {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 20px;
-    padding: 24px;
-    border: 1px solid var(--cor-borda);
-    border-radius: 16px;
-    background-color: var(--cor-1);
 }
 
 .painel[hidden] {
     display: none;
 }
 
-.rede[data-js] .painel:not([hidden]) {
-    animation: painel-entra 300ms ease-out;
+.camadas[data-js] .painel:not([hidden]) {
+    animation: painel-entra 360ms ease-out;
 }
 
 @keyframes painel-entra {
@@ -268,22 +496,26 @@ section.como {
 
 .painel:focus-visible {
     outline: 2px solid var(--cor-2);
-    outline-offset: 3px;
+    outline-offset: 6px;
+    border-radius: 8px;
 }
 
 .painel-texto h3 {
     font-family: var(--fonte-titulo);
-    font-size: 1.375rem;
+    font-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
     line-height: 1.2;
     color: var(--cor-2);
     margin-bottom: 8px;
+    overflow-wrap: break-word;
+    min-width: 0;
 }
 
 .painel-texto p {
+    font-family: var(--fonte-texto);
     color: var(--cor-3);
     font-size: 1rem;
     line-height: 1.6;
-    max-width: 46ch;
+    max-width: 48ch;
 }
 
 /* ---------- Mini peças: o resultado de cada destino ---------- */
@@ -373,6 +605,67 @@ section.como {
     border-radius: 999px;
 }
 
+/* Conversa (WhatsApp e Instagram) */
+.peca-conversa {
+    display: grid;
+    gap: 8px;
+}
+
+.peca-conversa .peca-topo {
+    margin-bottom: 4px;
+}
+
+.peca-conversa .peca-topo svg {
+    vertical-align: -3px;
+    color: var(--cor-detalhe);
+}
+
+.painel-peca .peca-msg {
+    justify-self: start;
+    max-width: 85%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border-bottom-left-radius: 4px;
+    background-color: var(--cor-superficie-2);
+    line-height: 1.4;
+}
+
+.painel-peca .peca-msg-agente {
+    justify-self: end;
+    border-radius: 12px;
+    border-bottom-right-radius: 4px;
+    background-color: var(--cor-detalhe-suave);
+}
+
+.peca-msg time {
+    margin-left: 8px;
+    color: var(--cor-3);
+    font-size: 0.6875rem;
+}
+
+.peca-conversa .peca-nota {
+    justify-self: start;
+    margin-top: 4px;
+}
+
+/* Agente: o que ele aprende */
+.peca-treino .peca-topo img {
+    vertical-align: -3px;
+}
+
+.peca-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+}
+
+.peca-chips li {
+    padding: 4px 12px;
+    border: 1px solid var(--cor-detalhe);
+    border-radius: 999px;
+}
+
 /* CRM */
 .peca-ficha {
     display: grid;
@@ -427,7 +720,8 @@ section.como a.passos-cta {
     align-items: center;
     justify-content: center;
     min-height: 52px;
-    margin-top: 32px;
+    justify-self: start;
+    margin-top: 40px;
     padding: 12px 32px;
     border-radius: 999px;
     font-family: var(--fonte-texto);
@@ -453,91 +747,104 @@ section.como a.passos-cta:active {
 /* ---------- Menos movimento ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-    .rede-agente,
-    .rede-destino,
-    .linha-acesa,
+    .lamina,
+    .lamina-face,
+    .lamina-rotulo,
+    .camadas-tour,
     section.como a.passos-cta {
         transition: none;
     }
 
-    .linha-pulso.pulsando,
-    .rede[data-js] .painel:not([hidden]) {
+    .camadas[data-js] .painel:not([hidden]) {
         animation: none;
     }
 }
 
-/* ---------- Tablet: painel em duas colunas ---------- */
+/* ---------- Tablet: pilha maior, painel em duas colunas ---------- */
 
 @media (min-width: 640px) {
-    .rede {
-        padding: 40px 32px;
+    section.como {
+        padding: 80px 32px 96px;
+    }
+
+    .camadas-palco {
+        --w: 232px;
+        --vao: 60px;
+        --sai: 24px;
+        --sobe: 8px;
+        --espalha: 0.8;
+        --rotulo: 168px;
+    }
+
+    .lamina-rotulo {
+        font-size: 0.9375rem;
     }
 
     .painel {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         align-items: center;
         gap: 32px;
-        padding: 32px;
     }
 
     .painel-peca {
         justify-self: end;
     }
-
-    .rede-destinos {
-        gap: 12px;
-    }
-
-    .rede-destino {
-        flex-direction: row;
-        gap: 8px;
-        min-height: 52px;
-        padding-inline: 12px;
-        font-size: 0.9375rem;
-    }
 }
 
-/* ---------- Computador: o mapa na horizontal ---------- */
+/* ---------- Computador: pilha à esquerda, texto à direita ---------- */
 
-@media (min-width: 900px) {
+@media (min-width: 1120px) {
     section.como {
-        padding: 96px 48px;
+        padding: 112px 48px;
+        background-image: radial-gradient(35% 45% at 30% 55%, var(--cor-brilho), transparent 70%);
     }
 
-    .rede {
-        padding: 56px 48px 48px;
+    .como-inner {
+        grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+        grid-template-areas:
+            "palco cabecalho"
+            "palco paineis"
+            "palco cta";
+        grid-template-rows: auto auto 1fr;
+        column-gap: 48px;
     }
 
-    .rede-grade {
-        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-        align-items: center;
-        gap: 96px;
+    .como-cabecalho {
+        grid-area: cabecalho;
+        margin-bottom: 40px;
     }
 
-    .rede-entradas {
-        flex-direction: column;
-        align-items: flex-start;
-        justify-self: start;
-        gap: 48px;
+    .camadas-palco {
+        grid-area: palco;
+        align-self: center;
+        margin-inline: 0;
+        --w: 272px;
+        --vao: 64px;
+        --sai: 44px;
+        --sobe: 8px;
+        --espalha: 1;
+        --rotulo: 176px;
     }
 
-    .rede-agente {
-        width: 160px;
+    .camadas-paineis {
+        grid-area: paineis;
+        margin-top: 0;
     }
 
-    .rede-destinos {
+    .painel {
         grid-template-columns: minmax(0, 1fr);
-        justify-self: end;
-        max-width: 260px;
+        align-items: start;
+        gap: 24px;
     }
 
-    .rede-destino {
-        justify-content: flex-start;
-        padding-inline: 16px;
-        text-align: left;
+    .painel-peca {
+        justify-self: start;
+        max-width: 400px;
     }
 
-    .rede-paineis {
-        margin-top: 48px;
+    section.como a.passos-cta {
+        grid-area: cta;
+        align-self: start;
+        justify-self: start;
     }
 }
