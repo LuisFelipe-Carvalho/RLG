@@ -74,10 +74,25 @@
 
     <main>
         <section id="home">
+            <!-- Onda: gradiente vivo nos tons do roxo da marca (scripts/home-fundo.js).
+                 Sem WebGL, sem JS ou com menos movimento fica o gradiente estático do CSS. -->
+            <div class="home-onda" aria-hidden="true"><canvas></canvas></div>
+
             <div class="home-inner">
                 <div class="conteudo-home">
-                    <h1 class="titulo">Você cuida do paciente.<br> A RLG cuida da clínica.</h1>
-                    <p>Agente de IA que <span class="verbo" data-verbo="responde">responde</span>, <span class="verbo" data-verbo="agenda">agenda</span> e <span class="verbo" data-verbo="confirma">confirma</span> consultas no WhatsApp.</p>
+                    <h1 class="titulo">
+                        <span class="sr-only">Você cuida do paciente. A RLG cuida da clínica.</span>
+                        <span class="titulo-visual" aria-hidden="true">
+                            <span class="titulo-linha">Você cuida do paciente.</span>
+                            <span class="titulo-linha">A RLG <span class="troca">
+                                <span class="verbo final" data-verbo="cuida">cuida da clínica.</span>
+                                <span class="verbo" data-verbo="responde">responde por você.</span>
+                                <span class="verbo" data-verbo="agenda">agenda por você.</span>
+                                <span class="verbo" data-verbo="confirma">confirma por você.</span>
+                            </span></span>
+                        </span>
+                    </h1>
+                    <p>Agente de IA no WhatsApp da sua clínica, atendendo a qualquer hora.</p>
                     <div class="butao">
                         <a href="#call" class="ctf">Quero parar de perder pacientes!</a>
                         <a href="#servicos" class="btn-sec">Serviços</a>
@@ -128,6 +143,10 @@
                                     <span class="hora">22:48 <span class="material-symbols-outlined lido">done_all</span></span>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="chat-campo">
+                            <span>Mensagem</span>
                         </div>
                     </div>
 
@@ -630,6 +649,7 @@
     </footer>
 
     <script src="scripts/script.js"></script>
+    <script src="scripts/home-fundo.js"></script>
     <script src="scripts/home-anima.js"></script>
     <script src="scripts/como-funciona.js"></script>
     <script src="scripts/explicacao-cenas.js"></script>

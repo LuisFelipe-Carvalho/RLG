@@ -3,8 +3,9 @@
 
    Cada elemento com data-passo="n" aparece no passo n
    (e some no passo data-ate, se tiver). Os elementos com
-   data-verbo-passo acendem a palavra correspondente da frase
-   "responde, agenda e confirma".
+   data-verbo-passo trocam o fim do título: "A RLG responde /
+   agenda / confirma por você". No começo e no fim do ciclo o
+   título volta à frase da marca, "A RLG cuida da clínica".
 
    Sem JS, ou com "reduzir movimento" ligado, nada disso roda
    e a home mostra o estado final, estático.
@@ -17,7 +18,9 @@
     if (movimentoReduzido.matches) return;
 
     const elementos = [...visual.querySelectorAll('[data-passo]')];
-    const verbos = [...document.querySelectorAll('#home .verbo')];
+    const troca = document.querySelector('#home .troca');
+    const verbos = troca ? [...troca.querySelectorAll('.verbo')] : [];
+    const FRASE_DA_MARCA = 'cuida';
 
     // Quanto tempo (ms) cada passo fica na tela antes do próximo
     const DURACAO = [
@@ -42,6 +45,12 @@
     let passo = 0;
     let timer = 0;
     let rodando = false;
+    let primeiraVez = true;
+
+    // Troca o fim do título (a entrada e a saída estão no CSS)
+    const trocarPalavra = (palavra) => {
+        verbos.forEach(v => v.classList.toggle('ativo', v.dataset.verbo === palavra));
+    };
 
     const mostrarPasso = (n) => {
         elementos.forEach(el => {
@@ -49,10 +58,9 @@
             const sai = el.dataset.ate ? Number(el.dataset.ate) : Infinity;
             el.classList.toggle('visivel', n >= entra && n < sai);
         });
-        if (verboDoPasso[n]) {
-            verbos.forEach(v => v.classList.toggle('ativo', v.dataset.verbo === verboDoPasso[n]));
-        }
-        if (n === 0) verbos.forEach(v => v.classList.remove('ativo'));
+        const ultimo = n === DURACAO.length - 1;
+        const palavra = n === 0 || ultimo ? FRASE_DA_MARCA : verboDoPasso[n];
+        if (palavra) trocarPalavra(palavra);
     };
 
     const proximo = () => {
@@ -72,7 +80,10 @@
     const iniciar = () => {
         if (rodando) return;
         rodando = true;
-        timer = setTimeout(proximo, DURACAO[passo]);
+        // Na primeira vez, espera a entrada da hero (estilos/home.css) terminar
+        const espera = primeiraVez ? 1400 : 0;
+        primeiraVez = false;
+        timer = setTimeout(proximo, espera + DURACAO[passo]);
     };
 
     const pausar = () => {
@@ -82,6 +93,7 @@
 
     // Liga a animação: esconde tudo e começa do passo 0
     visual.dataset.js = 'anima';
+    if (troca) troca.dataset.js = 'anima';
     mostrarPasso(0);
 
     let naTela = false;
@@ -99,6 +111,7 @@
         if (!movimentoReduzido.matches) return;
         pausar();
         delete visual.dataset.js;
+        if (troca) delete troca.dataset.js;
         elementos.forEach(el => el.classList.remove('visivel'));
         verbos.forEach(v => v.classList.remove('ativo'));
     });

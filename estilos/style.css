@@ -40,6 +40,12 @@
     --ceu-dia-1: oklch(88% 0.02 85);
     --ceu-dia-2: oklch(78% 0.035 75);
 
+    /* Onda da home: um só tom, o roxo da marca, do quase preto ao lilás */
+    --onda-1: oklch(16% 0.045 293);
+    --onda-2: oklch(32% 0.14 293);
+    --onda-3: oklch(55% 0.22 293);
+    --onda-4: oklch(80% 0.11 300);
+
     --fonte-titulo: 'Sora', Arial, Helvetica, sans-serif;
     --fonte-texto: 'Inter', Arial, Helvetica, sans-serif;
     --fonte-icone: 'Material Symbols Outlined';
@@ -60,11 +66,11 @@ html {
 body {
     overflow-x: clip;
     background-color: var(--cor-1);
-    font-family: 'Inter', Arial, Helvetica, sans-serif;
+    font-family: var(--fonte-texto);
 }
 
 h1, h2, h3 {
-    font-family: 'Sora', Arial, Helvetica, sans-serif;
+    font-family: var(--fonte-titulo);
 }
 
 section {

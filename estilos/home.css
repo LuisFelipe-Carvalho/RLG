@@ -1,8 +1,9 @@
-/* Hallmark · shape: kept · genre: atmospheric · theme: brand · redesign: full (escopo: só o hero #home) · hero: Stage, texto à esquerda e animação à direita, empilhado no mobile · nav: kept · footer: kept · signature: a frase encenada; uma conversa no WhatsApp às 22:47 em que o agente responde, marca o horário na agenda e confirma, e cada verbo da frase acende no seu passo
- * axes: preto/Sora/roxo · posture: stage · contrast: pass · fold: pass · v2.0.0 */
-/* Hallmark · pre-emit critique: P4 H5 E4 S4 R5 V3 · weakest: V, o layout texto+animação segue a referência pedida pelo usuário; a animação encena a própria frase do hero (responde, agenda, confirma), o que só a RLG pode mostrar */
+/* Hallmark · shape: kept · genre: atmospheric · theme: brand · redesign: full (escopo: só o hero #home, branch v2-hero) · hero: Stage, texto à esquerda em 7 de 12 colunas e o celular à direita sobre a onda, empilhado no mobile · nav: kept · footer: kept · signature: a onda viva nos tons do roxo da marca atravessa a hero na diagonal (referência Stripe) e o celular da clínica flutua sobre a borda dela; o fim do título troca (responde, agenda, confirma) no mesmo passo em que o agente faz isso na conversa, e volta à frase da marca
+ * axes: preto/Sora/roxo · posture: wave (a onda é superfície declarada, ocupa a faixa de cima da hero) · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H5 E4 S4 R4 V4 · weakest: R, a onda e o celular inclinado são duas decorações; a onda fica escura sob o texto e o celular é o próprio produto */
+/* Hallmark · waive 29 · um tom só (o roxo da marca, sem azul nem rosa, Floor 2a), escura sob o texto, parada com movimento reduzido · a onda viva atrás do título foi escolhida pelo dono a partir da referência da Stripe */
 /* Hallmark · dismissed 58 · o h1 "Você cuida do paciente. A RLG cuida da clínica." é a frase da marca RLG e foi mantido a pedido do dono */
-/* Hallmark · reworded o parágrafo do hero (70 palavras) para "Agente de IA que responde, agenda e confirma consultas no WhatsApp." · 58 pede uma frase no hero; o texto longo já está em Serviços */
+/* Hallmark · reworded o parágrafo do hero de "Agente de IA que responde, agenda e confirma consultas no WhatsApp." para "Agente de IA no WhatsApp da sua clínica, atendendo a qualquer hora." · os três verbos passaram para o título, que troca a palavra */
 /* Hallmark · waive 49b · a.ctf "Quero parar de perder pacientes!" quebra em 2 linhas só abaixo de ~400px · o rótulo é a chamada da RLG e o texto em 19px negrito é o que garante o contraste no roxo da marca */
 
 /* =========================================================
@@ -10,14 +11,68 @@
    Base: celular. Ajustes de tela maior no @media no fim.
    ========================================================= */
 
-section#home {
-    padding: 48px 20px 64px;
+#home {
+    --cor-tela: color-mix(in srgb, var(--cor-1) 70%, var(--cor-superficie));
+    --sombra-celular:
+        0 2px 0 0 var(--cor-borda) inset,
+        0 40px 80px -24px color-mix(in srgb, var(--onda-1) 85%, transparent),
+        0 24px 64px -32px color-mix(in srgb, var(--cor-detalhe) 55%, transparent);
+    --sombra-flutua: 0 24px 48px -16px color-mix(in srgb, var(--onda-1) 90%, transparent);
+    --altura-topo: 68px; /* a pílula do topo: 12px + 56px */
 }
+
+section#home {
+    position: relative;
+    isolation: isolate;
+    /* A onda passa por trás da pílula do topo, como na Stripe */
+    margin-top: calc(-1 * var(--altura-topo));
+    padding: calc(var(--altura-topo) + 40px) 20px 64px;
+}
+
+#home .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* ---------- Onda ---------- */
+
+#home .home-onda {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    /* Corte diagonal: a onda desce mais à esquerda e sobe à direita */
+    clip-path: polygon(0 0, 100% 0, 100% 52%, 0 74%);
+    /* Sem WebGL ou sem JS: o mesmo tom, parado */
+    background-color: var(--onda-1);
+    background-image:
+        radial-gradient(60% 70% at 85% 20%, var(--onda-3), transparent 70%),
+        radial-gradient(50% 60% at 55% 0%, var(--onda-2), transparent 75%);
+}
+
+#home .home-onda canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+}
+
+#home .home-onda[data-pronto] canvas {
+    opacity: 1;
+}
+
+/* ---------- Layout ---------- */
 
 #home .home-inner {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 40px;
+    gap: 48px;
     max-width: 1200px;
     margin-inline: auto;
 }
@@ -30,24 +85,68 @@ section#home {
 
 #home .titulo {
     font-family: var(--fonte-titulo);
-    font-size: clamp(2rem, 1.25rem + 3.5vw, 3.5rem);
-    line-height: 1.1;
-    margin-bottom: 16px;
-    text-wrap: balance;
+    font-size: clamp(1.875rem, 0.9rem + 4.4vw, 4rem);
+    font-weight: 700;
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    color: var(--cor-2);
+    margin-bottom: 24px;
     overflow-wrap: break-word;
     min-width: 0;
+}
+
+#home .titulo-visual,
+#home .titulo-linha {
+    display: block;
+}
+
+#home .titulo-linha {
+    text-wrap: balance;
+}
+
+/* O fim do título: as quatro frases ocupam o mesmo lugar (a mais larga
+   reserva o espaço) e só uma aparece. Sem JS fica a frase da marca. */
+#home .troca {
+    display: grid;
+}
+
+#home .troca > .verbo {
+    grid-area: 1 / 1;
+}
+
+#home .troca:not([data-js]) > .verbo:not(.final) {
+    visibility: hidden;
+}
+
+/* A frase que sai sobe e some (transição); a que entra vem de baixo (animação) */
+#home .troca[data-js] > .verbo {
+    opacity: 0;
+    transform: translateY(-0.45em);
+    transition-property: opacity, transform;
+    transition-duration: 0.35s;
+    transition-timing-function: ease-in;
+}
+
+#home .troca[data-js] > .verbo.ativo {
+    opacity: 1;
+    transform: none;
+    animation: palavra-entra 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s backwards;
+}
+
+@keyframes palavra-entra {
+    from { opacity: 0; transform: translateY(0.45em); }
 }
 
 #home .conteudo-home > p {
     font-family: var(--fonte-texto);
     color: var(--cor-3);
-    font-size: 1.125rem;
+    font-size: 1.1875rem;
     line-height: 1.5;
     max-width: 34ch;
-    margin-bottom: 32px;
+    margin-bottom: 36px;
 }
 
-/* ---------- Botões ---------- */
+/* ---------- Botões: pílulas, como a navbar ---------- */
 
 #home .butao {
     display: flex;
@@ -59,32 +158,39 @@ section#home {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 48px;
-    padding: 12px 16px;
-    border-radius: 5px;
+    min-height: 52px;
+    padding: 12px 24px;
+    border-radius: 999px;
     font-family: var(--fonte-texto);
+    font-size: 1.1875rem;
     text-align: center;
     text-wrap: balance;
-    transition-property: background-color, box-shadow, transform;
-    transition-duration: 0.3s;
+    transition-property: background-color, border-color, box-shadow, transform;
+    transition-duration: 0.25s;
     transition-timing-function: ease;
 }
 
 /* Texto grande (19px, negrito) para o branco sobre o roxo da marca
    passar no contraste de texto grande (3:1) */
 #home a.ctf {
-    font-size: 1.1875rem;
     font-weight: 700;
+    box-shadow: 0 12px 32px -12px color-mix(in srgb, var(--cor-detalhe) 70%, transparent);
+}
+
+#home a.ctf:hover {
+    box-shadow: 0 16px 40px -12px color-mix(in srgb, var(--cor-detalhe) 90%, transparent);
+    transform: translateY(-1px);
 }
 
 #home a.btn-sec {
-    font-size: 1.1875rem;
-    background-color: var(--cor-vidro);
+    background-color: var(--cor-superficie);
+    border: 1px solid var(--cor-trilha);
     color: var(--cor-2);
 }
 
 #home a.btn-sec:hover {
-    background-color: var(--cor-vidro-hover);
+    background-color: var(--cor-superficie-2);
+    border-color: var(--cor-3);
 }
 
 #home .butao a:focus-visible {
@@ -97,23 +203,36 @@ section#home {
     transform: translateY(1px);
 }
 
-/* ---------- Animação: o agente responde, agenda e confirma ----------
+/* ---------- Entrada: um momento só, no carregamento ----------
+   Fica visível por padrão: a animação só leva do invisível ao final. */
+
+#home .titulo-linha,
+#home .conteudo-home > p,
+#home .butao,
+#home .home-visual {
+    animation: entrar 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+
+#home .titulo-linha:nth-child(2) { animation-delay: 0.12s; }
+#home .conteudo-home > p { animation-delay: 0.3s; }
+#home .butao { animation-delay: 0.42s; }
+#home .home-visual { animation-delay: 0.55s; animation-duration: 1.1s; }
+
+@keyframes entrar {
+    from { opacity: 0; transform: translateY(24px); }
+}
+
+/* ---------- O celular e os cartões ----------
    Sem JS ou com menos movimento, tudo aparece no estado final (estático).
    O script adiciona data-js e vai marcando cada passo com .visivel. */
 
 #home .home-visual {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: 12px;
+    position: relative;
     width: 100%;
-    max-width: 440px;
+    max-width: 340px;
     margin-inline: auto;
-    padding: 24px 0;
     font-family: var(--fonte-texto);
-    background: radial-gradient(ellipse at 55% 45%,
-        color-mix(in srgb, var(--cor-detalhe) 28%, transparent) 0%,
-        color-mix(in srgb, var(--cor-detalhe) 8%, transparent) 45%,
-        transparent 72%);
+    perspective: 1400px;
 }
 
 #home .home-visual p {
@@ -125,15 +244,24 @@ section#home {
 #home .aviso {
     background-color: var(--cor-superficie);
     border: 1px solid var(--cor-borda);
-    border-radius: 14px;
+    border-radius: 16px;
     box-shadow: var(--sombra-card);
 }
 
 /* --- Conversa --- */
 
+/* A conversa é a tela de um celular: alta, com cantos de aparelho,
+   o cabeçalho do WhatsApp em cima e o campo de mensagem embaixo.
+   Sem moldura, notch ou barra de status desenhados. */
 #home .chat {
-    grid-column: 1 / 13;
-    grid-row: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 460px;
+    border-radius: 32px;
+    background-color: var(--cor-tela);
+    box-shadow: var(--sombra-celular);
     overflow: clip;
 }
 
@@ -172,11 +300,32 @@ section#home {
     font-size: 0.75rem;
 }
 
+#home .chat-topo {
+    padding-top: 16px;
+    background-color: var(--cor-superficie);
+}
+
+/* As mensagens ficam embaixo, perto do campo, como no WhatsApp */
 #home .chat-corpo {
+    flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     gap: 8px;
     padding: 16px;
+}
+
+#home .chat-campo {
+    padding: 8px 12px 16px;
+}
+
+#home .chat-campo span {
+    display: block;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background-color: var(--cor-superficie-2);
+    color: var(--cor-3);
+    font-size: 0.8125rem;
 }
 
 #home .balao {
@@ -273,8 +422,6 @@ section#home {
 /* --- Agenda --- */
 
 #home .agenda {
-    grid-column: 2 / 13;
-    grid-row: 2;
     padding: 16px;
 }
 
@@ -348,38 +495,9 @@ section#home {
 /* --- Aviso de lembrete --- */
 
 #home .aviso {
-    grid-column: 1 / 11;
-    grid-row: 3;
     padding: 12px 16px;
 }
 
-/* --- Frase: cada verbo acende no passo correspondente --- */
-
-#home .verbo {
-    position: relative;
-    transition: color 0.4s ease;
-}
-
-#home .verbo::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -2px;
-    height: 2px;
-    background-color: var(--cor-detalhe);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.4s ease;
-}
-
-#home .verbo.ativo {
-    color: var(--cor-2);
-}
-
-#home .verbo.ativo::after {
-    transform: scaleX(1);
-}
 
 /* --- Estados da animação (só com [data-js], adicionado pelo script) --- */
 
@@ -414,14 +532,27 @@ section#home {
     50% { transform: scale(1.08); }
 }
 
+
+/* Os cartões flutuam devagar, cada um no seu ritmo */
+@keyframes flutuar {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -8px, 0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
     #home .butao a,
-    #home .verbo,
-    #home .verbo::after {
+    #home .troca[data-js] > .verbo,
+    #home .home-onda canvas {
         transition: none;
     }
 
-    #home .digitando i {
+    #home .digitando i,
+    #home .titulo-linha,
+    #home .conteudo-home > p,
+    #home .butao,
+    #home .home-visual,
+    #home .agenda,
+    #home .aviso {
         animation: none;
     }
 }
@@ -445,75 +576,96 @@ section#home {
     }
 }
 
-/* ---------- Tablet: ainda empilhado, com mais respiro ---------- */
+/* ---------- Tablet: ainda empilhado, cartões flutuando ao lado ---------- */
 
 @media (min-width: 768px) {
     section#home {
-        padding: 64px 48px 80px;
+        padding: calc(var(--altura-topo) + 64px) 48px 96px;
     }
 
-    /* Tablet e maiores: a agenda e o lembrete ganham cartões próprios */
-    #home .agenda {
-        display: block;
+    #home .home-onda {
+        clip-path: polygon(0 0, 100% 0, 100% 48%, 0 70%);
     }
 
-    #home .aviso {
-        display: flex;
+    #home .home-visual {
+        max-width: 560px;
+        padding-inline: 112px;
+    }
+
+    #home .chat {
+        min-height: 600px;
     }
 
     #home .chat-agendado {
         display: none;
     }
 
-    #home .home-visual {
-        max-width: 480px;
+    #home .agenda,
+    #home .aviso {
+        position: absolute;
+        z-index: 1;
+        box-shadow: var(--sombra-flutua);
     }
 
     #home .agenda {
-        grid-column: 3 / 13;
+        display: block;
+        width: 236px;
+        left: 0;
+        top: 64px;
+        animation: flutuar 7s ease-in-out infinite;
     }
 
     #home .aviso {
-        grid-column: 1 / 9;
+        display: flex;
+        width: 248px;
+        right: 0;
+        bottom: -24px;
+        animation: flutuar 8s ease-in-out -3s infinite;
     }
 }
 
-/* ---------- Desktop: texto à esquerda, animação à direita ---------- */
+/* ---------- Desktop: texto à esquerda, celular à direita ---------- */
 
 @media (min-width: 960px) {
     section#home {
         display: grid;
         align-items: center;
-        min-height: calc(100svh - 70px);
-        padding: 48px;
+        min-height: 100svh;
+        padding: calc(var(--altura-topo) + 32px) 48px 64px;
+    }
+
+    #home .home-onda {
+        clip-path: polygon(0 0, 100% 0, 100% 58%, 0 86%);
     }
 
     #home .home-inner {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
         align-items: center;
-        gap: 48px;
+        gap: 32px;
         width: 100%;
     }
 
     #home .home-visual {
-        max-width: 560px;
-        align-items: start;
+        max-width: none;
+        padding-inline: 64px 40px;
     }
 
-    /* Conversa à esquerda; agenda e lembrete empilhados à direita */
+    /* O celular inclina de leve para o texto */
     #home .chat {
-        grid-column: 1 / 8;
-        grid-row: 1 / 3;
+        min-height: 600px;
+        transform: rotateY(-6deg);
+        transform-origin: 70% 50%;
     }
 
+    /* A agenda flutua no alto, onde a conversa ainda está vazia;
+       o lembrete sai pela borda de baixo, sobre o campo de mensagem */
     #home .agenda {
-        grid-column: 8 / 13;
-        grid-row: 1;
-        margin-top: 40px;
+        left: -8px;
+        top: 64px;
     }
 
     #home .aviso {
-        grid-column: 8 / 13;
-        grid-row: 2;
+        right: 0;
+        bottom: -24px;
     }
 }
