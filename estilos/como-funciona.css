@@ -64,7 +64,9 @@ section.como {
 .camadas-palco {
     /* Medidas da pilha: lado da lâmina, vão entre lâminas,
        quanto a escolhida sai e sobe, largura dos rótulos */
-    --w: 156px;
+    /* Lado da lâmina: 156px, ou menos quando a tela não comporta
+       losango (1,414 W) + 12px + rótulos (celulares estreitos) */
+    --w: clamp(110px, calc((100vw - 44px - var(--rotulo)) / 1.414), 156px);
     --vao: 58px;
     --sai: 0px;
     --sobe: 6px;
@@ -79,12 +81,33 @@ section.como {
 
     position: relative;
     /* Altura: losango da base (0,707 W) + 6 vãos projetados (0,866) + folga */
-    /* + 64px para o botão de pausar o tour */
-    height: calc(var(--w) * 0.707 + var(--vao) * 0.866 * 6 + 40px + 64px);
+    /* + o espaço do botão de pausar, só quando ele aparece */
+    height: calc(var(--w) * 0.707 + var(--vao) * 0.866 * 6 + 40px + var(--espaco-tour, 0px));
     width: calc(var(--w) * 1.414 + 12px + var(--rotulo));
     max-width: 100%;
     margin-inline: auto;
     font-family: var(--fonte-texto);
+}
+
+/* O botão do tour só existe com JS e sem "reduzir movimento" */
+.camadas-palco:has(> .camadas-tour:not([hidden])) {
+    --espaco-tour: 64px;
+}
+
+/* Celulares estreitos: rótulos mais curtos e sem ícone */
+@media (max-width: 374px) {
+    .camadas-palco {
+        --rotulo: 108px;
+    }
+
+    .lamina-rotulo {
+        padding-inline: 12px;
+    }
+
+    .lamina-rotulo .material-symbols-outlined,
+    .lamina-rotulo svg {
+        display: none;
+    }
 }
 
 /* Halo da lâmina do agente. Fica em 2D, atrás da pilha: brilho
@@ -460,7 +483,7 @@ section.como {
     border-inline: 3px solid currentColor;
 }
 
-.camadas-tour[aria-pressed="true"] .tour-icone {
+.camadas-tour[data-estado="parado"] .tour-icone {
     width: 0;
     height: 0;
     border-block: 6px solid transparent;
@@ -484,6 +507,18 @@ section.como {
 
 .painel[hidden] {
     display: none;
+}
+
+/* Com JS os painéis dividem a mesma célula: a caixa fica com a altura do
+   maior e nada abaixo dela pula quando o tour troca de painel. Os ocultos
+   continuam fora da leitura e do Tab (visibility: hidden). */
+.camadas[data-js] .painel {
+    grid-area: 1 / 1;
+}
+
+.camadas[data-js] .painel[hidden] {
+    display: grid;
+    visibility: hidden;
 }
 
 .camadas[data-js] .painel:not([hidden]) {

@@ -35,7 +35,7 @@
     if (!palco || !botao || !paineisCaixa || !abas.length || paineis.includes(null)) return;
 
     const TEMPO = 5000;
-    const movimentoReduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const menosMovimento = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     /* ---------- Abas (acessíveis) ---------- */
 
@@ -70,14 +70,15 @@
     /* ---------- Tour ---------- */
 
     // 'rodando' ou 'parado'; o que segura o tour sem pará-lo fica em `segura`
-    let tour = movimentoReduzido ? 'parado' : 'rodando';
+    let tour = menosMovimento.matches ? 'parado' : 'rodando';
     const segura = { mouse: false, foco: false, fora: true, montando: false };
 
     const atualizarTour = () => {
         camadas.dataset.tour = tour;
         camadas.toggleAttribute('data-segura', Object.values(segura).some(Boolean));
+        // O texto diz o que o botão faz; o estado vai só para o CSS (ícone)
         const parado = tour !== 'rodando';
-        botao.setAttribute('aria-pressed', String(parado));
+        botao.dataset.estado = tour;
         botao.querySelector('.tour-texto').textContent = parado ? 'Continuar' : 'Pausar';
     };
 
@@ -106,14 +107,22 @@
         });
     });
 
-    // Foco em qualquer coisa da seção (abas, painel, botão) segura
-    const dentro = el => el && (palco.contains(el) || paineisCaixa.contains(el));
+    // Foco de teclado numa aba ou no painel segura. O clique também foca, mas
+    // aí quem segura é o mouse; e o foco no próprio botão não segura, senão
+    // "Continuar" deixaria o tour parado enquanto o botão tiver foco.
+    const focoSegura = () => {
+        const el = document.activeElement;
+        return Boolean(el && el !== botao && (palco.contains(el) || paineisCaixa.contains(el))
+            && el.matches(':focus-visible'));
+    };
+    const conferirFoco = () => {
+        segura.foco = focoSegura();
+        atualizarTour();
+    };
     [palco, paineisCaixa].forEach(el => {
-        el.addEventListener('focusin', () => { segura.foco = true; atualizarTour(); });
-        el.addEventListener('focusout', e => {
-            segura.foco = dentro(e.relatedTarget);
-            atualizarTour();
-        });
+        el.addEventListener('focusin', conferirFoco);
+        // No focusout o novo foco ainda não chegou: confere no quadro seguinte
+        el.addEventListener('focusout', () => setTimeout(conferirFoco));
     });
 
     // Fora da tela segura (e o tour só começa quando a pilha aparece)
@@ -155,20 +164,28 @@
 
     /* ---------- Montagem presa à rolagem ---------- */
 
+    let montagem = null;
+
+    // Enquanto não está montada: sem transição nas lâminas e o tour espera.
+    // Os botões só aparecem a partir de 0,7 (CSS); antes disso as abas e o
+    // botão do tour ficam inertes, para não receber clique nem Tab invisíveis.
+    const marcar = junta => {
+        const ocultos = junta < 0.75;
+        lista.inert = ocultos;
+        botao.inert = ocultos;
+
+        const montando = junta < 0.999;
+        if (montando === segura.montando) return;
+        segura.montando = montando;
+        palco.toggleAttribute('data-montando', montando);
+        atualizarTour();
+    };
+
     const montar = () => {
-        if (movimentoReduzido || !window.gsap || !window.ScrollTrigger) return;
+        if (menosMovimento.matches || !window.gsap || !window.ScrollTrigger) return;
         gsap.registerPlugin(ScrollTrigger);
 
-        // Enquanto não está montada: sem transição nas lâminas e o tour espera
-        const marcar = junta => {
-            const montando = junta < 0.999;
-            if (montando === segura.montando) return;
-            segura.montando = montando;
-            palco.toggleAttribute('data-montando', montando);
-            atualizarTour();
-        };
-
-        gsap.fromTo(palco, { '--junta': 0 }, {
+        montagem = gsap.fromTo(palco, { '--junta': 0 }, {
             '--junta': 1,
             ease: 'none',
             scrollTrigger: {
@@ -183,11 +200,28 @@
         marcar(parseFloat(gsap.getProperty(palco, '--junta')));
     };
 
+    // "Reduzir movimento" ligado com a página aberta: monta a pilha na hora,
+    // para o tour e some com o botão. Desligado: o botão volta (tour parado).
+    menosMovimento.addEventListener('change', () => {
+        if (menosMovimento.matches) {
+            if (montagem) {
+                montagem.scrollTrigger.kill();
+                montagem.kill();
+                montagem = null;
+            }
+            palco.style.setProperty('--junta', '1');
+            marcar(1);
+            tour = 'parado';
+        }
+        botao.hidden = menosMovimento.matches;
+        atualizarTour();
+    });
+
     /* ---------- Ligar ---------- */
 
     camadas.style.setProperty('--tempo', `${TEMPO}ms`);
     camadas.dataset.js = 'camadas';
-    botao.hidden = movimentoReduzido;
+    botao.hidden = menosMovimento.matches;
     atualizarTour();
     escolher(0);
     montar();

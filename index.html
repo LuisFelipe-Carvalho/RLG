@@ -236,7 +236,7 @@
                 <div class="camadas">
                     <div class="camadas-palco">
                         <div class="pilha">
-                            <div class="pilha-abas" aria-label="Camadas da clínica">
+                            <div class="pilha-abas" role="group" aria-label="Camadas da clínica">
                                 <a href="#painel-whatsapp" id="aba-whatsapp" class="lamina lamina-canal" style="--i: 6">
                                     <span class="lamina-face face-whatsapp" aria-hidden="true">
                                         <i class="m-balao"></i><i class="m-balao m-direita"></i><i class="m-balao m-curto"></i>
@@ -284,7 +284,7 @@
 
                         <!-- Tour: a pilha percorre as lâminas sozinha enquanto está à vista.
                              Para ao passar o mouse, ao focar e de vez no primeiro clique. -->
-                        <button type="button" class="camadas-tour" aria-pressed="false" hidden>
+                        <button type="button" class="camadas-tour" data-estado="rodando" hidden>
                             <span class="tour-icone" aria-hidden="true"></span>
                             <span class="tour-texto">Pausar</span>
                         </button>
