@@ -1,10 +1,11 @@
-/* Hallmark · redesign: full (escopo: só a seção #como-funciona) · theme: brand · os 4 passos numerados e ligados por uma linha; cada clique desenha a linha até o próximo passo e a imagem aproxima a parte que ele mostra (celular, lembrete, CRM, gráfico) · interação por clique e não por scroll: funciona igual no celular, sem JS e com menos movimento (scroll-choreography desliga abaixo de 40rem e com reduced-motion) */
-/* Hallmark · pre-emit critique: o movimento só acontece quando a pessoa pede (clique), segue as linhas que a própria imagem já desenha e termina na chamada para a call · sem JS: passos abertos, linhas completas, imagem inteira */
+/* Hallmark · redesign: full (escopo: só a seção #como-funciona, branch v2-como-funciona-mapa) · theme: brand · shape: mapa de conexões (referências Synthesized e Contiant), para não repetir a forma de passos da Explicação · o Agente RLG no centro, ligado ao WhatsApp e ao Instagram (entrada) e à agenda, aos lembretes, ao CRM e ao dashboard (saída) · signature: clicar num destino acende o caminho entrada, agente, destino, e um pulso de luz corre por ele uma vez · interação só por clique (e setas no teclado), nada se move sozinho · sem JS: sem linhas, os destinos são links e os 4 painéis ficam abertos */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V5 · weakest: H, sete nós e um painel disputam o olho; o nó do agente é o maior, só o caminho escolhido tem cor e o resto fica na cor da trilha */
+/* Hallmark · dropped imagens/como_funciona.png e o botão "Próximo passo" · o dono não gostava da foto (ia trocá-la) e cada destino agora é clicável; o arquivo da foto continua no repositório */
 
 /* =========================================================
    COMO FUNCIONA - mobile first
-   Base: celular (imagem em cima, passos embaixo).
-   Duas colunas a partir de 960px.
+   Base: celular (mapa na vertical, destinos em grade 2x2).
+   Mapa na horizontal a partir de 900px.
    ========================================================= */
 
 section.como {
@@ -44,319 +45,499 @@ section.como {
     text-wrap: pretty;
 }
 
-/* ---------- Corpo: imagem + passos ---------- */
+/* ---------- Palco do mapa ---------- */
 
-.como-corpo {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 32px;
-}
-
-/* ---------- Imagem que aproxima cada passo ---------- */
-
-.como-visual {
-    aspect-ratio: 1672 / 941;
-    overflow: clip;
+.rede {
+    position: relative;
+    isolation: isolate;
+    padding: 32px 16px;
     border: 1px solid var(--cor-borda);
-    border-radius: 14px;
-    background-color: var(--cor-1);
+    border-radius: 24px;
+    background-color: var(--cor-superficie);
+    /* Grade de pontos, como uma prancheta de diagrama */
+    background-image: radial-gradient(var(--cor-borda) 1px, transparent 1px);
+    background-size: 24px 24px;
+    font-family: var(--fonte-texto);
 }
 
-/* --s: zoom · --x/--y: quanto a imagem anda para centralizar o foco
-   (em % do próprio tamanho; limitado para não mostrar as bordas) */
-.como-visual img {
-    display: block;
+.rede-linhas {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transform: scale(var(--s, 1)) translate(var(--x, 0%), var(--y, 0%));
-    transition: transform 600ms cubic-bezier(0.65, 0, 0.35, 1);
+    overflow: visible;
+    pointer-events: none;
 }
 
-section.como[data-js] .como-visual[data-foco="1"] { --s: 1.2; --x: 4%; --y: 0%; }     /* celular: a conversa */
-section.como[data-js] .como-visual[data-foco="2"] { --s: 1.8; --x: 22%; --y: 2%; }    /* lembrete de consulta */
-section.como[data-js] .como-visual[data-foco="3"] { --s: 1.8; --x: -22%; --y: 22%; }  /* registro do lead */
-section.como[data-js] .como-visual[data-foco="4"] { --s: 1.8; --x: -22%; --y: -13%; } /* gráfico de agendamentos */
+/* ---------- Nós ---------- */
 
-/* ---------- Passos ---------- */
+.rede-grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 48px;
+}
 
-.passos {
+.rede-entradas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
     list-style: none;
 }
 
-.passo {
-    position: relative;
-    padding-left: 56px;
-    padding-bottom: 32px;
-}
-
-.passo:last-child {
-    padding-bottom: 0;
-}
-
-.passo h3 {
-    margin-left: -56px;
-    font-size: 1.125rem;
-    line-height: 1.3;
-}
-
-.passo-gatilho {
+.rede-no {
     display: flex;
     align-items: center;
-    width: 100%;
-    min-height: 40px;
-    padding: 0 0 0 56px;
-    border: 0;
-    border-radius: 8px;
-    background: none;
-    color: inherit;
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-}
-
-.passo-gatilho:focus-visible {
-    outline: 2px solid var(--cor-2);
-    outline-offset: 4px;
-}
-
-.passo-titulo {
-    font-family: var(--fonte-titulo);
+    gap: 8px;
+    border: 1px solid var(--cor-trilha);
+    background-color: var(--cor-superficie-2);
     color: var(--cor-2);
-    text-wrap: balance;
-    min-width: 0;
-    transition: color 220ms ease-out;
-}
-
-.passo-marcador {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: grid;
-    place-items: center;
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--cor-detalhe);
-    border-radius: 50%;
-    background-color: var(--cor-detalhe-suave);
-    color: var(--cor-2);
-    font-family: var(--fonte-texto);
     font-size: 0.9375rem;
     font-weight: 600;
-    transition-property: background-color, border-color, color, box-shadow;
-    transition-duration: 300ms;
-    transition-timing-function: ease-out;
 }
 
-.passo-texto {
-    display: grid;
-    grid-template-rows: 1fr;
-    transition:
-        grid-template-rows 420ms ease-in-out,
-        opacity 300ms ease-out;
-}
-
-.passo-texto > div {
-    min-height: 0;
-    overflow: hidden;
-}
-
-.passo-texto p {
-    padding-top: 8px;
-    max-width: 46ch;
-    font-family: var(--fonte-texto);
-    color: var(--cor-3);
-    font-size: 1rem;
-    line-height: 1.6;
-    text-wrap: pretty;
-}
-
-/* A linha entre um marcador e o próximo: trilha apagada + preenchimento roxo */
-.passo-linha {
-    position: absolute;
-    top: 44px;
-    bottom: 4px;
-    left: 19px;
-    width: 2px;
-    overflow: hidden;
-    border-radius: 1px;
-    background-color: var(--cor-trilha);
-}
-
-.passo-linha::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-color: var(--cor-detalhe);
-    transform-origin: top;
-    transform: scaleY(1);
-    transition: transform 380ms ease-in-out;
-}
-
-/* ---------- Estados (só com JS: data-js na seção, data-estado no passo) ---------- */
-
-/* A linha se desenha quando o passo está avançando (data-avancando)
-   e fica desenhada depois que ele vira "feito" */
-section.como[data-js] .passo:not([data-estado="feito"]):not([data-avancando]) .passo-linha::after {
-    transform: scaleY(0);
-}
-
-section.como[data-js] .passo[data-estado="atual"] .passo-marcador {
-    background-color: var(--cor-detalhe);
-    border-color: var(--cor-detalhe);
-    box-shadow: 0 0 0 6px var(--cor-brilho);
-}
-
-section.como[data-js] .passo[data-estado="futuro"] .passo-marcador {
-    background-color: transparent;
-    border-color: var(--cor-trilha);
+.rede-no .material-symbols-outlined {
+    font-size: 1.25rem;
     color: var(--cor-3);
 }
 
-section.como[data-js] .passo[data-estado="futuro"] .passo-titulo {
+.rede-entrada {
+    min-height: 44px;
+    padding: 8px 16px;
+    border-radius: 999px;
+}
+
+.rede-entrada svg {
+    flex-shrink: 0;
     color: var(--cor-3);
 }
 
-section.como[data-js] .passo:not([data-estado="atual"]) .passo-texto {
-    grid-template-rows: 0fr;
-    opacity: 0;
-    visibility: hidden;
-    transition:
-        grid-template-rows 420ms ease-in-out,
-        opacity 200ms ease-in,
-        visibility 0s linear 420ms;
-}
-
-section.como[data-js] .passo:not([data-estado="atual"]) .passo-gatilho:hover .passo-titulo {
-    color: var(--cor-2);
-}
-
-section.como[data-js] .passo[data-estado="futuro"] .passo-gatilho:hover .passo-marcador {
-    border-color: var(--cor-detalhe);
-}
-
-/* Sem JS os passos já estão todos abertos: o botão não faz nada */
-section.como:not([data-js]) .passo-gatilho {
-    cursor: default;
-}
-
-/* ---------- Ações: próximo passo e, no fim, a chamada ---------- */
-
-.passos-acoes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 32px;
-    padding-left: 56px;
-}
-
-.passos-proximo,
-section.como a.passos-cta {
-    display: inline-flex;
-    align-items: center;
+/* O agente: o nó maior, no centro */
+.rede-agente {
+    flex-direction: column;
     justify-content: center;
-    min-height: 48px;
-    padding: 12px 24px;
-    border-radius: 5px;
-    font-family: var(--fonte-texto);
+    gap: 8px;
+    width: 136px;
+    aspect-ratio: 1;
+    border-radius: 32px;
+    border-color: var(--cor-detalhe);
+    background-color: var(--cor-detalhe-suave);
+    font-family: var(--fonte-titulo);
+    font-size: 1rem;
+    transition: box-shadow 400ms ease-out;
+}
+
+.rede-agente img {
+    display: block;
+}
+
+.rede-agente.aceso {
+    box-shadow: 0 16px 40px -12px color-mix(in srgb, var(--cor-detalhe) 70%, transparent);
+}
+
+/* Destinos: abas (com JS) ou links para os painéis (sem JS).
+   Celular e tablet: os 4 numa fileira só, para todas as linhas descerem
+   direto do agente (numa grade 2x2 as de baixo passariam por trás das de cima) */
+.rede-destinos {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    width: 100%;
+}
+
+.rede-destino {
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    min-height: 72px;
+    padding: 8px 4px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    line-height: 1.2;
     text-align: center;
-    text-wrap: balance;
-    transition-property: background-color, box-shadow, transform;
+    text-decoration: none;
+    cursor: pointer;
+    transition-property: background-color, border-color, color;
     transition-duration: 220ms;
     transition-timing-function: ease-out;
 }
 
-.passos-proximo {
-    display: none;
-    border: 0;
-    background-color: var(--cor-vidro);
+.rede-destino:hover {
+    border-color: var(--cor-3);
+}
+
+.rede-destino[aria-selected="true"] {
+    border-color: var(--cor-detalhe);
+    background-color: var(--cor-detalhe-suave);
+}
+
+.rede-destino[aria-selected="true"] .material-symbols-outlined {
     color: var(--cor-2);
+}
+
+.rede-destino:focus-visible {
+    outline: 2px solid var(--cor-2);
+    outline-offset: 3px;
+    transition: none;
+}
+
+.rede-destino:active {
+    transform: translateY(1px);
+}
+
+/* ---------- Linhas ---------- */
+
+.rede-linhas path {
+    fill: none;
+    stroke-linecap: round;
+}
+
+.linha-trilha {
+    stroke: var(--cor-trilha);
+    stroke-width: 1.5;
+}
+
+/* A linha acesa se desenha (e recolhe) por cima da trilha */
+.linha-acesa {
+    stroke: var(--cor-detalhe);
+    stroke-width: 2;
+    stroke-dasharray: var(--comp) var(--comp);
+    stroke-dashoffset: var(--comp);
+    transition: stroke-dashoffset 500ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.aceso .linha-acesa {
+    stroke-dashoffset: 0;
+}
+
+/* O pulso: um traço curto e claro que corre pelo caminho uma vez */
+.linha-pulso {
+    stroke: var(--onda-4);
+    stroke-width: 3;
+    stroke-dasharray: 32px var(--comp);
+    stroke-dashoffset: 32px;
+    opacity: 0;
+}
+
+.linha-pulso.pulsando {
+    animation: pulso 900ms ease-in-out var(--atraso, 0ms) forwards;
+}
+
+@keyframes pulso {
+    0% { opacity: 1; stroke-dashoffset: 32px; }
+    85% { opacity: 1; }
+    100% { opacity: 0; stroke-dashoffset: calc(-1 * var(--comp)); }
+}
+
+/* Sem JS não há linhas: o SVG fica vazio */
+.rede:not([data-js]) .rede-linhas {
+    display: none;
+}
+
+/* ---------- Painéis ---------- */
+
+.rede-paineis {
+    display: grid;
+    gap: 16px;
+    margin-top: 40px;
+}
+
+.painel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    padding: 24px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 16px;
+    background-color: var(--cor-1);
+}
+
+.painel[hidden] {
+    display: none;
+}
+
+.rede[data-js] .painel:not([hidden]) {
+    animation: painel-entra 300ms ease-out;
+}
+
+@keyframes painel-entra {
+    from { opacity: 0; transform: translateY(8px); }
+}
+
+.painel:focus-visible {
+    outline: 2px solid var(--cor-2);
+    outline-offset: 3px;
+}
+
+.painel-texto h3 {
+    font-family: var(--fonte-titulo);
+    font-size: 1.375rem;
+    line-height: 1.2;
+    color: var(--cor-2);
+    margin-bottom: 8px;
+}
+
+.painel-texto p {
+    color: var(--cor-3);
     font-size: 1rem;
+    line-height: 1.6;
+    max-width: 46ch;
+}
+
+/* ---------- Mini peças: o resultado de cada destino ---------- */
+
+.painel-peca {
+    align-self: center;
+    width: 100%;
+    max-width: 360px;
+    padding: 16px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 12px;
+    background-color: var(--cor-superficie);
+    color: var(--cor-2);
+    font-size: 0.8125rem;
+}
+
+.painel-peca p {
+    margin: 0;
+}
+
+.painel-peca .material-symbols-outlined {
+    font-size: 1rem;
+    color: var(--cor-detalhe);
+    vertical-align: -3px;
+}
+
+.painel-peca .peca-topo {
     font-weight: 600;
-    cursor: pointer;
+    margin-bottom: 12px;
 }
 
-.passos-proximo:hover {
-    background-color: var(--cor-vidro-hover);
+.painel-peca .marcado {
+    border-color: var(--cor-detalhe);
+    background-color: var(--cor-detalhe-suave);
+    font-weight: 600;
 }
 
-/* Texto grande (19px, negrito) para o branco sobre o roxo passar no contraste */
+/* Agenda */
+.peca-horarios {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    list-style: none;
+}
+
+.peca-horarios li {
+    padding: 8px 0;
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.peca-horarios li.ocupado {
+    color: var(--cor-3);
+    text-decoration: line-through;
+}
+
+.painel-peca .peca-nota {
+    margin-top: 12px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background-color: var(--cor-detalhe-suave);
+}
+
+.peca-nota .material-symbols-outlined {
+    color: var(--cor-2);
+}
+
+/* Lembrete */
+.peca-balao {
+    padding: 8px 12px;
+    border-radius: 12px;
+    border-bottom-right-radius: 4px;
+    background-color: var(--cor-detalhe-suave);
+    line-height: 1.4;
+}
+
+.painel-peca .peca-escolhas {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.peca-escolhas span {
+    padding: 4px 12px;
+    border: 1px solid var(--cor-trilha);
+    border-radius: 999px;
+}
+
+/* CRM */
+.peca-ficha {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.peca-ficha dt {
+    color: var(--cor-3);
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+}
+
+.peca-ficha dd {
+    font-weight: 600;
+}
+
+.peca-ficha .marcado {
+    display: inline-block;
+    padding: 2px 8px;
+    border: 1px solid var(--cor-detalhe);
+    border-radius: 999px;
+}
+
+/* Dashboard: só a forma das barras, sem número inventado */
+.peca-barras {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: end;
+    gap: 12px;
+    height: 120px;
+}
+
+.peca-barras span {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: var(--altura);
+    padding-bottom: 8px;
+    border-radius: 8px 8px 4px 4px;
+    background-color: var(--cor-detalhe-suave);
+    border-top: 2px solid var(--cor-detalhe);
+    font-size: 0.6875rem;
+    color: var(--cor-2);
+    text-align: center;
+}
+
+/* ---------- Chamada ---------- */
+
 section.como a.passos-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    margin-top: 32px;
+    padding: 12px 32px;
+    border-radius: 999px;
+    font-family: var(--fonte-texto);
     font-size: 1.1875rem;
     font-weight: 700;
+    text-align: center;
+    text-wrap: balance;
+    transition-property: background-color, transform;
+    transition-duration: 220ms;
+    transition-timing-function: ease-out;
 }
 
-.passos-proximo:focus-visible,
 section.como a.passos-cta:focus-visible {
     outline: 2px solid var(--cor-2);
     outline-offset: 3px;
     transition: none;
 }
 
-.passos-proximo:active,
 section.como a.passos-cta:active {
     transform: translateY(1px);
 }
 
-/* Com JS: "Próximo passo" até o último; no último, a chamada */
-section.como[data-js] .passos-proximo {
-    display: inline-flex;
-}
-
-section.como[data-js][data-fim] .passos-proximo,
-section.como[data-js]:not([data-fim]) .passos-cta {
-    display: none;
-}
-
-/* Anúncio para leitor de tela ("Passo 2 de 4: Confirma e lembra") */
-.como-aviso {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-}
-
-/* ---------- Menos movimento: tudo muda na hora ---------- */
+/* ---------- Menos movimento ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-    .como-visual img,
-    .passo-linha::after,
-    .passo-texto,
-    section.como[data-js] .passo:not([data-estado="atual"]) .passo-texto {
+    .rede-agente,
+    .rede-destino,
+    .linha-acesa,
+    section.como a.passos-cta {
         transition: none;
+    }
+
+    .linha-pulso.pulsando,
+    .rede[data-js] .painel:not([hidden]) {
+        animation: none;
     }
 }
 
-/* ---------- Tablet e maiores ---------- */
+/* ---------- Tablet: painel em duas colunas ---------- */
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
+    .rede {
+        padding: 40px 32px;
+    }
+
+    .painel {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: center;
+        gap: 32px;
+        padding: 32px;
+    }
+
+    .painel-peca {
+        justify-self: end;
+    }
+
+    .rede-destinos {
+        gap: 12px;
+    }
+
+    .rede-destino {
+        flex-direction: row;
+        gap: 8px;
+        min-height: 52px;
+        padding-inline: 12px;
+        font-size: 0.9375rem;
+    }
+}
+
+/* ---------- Computador: o mapa na horizontal ---------- */
+
+@media (min-width: 900px) {
     section.como {
         padding: 96px 48px;
     }
 
-    .como-cabecalho {
-        margin-bottom: 56px;
+    .rede {
+        padding: 56px 48px 48px;
     }
-}
 
-/* ---------- Tela grande: passos à esquerda, imagem à direita ---------- */
-
-@media (min-width: 960px) {
-    .como-corpo {
-        grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    .rede-grade {
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
         align-items: center;
-        gap: 64px;
+        gap: 96px;
     }
 
-    .como-passos {
-        grid-column: 1;
-        grid-row: 1;
+    .rede-entradas {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-self: start;
+        gap: 48px;
     }
 
-    .como-visual {
-        grid-column: 2;
-        grid-row: 1;
+    .rede-agente {
+        width: 160px;
+    }
+
+    .rede-destinos {
+        grid-template-columns: minmax(0, 1fr);
+        justify-self: end;
+        max-width: 260px;
+    }
+
+    .rede-destino {
+        justify-content: flex-start;
+        padding-inline: 16px;
+        text-align: left;
+    }
+
+    .rede-paineis {
+        margin-top: 48px;
     }
 }

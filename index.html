@@ -227,76 +227,113 @@
                     <p>A gente não entrega um sistema e some. Instalamos o agente dentro do WhatsApp e do Instagram que sua clínica já usa, conectamos na sua agenda e acompanhamos os números todo mês. Sem trocar de software, sem treinar equipe em plataforma nova.</p>
                 </div>
 
-                <div class="como-corpo">
-                    <!-- Sem JS: todos os passos abertos, linhas completas e a imagem inteira.
-                         Com JS (data-js na seção): um passo por vez; o clique desenha a linha
-                         até o próximo e a imagem aproxima a parte daquele passo. -->
-                    <div class="como-visual" data-foco="0">
-                        <img src="imagens/como_funciona.png" alt="Conversa no WhatsApp agendando uma consulta, ligada por linhas ao lembrete de confirmação, ao registro do lead e ao gráfico de agendamentos" width="1672" height="941" loading="lazy" decoding="async">
-                    </div>
+                <!-- Mapa de conexões (scripts/como-funciona.js): o agente no centro,
+                     ligado ao WhatsApp e ao Instagram (entrada) e ao que ele faz (saída).
+                     Clicar num destino acende o caminho e mostra o painel dele.
+                     Sem JS: sem linhas, os destinos são links e os 4 painéis ficam abertos. -->
+                <div class="rede">
+                    <svg class="rede-linhas" aria-hidden="true"></svg>
 
-                    <div class="como-passos">
-                        <ol class="passos">
-                            <li class="passo">
-                                <h3>
-                                    <button type="button" class="passo-gatilho" aria-controls="passo-1-texto">
-                                        <span class="passo-marcador" aria-hidden="true">1</span>
-                                        <span class="passo-titulo">Responde e agenda</span>
-                                    </button>
-                                </h3>
-                                <div class="passo-texto" id="passo-1-texto">
-                                    <div><p>Atende no WhatsApp e no Instagram, qualifica o paciente e marca direto na agenda da clínica.</p></div>
-                                </div>
-                                <span class="passo-linha" aria-hidden="true"></span>
+                    <div class="rede-grade">
+                        <ul class="rede-entradas" aria-label="Onde o paciente chama a clínica">
+                            <li class="rede-no rede-entrada">
+                                <span class="material-symbols-outlined" aria-hidden="true">forum</span>
+                                WhatsApp
                             </li>
-
-                            <li class="passo">
-                                <h3>
-                                    <button type="button" class="passo-gatilho" aria-controls="passo-2-texto">
-                                        <span class="passo-marcador" aria-hidden="true">2</span>
-                                        <span class="passo-titulo">Confirma e lembra</span>
-                                    </button>
-                                </h3>
-                                <div class="passo-texto" id="passo-2-texto">
-                                    <div><p>Confirmação imediata, lembrete 24h e 2h antes. Menos falta, menos horário vago.</p></div>
-                                </div>
-                                <span class="passo-linha" aria-hidden="true"></span>
+                            <li class="rede-no rede-entrada">
+                                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                                Instagram
                             </li>
+                        </ul>
 
-                            <li class="passo">
-                                <h3>
-                                    <button type="button" class="passo-gatilho" aria-controls="passo-3-texto">
-                                        <span class="passo-marcador" aria-hidden="true">3</span>
-                                        <span class="passo-titulo">Organiza sozinho</span>
-                                    </button>
-                                </h3>
-                                <div class="passo-texto" id="passo-3-texto">
-                                    <div><p>Todo lead cai automaticamente na planilha ou no CRM, com origem, motivo e status.</p></div>
-                                </div>
-                                <span class="passo-linha" aria-hidden="true"></span>
-                            </li>
-
-                            <li class="passo">
-                                <h3>
-                                    <button type="button" class="passo-gatilho" aria-controls="passo-4-texto">
-                                        <span class="passo-marcador" aria-hidden="true">4</span>
-                                        <span class="passo-titulo">Mostra o resultado</span>
-                                    </button>
-                                </h3>
-                                <div class="passo-texto" id="passo-4-texto">
-                                    <div><p>Dashboard com leads, comparecimento, conversão, CAC e ROI. Decisão com número, não com achismo.</p></div>
-                                </div>
-                            </li>
-                        </ol>
-
-                        <div class="passos-acoes">
-                            <button type="button" class="passos-proximo">Próximo passo</button>
-                            <a href="#call" class="ctf passos-cta">Quero isso na minha clínica</a>
+                        <div class="rede-no rede-agente">
+                            <img src="imagens/logo/rlg-white.svg" alt="" width="40" height="40">
+                            <span>Agente RLG</span>
                         </div>
 
-                        <p class="como-aviso" aria-live="polite"></p>
+                        <div class="rede-destinos" aria-label="O que o agente faz">
+                            <a href="#painel-agenda" id="aba-agenda" class="rede-no rede-destino">
+                                <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+                                Agenda
+                            </a>
+                            <a href="#painel-lembretes" id="aba-lembretes" class="rede-no rede-destino">
+                                <span class="material-symbols-outlined" aria-hidden="true">notifications_active</span>
+                                Lembretes
+                            </a>
+                            <a href="#painel-crm" id="aba-crm" class="rede-no rede-destino">
+                                <span class="material-symbols-outlined" aria-hidden="true">database</span>
+                                CRM ou planilha
+                            </a>
+                            <a href="#painel-dashboard" id="aba-dashboard" class="rede-no rede-destino">
+                                <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
+                                Dashboard
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="rede-paineis">
+                        <div class="painel" id="painel-agenda">
+                            <div class="painel-texto">
+                                <h3>Responde e agenda</h3>
+                                <p>Atende no WhatsApp e no Instagram, qualifica o paciente e marca direto na agenda da clínica.</p>
+                            </div>
+                            <div class="painel-peca peca-agenda" aria-hidden="true">
+                                <p class="peca-topo"><span class="material-symbols-outlined">calendar_month</span> Sábado</p>
+                                <ul class="peca-horarios">
+                                    <li class="ocupado">08:00</li>
+                                    <li class="ocupado">09:00</li>
+                                    <li class="marcado">10:30</li>
+                                    <li>11:00</li>
+                                </ul>
+                                <p class="peca-nota"><span class="material-symbols-outlined">event_available</span> Ana, limpeza às 10:30</p>
+                            </div>
+                        </div>
+
+                        <div class="painel" id="painel-lembretes">
+                            <div class="painel-texto">
+                                <h3>Confirma e lembra</h3>
+                                <p>Confirmação imediata, lembrete 24h e 2h antes. Menos falta, menos horário vago.</p>
+                            </div>
+                            <div class="painel-peca peca-lembrete" aria-hidden="true">
+                                <p class="peca-topo"><span class="material-symbols-outlined">notifications_active</span> Lembrete, 24h antes</p>
+                                <p class="peca-balao">Oi, Ana! Sua limpeza é amanhã, às 10:30. Posso confirmar?</p>
+                                <p class="peca-escolhas"><span class="marcado">Confirmar</span><span>Remarcar</span></p>
+                            </div>
+                        </div>
+
+                        <div class="painel" id="painel-crm">
+                            <div class="painel-texto">
+                                <h3>Organiza sozinho</h3>
+                                <p>Todo lead cai automaticamente na planilha ou no CRM, com origem, motivo e status.</p>
+                            </div>
+                            <div class="painel-peca peca-crm" aria-hidden="true">
+                                <dl class="peca-ficha">
+                                    <div><dt>Nome</dt><dd>Ana</dd></div>
+                                    <div><dt>Origem</dt><dd>WhatsApp</dd></div>
+                                    <div><dt>Motivo</dt><dd>Limpeza</dd></div>
+                                    <div><dt>Status</dt><dd><span class="marcado">Agendada</span></dd></div>
+                                </dl>
+                            </div>
+                        </div>
+
+                        <div class="painel" id="painel-dashboard">
+                            <div class="painel-texto">
+                                <h3>Mostra o resultado</h3>
+                                <p>Dashboard com leads, comparecimento, conversão, CAC e ROI. Decisão com número, não com achismo.</p>
+                            </div>
+                            <div class="painel-peca peca-dashboard" aria-hidden="true">
+                                <p class="peca-topo"><span class="material-symbols-outlined">monitoring</span> Seu mês</p>
+                                <div class="peca-barras">
+                                    <span style="--altura: 100%">Leads</span>
+                                    <span style="--altura: 72%">Agendados</span>
+                                    <span style="--altura: 60%">Compareceram</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <a href="#call" class="ctf passos-cta">Quero isso na minha clínica</a>
             </div>
         </section>
 
